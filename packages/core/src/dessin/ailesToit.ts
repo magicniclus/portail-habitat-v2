@@ -43,7 +43,7 @@ export const monde = (r: Repere, a: number, b: number): Point => ({
 });
 
 /** Mur prolongé d'une demi-épaisseur à chaque bout : les angles de la maison sont pleins. */
-function murPlein(m: Niveau['murs'][number]): Point[] {
+export function murPlein(m: Niveau['murs'][number]): Point[] {
   const l = longueurMur(m);
   const d = m.epaisseur / 2;
   const u = { x: ((m.b.x - m.a.x) / l) * d, y: ((m.b.y - m.a.y) / l) * d };

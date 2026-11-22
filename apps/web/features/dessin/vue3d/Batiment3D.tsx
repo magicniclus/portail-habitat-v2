@@ -6,6 +6,7 @@ import {
   habillageEscalier,
   type MatiereEscalier,
   morceauxDeMur,
+  murSousEtage,
   type Dalle,
   type Niveau,
   type Point,
@@ -96,7 +97,10 @@ export function Niveau3D({
     const contours = contoursRaccordes(n.murs);
     // Un niveau au-dessus : les murs montent jusqu'à son plancher (façade continue).
     const rehausse = dessus ? dessus.altitude - n.altitude - n.hauteurSousPlafond : 0;
-    return n.murs.flatMap((m) => morceauxDeMur(m, n, contours.get(m.id), rehausse));
+    // Seuls les murs qui portent l'étage montent jusqu'à son plancher.
+    return n.murs.flatMap((m) =>
+      morceauxDeMur(m, n, contours.get(m.id), dessus && murSousEtage(m, dessus) ? rehausse : 0),
+    );
   }, [n, dessus]);
   const dalles = useMemo(() => dallesDuNiveau(n), [n]);
   const escaliers = useMemo(

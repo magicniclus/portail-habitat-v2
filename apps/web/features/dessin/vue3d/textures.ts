@@ -12,6 +12,7 @@ import {
   Vector2,
   type Texture,
 } from 'three';
+import { LAME_TERRASSE, nuance, PLANCHER } from '../nuance';
 
 /**
  * Matériaux 3D des revêtements (DES-26 en 3D) : couleur du matériau, et pour les carrelages et
@@ -27,7 +28,48 @@ const couleurRevetement = (r: Revetement, defaut: string = COULEURS_3D.mur) =>
 
 const cache = new Map<string, MeshStandardMaterial>();
 
+/**
+ * Lames de terrasse (bois, composite) : longues (3,60 m × 14,5 cm), interstice sombre entre
+ * deux lames, aboutements décalés d'un rang à l'autre, teinte qui varie un peu par lame.
+ */
+function texturePlancher(r: Revetement, couleur: string): CanvasTexture | null {
+  const f = r.format ?? LAME_TERRASSE;
+  const rangs = 4;
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  const h = Math.max(12, Math.round((canvas.width * f.p) / f.l));
+  canvas.height = h * rangs;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  const decalages = [0, 0.5, 0.25, 0.75];
+  const teintes = [1, 0.93, 1.05, 0.97, 1.02, 0.95];
+  for (let i = 0; i < rangs; i++) {
+    const x0 = decalages[i]! * canvas.width;
+    for (const [k, x] of [x0 - canvas.width, x0].entries()) {
+      ctx.fillStyle = nuance(couleur, teintes[(i * 2 + k) % teintes.length]!);
+      ctx.fillRect(x, i * h, canvas.width, h);
+      ctx.fillStyle = nuance(couleur, 0.45);
+      ctx.fillRect(x + canvas.width - 1, i * h, 2, h);
+    }
+    // Interstice de 5 mm entre deux lames, sombre.
+    ctx.fillStyle = nuance(couleur, 0.35);
+    ctx.fillRect(
+      0,
+      (i + 1) * h - Math.max(2, Math.round((5 / f.p) * h)),
+      canvas.width,
+      Math.max(2, Math.round((5 / f.p) * h)),
+    );
+  }
+  const t = new CanvasTexture(canvas);
+  t.wrapS = RepeatWrapping;
+  t.wrapT = RepeatWrapping;
+  t.colorSpace = SRGBColorSpace;
+  t.repeat.set(1000 / f.l, 1000 / (f.p * rangs));
+  return t;
+}
+
 function texture(r: Revetement, couleur: string): CanvasTexture | null {
+  if (PLANCHER.has(r.famille) && !r.format) return texturePlancher(r, couleur);
   const lames = LAMES.has(r.famille);
   if (!lames && !CARREAUX.has(r.famille)) return null;
   const f = r.format ?? materiau(r)?.format ?? (lames ? { l: 1200, p: 180 } : { l: 600, p: 600 });

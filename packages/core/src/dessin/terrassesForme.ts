@@ -1,7 +1,7 @@
 import { echec, succes, type Resultat } from '../resultat';
 import type { Niveau, Point } from '../schemas/dessinScene';
 import { pointDansPolygone } from './geometrie';
-import { maison } from './placementExterieur';
+import { murPlein } from './ailesToit';
 
 type Rect = [Point, Point];
 /** En dessous (mm), un morceau de terrasse est une chute, pas une terrasse. */
@@ -18,7 +18,11 @@ export function rectanglesHorsMaison(n: Niveau, [a, b]: Rect): Rect[] {
     Math.min(a.y, b.y),
     Math.max(a.y, b.y),
   ];
-  const polys = maison(n);
+  // Emprise de la maison : pièces et murs prolongés aux angles (les coins sont pleins).
+  const polys = [
+    ...n.pieces.map((p) => p.contour),
+    ...n.murs.filter((m) => m.type !== 'separation' && m.type !== 'poutre').map(murPlein),
+  ];
   const coupe = (v: number[], lo: number, hi: number) =>
     [...new Set([lo, hi, ...v.filter((x) => x > lo && x < hi)].map(Math.round))].sort(
       (p, q) => p - q,
@@ -65,7 +69,31 @@ export function rectanglesHorsMaison(n: Niveau, [a, b]: Rect): Rect[] {
     }
   }
   for (const r of ouverts.values()) fermer(r, ys.length - 1);
-  return faits.filter(([p, q]) => q.x - p.x >= COTE_MIN && q.y - p.y >= COTE_MIN);
+  // Aucun morceau jeté (sinon une bande de gazon apparaît entre deux terrasses) ; les morceaux
+  // qui partagent un côté entier sont réunis, pour en garder le moins possible.
+  return reunir(faits.filter(([p, q]) => q.x - p.x >= 1 && q.y - p.y >= 1));
+}
+
+/** Réunit deux à deux les rectangles qui partagent un côté entier, jusqu'à ce qu'il n'y en ait plus. */
+function reunir(rects: Rect[]): Rect[] {
+  const r = rects.map(([p, q]) => [{ ...p }, { ...q }] as Rect);
+  for (let fini = false; !fini;) {
+    fini = true;
+    for (let i = 0; i < r.length && fini; i++)
+      for (let j = i + 1; j < r.length && fini; j++) {
+        const [[a, b], [c, d]] = [r[i]!, r[j]!];
+        const memesX = a.x === c.x && b.x === d.x && (b.y === c.y || d.y === a.y);
+        const memesY = a.y === c.y && b.y === d.y && (b.x === c.x || d.x === a.x);
+        if (!memesX && !memesY) continue;
+        r[i] = [
+          { x: Math.min(a.x, c.x), y: Math.min(a.y, c.y) },
+          { x: Math.max(b.x, d.x), y: Math.max(b.y, d.y) },
+        ];
+        r.splice(j, 1);
+        fini = false;
+      }
+  }
+  return r;
 }
 
 type Terrasse = Niveau['exterieur']['terrasses'][number];

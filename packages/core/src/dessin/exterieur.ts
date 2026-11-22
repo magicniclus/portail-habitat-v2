@@ -9,7 +9,7 @@ import {
   type Scene,
 } from '../schemas/dessinScene';
 import type { Contexte } from './commandes';
-import { contourPiscine } from './formePiscine';
+import { contourMargelles, contourPiscine } from './formePiscine';
 import {
   clotureTraverse,
   piscineSurLaMaison,
@@ -20,7 +20,7 @@ import {
 import { aire, distance, projeter } from './geometrie';
 import { rectanglesHorsMaison } from './terrassesForme';
 
-export { contourPiscine };
+export { contourMargelles, contourPiscine };
 
 /**
  * Extérieur (DES-18 à DES-20) : terrasses (surélevées avec marches), allées, clôtures,

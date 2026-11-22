@@ -1,4 +1,5 @@
 import type { Niveau, Point } from '../schemas/dessinScene';
+import { decalerVersInterieur } from './geometrie';
 
 type Piscine = Niveau['exterieur']['piscines'][number];
 
@@ -50,4 +51,13 @@ export function contourPiscine(p: Omit<Piscine, 'id'>): Point[] {
     x: Math.round(p.position.x + q.x * c - q.y * s),
     y: Math.round(p.position.y + q.x * s + q.y * c),
   }));
+}
+
+/** Contour extérieur des margelles : le bassin élargi de `largeur` (mm) tout autour. */
+export function contourMargelles(p: Omit<Piscine, 'id'>, largeur = 300): Point[] {
+  const c = contourPiscine(p);
+  return decalerVersInterieur(
+    c,
+    c.map(() => -largeur),
+  ).map((q) => ({ x: Math.round(q.x), y: Math.round(q.y) }));
 }

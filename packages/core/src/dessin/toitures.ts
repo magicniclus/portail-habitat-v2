@@ -56,7 +56,17 @@ export interface Emprise {
   /** Altitude du haut des murs (base du toit) et hauteur des murs au-dessus du sol du niveau. */
   base: number;
   hMurs: number;
+  /**
+   * Pente maximale (tangente) de cette aile : un appentis contre l'étage s'arrête sous ses
+   * fenêtres, quitte à être moins pentu que le reste du toit (légère cassure de pente).
+   */
+  kMax?: number;
 }
+
+/** Haut d'un appentis : 80 cm au-dessus du plancher de l'étage, sous ses fenêtres (mm). */
+const HAUT_APPENTIS = 800;
+/** Pente minimale d'un appentis (tuiles) : 10°. */
+const K_APPENTIS_MIN = Math.tan((10 * Math.PI) / 180);
 
 /** Hauteur des murs extérieurs du niveau (égout du toit). */
 const hauteurMurs = (n: Pick<Niveau, 'murs'>) =>
@@ -98,6 +108,14 @@ export function emprisesToit(n: Niveau, dessus: Niveau | null = null): Emprise[]
       sens: appentis && cotes.b0 === 'etage' ? -1 : 1,
       base: n.altitude + hMurs,
       hMurs,
+      ...(appentis && dessus
+        ? {
+            kMax: Math.max(
+              K_APPENTIS_MIN,
+              (dessus.altitude + HAUT_APPENTIS - (n.altitude + hMurs)) / Math.max(1, P0),
+            ),
+          }
+        : {}),
     };
   });
 }
@@ -113,11 +131,11 @@ const penteDe = (t: Toiture) => t.pentes[0]! / 10;
  */
 export function hauteurLocale(
   t: Toiture,
-  e: Pick<Emprise, 'L0' | 'P0'> & Partial<Pick<Emprise, 'cotes' | 'type' | 'sens'>>,
+  e: Pick<Emprise, 'L0' | 'P0'> & Partial<Pick<Emprise, 'cotes' | 'type' | 'sens' | 'kMax'>>,
   a: number,
   b: number,
 ): number {
-  const k = tan(penteDe(t));
+  const k = Math.min(tan(penteDe(t)), e.kMax ?? Infinity);
   const versB = e.P0 / 2 - Math.abs(b);
   // Croupe ou quatre pans : la pente de bout n'existe qu'aux bouts libres (pas contre une aile).
   const libre = (c: Cote | undefined) => c === undefined || c === 'exterieur';

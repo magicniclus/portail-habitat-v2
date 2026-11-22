@@ -1,5 +1,6 @@
-import type { Mur, Point } from '../schemas/dessinScene';
-import { distancePointSegment } from './geometrie';
+import type { Mur, Niveau, Point } from '../schemas/dessinScene';
+import { murPlein } from './ailesToit';
+import { distancePointSegment, pointDansPolygone } from './geometrie';
 
 /** Deux murs se touchent : un bout de l'un sur l'autre (angle ou jonction en T). */
 const touche = (m: Mur, n: Mur) => {
@@ -50,4 +51,17 @@ export function batimentEn(murs: readonly Mur[], p: Point): Mur[] | null {
         (a, b) => (a.b.x1 - a.b.x0) * (a.b.y1 - a.b.y0) - (b.b.x1 - b.b.x0) * (b.b.y1 - b.b.y0),
       )[0]?.g ?? null
   );
+}
+
+/**
+ * Mur qui porte l'étage (DES-33) : son milieu est sous une pièce, un mur extérieur ou un mur
+ * porteur de l'étage. Seuls ces murs montent jusqu'au plancher de l'étage ; ceux d'une partie
+ * sans étage s'arrêtent à leur hauteur (sinon ils traversent le toit de l'appentis).
+ */
+export function murSousEtage(m: Mur, dessus: Pick<Niveau, 'murs' | 'pieces'>): boolean {
+  const milieu = { x: (m.a.x + m.b.x) / 2, y: (m.a.y + m.b.y) / 2 };
+  return [
+    ...dessus.pieces.map((p) => p.contour),
+    ...dessus.murs.filter((x) => x.type === 'mur' || x.porteur).map(murPlein),
+  ].some((poly) => pointDansPolygone(milieu, poly));
 }

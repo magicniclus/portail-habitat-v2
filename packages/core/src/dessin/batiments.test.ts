@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Scene } from '../schemas/dessinScene';
 import { contexteTest, niveauMaquette, ok } from './aidesTest';
-import { batimentEn, batiments } from './batiments';
+import { batimentEn, batiments, murSousEtage } from './batiments';
 import { mursDepuisForme } from './formes';
 import { nouvelleScene } from './migrations';
 import { ajouterNiveau } from './niveaux';
@@ -46,5 +46,11 @@ describe('ajouter un niveau au seul bâtiment choisi (DES-04)', () => {
     expect(etage.murs).toHaveLength(4);
     expect(etage.murs.every((m) => m.a.x <= 10_600 && m.b.x <= 10_600)).toBe(true);
     expect(etage.pieces).toHaveLength(1);
+  });
+
+  it('seuls les murs qui ont l’étage au-dessus montent jusqu’à son plancher', () => {
+    const etage = { murs: maison.murs, pieces: maison.pieces };
+    for (const m of maison.murs) expect(murSousEtage(m, etage)).toBe(true);
+    for (const m of decale) expect(murSousEtage(m, etage)).toBe(false);
   });
 });

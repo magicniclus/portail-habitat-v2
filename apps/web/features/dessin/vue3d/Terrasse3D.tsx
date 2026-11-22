@@ -2,7 +2,7 @@
 
 import { centroide, marchesTerrasse, type Point, type Terrasse } from '@ph/core/dessin';
 import { COULEURS_3D, COULEURS_EXTERIEUR as C, COULEURS_TERRASSE } from '@ph/ui/tokens';
-import { useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, type ReactNode } from 'react';
 import { ExtrudeGeometry } from 'three';
 import { cotes, forme, Poteau, Segment } from './FormesExterieur3D';
 import { materiauRevetement } from './textures';
@@ -13,17 +13,24 @@ export function Terrasse3D({
   t,
   maison,
   contreMaison,
+  trous = [],
 }: {
   t: Terrasse;
+  /** Bassins des piscines posées dessus : découpés dans le plancher. */
+  trous?: readonly Point[][];
   maison: Point | undefined;
   /** Côtés collés à la façade (pas de garde-corps). */
   contreMaison: boolean[];
 }) {
   const h = Math.max(t.hauteur, 40);
-  const g = useMemo(
-    () => new ExtrudeGeometry(forme(t.contour), { depth: M(h), bevelEnabled: false }),
-    [t.contour, h],
-  );
+  // Clé stable : la géométrie n'est refaite que si un bassin bouge vraiment.
+  const cleTrous = JSON.stringify(trous);
+  const g = useMemo(() => {
+    const s = forme(t.contour);
+    for (const trou of JSON.parse(cleTrous) as Point[][]) s.holes.push(forme(trou));
+    return new ExtrudeGeometry(s, { depth: M(h), bevelEnabled: false });
+  }, [t.contour, h, cleTrous]);
+  useEffect(() => () => g.dispose(), [g]);
   const marches = marchesTerrasse(t, maison);
   const c = centroide(t.contour);
   const pieces: ReactNode[] = [];

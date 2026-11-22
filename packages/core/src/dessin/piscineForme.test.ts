@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { Niveau } from '../schemas/dessinScene';
 import { contexteTest, niveauMaquette, ok } from './aidesTest';
-import { ajouterTerrasse, contourPiscine } from './exterieur';
+import { ajouterTerrasse, contourMargelles, contourPiscine } from './exterieur';
+import { aire } from './geometrie';
 import { redimensionnerPiscine, tracerPiscine } from './piscineForme';
 
 describe('piscine tracée comme un sol (DES-20)', () => {
@@ -45,5 +46,18 @@ describe('piscine tracée comme un sol (DES-20)', () => {
     expect(redimensionnerPiscine(r, 'pi_absent', 0, { x: 0, y: 0 }).ok).toBe(false);
     // Jamais sur la maison.
     expect(redimensionnerPiscine(r, p.id, 0, { x: 5_000, y: 5_000 }).ok).toBe(false);
+  });
+
+  it('margelles d’un seul tenant : 30 cm tout autour, angles nets', () => {
+    const r = ok(
+      tracerPiscine(n, { x: 1_000, y: 10_000 }, { x: 9_000, y: 14_000 }, 'rectangle', ctx),
+    );
+    const p = r.exterieur.piscines[0]!;
+    const m = contourMargelles(p);
+    expect(m).toHaveLength(4);
+    expect(aire(m)).toBe(8_600 * 4_600);
+    expect(contourMargelles({ ...p, forme: 'ronde', longueur: 4_000, largeur: 4_000 }).length).toBe(
+      32,
+    );
   });
 });

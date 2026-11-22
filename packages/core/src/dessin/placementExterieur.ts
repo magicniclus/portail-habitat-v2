@@ -16,7 +16,7 @@ const ACCROCHE_LIMITE = 1_000;
 type Bati = { nom: string; poly: Point[] };
 
 /** Polygones de la maison (pièces et murs). */
-export const maison = (n: Niveau): Point[][] => [
+const maison = (n: Niveau): Point[][] => [
   ...n.pieces.map((p) => p.contour),
   ...n.murs.filter((m) => m.type !== 'separation' && m.type !== 'poutre').map((m) => contourMur(m)),
 ];
