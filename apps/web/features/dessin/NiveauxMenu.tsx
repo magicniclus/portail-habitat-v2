@@ -1,6 +1,6 @@
 'use client';
 
-import { formatLongueur, niveauxTries, type TypeNiveau } from '@ph/core/dessin';
+import { formatLongueur, niveauxTries, type TypeNiveau, batiments } from '@ph/core/dessin';
 import {
   ArrowDownIcon,
   ArrowLineDownIcon,
@@ -14,6 +14,7 @@ import { Checkbox, IconButton } from '@ph/ui';
 import { useState, type Dispatch } from 'react';
 import { ChampMesure } from './ChampMesure';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
+import { pointDuBatiment } from './etatNiveaux';
 
 const AJOUTS: { type: TypeNiveau; libelle: string; aria: string; Icone: Icon }[] = [
   { type: 'etage', libelle: 'Étage', aria: 'Ajouter un étage', Icone: ArrowLineUpIcon },
@@ -146,6 +147,13 @@ export function NiveauxMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
         <Checkbox checked={copier} onChange={(ev) => setCopier(ev.target.checked)}>
           Reprendre les murs extérieurs
         </Checkbox>
+        {copier && batiments(actuel.murs).length > 1 ? (
+          <p className="m-0 text-[13px] leading-5 text-neutre-800">
+            {pointDuBatiment(etat)
+              ? 'Seuls les murs du bâtiment choisi seront repris.'
+              : 'Choisissez une pièce sur le plan pour ne reprendre que son bâtiment.'}
+          </p>
+        ) : null}
       </section>
     </div>
   );

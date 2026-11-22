@@ -6,6 +6,7 @@ import {
   type Scene,
 } from '../schemas/dessinScene';
 import type { Contexte } from './commandes';
+import { batimentEn } from './batiments';
 import { emprise } from './escaliers';
 import { detecterPieces, synchroniserPieces } from './pieces';
 
@@ -40,11 +41,17 @@ export function niveauSuperieur(s: Scene, niveauId: string): Niveau | null {
 
 /**
  * Nouveau niveau au-dessus (étage, combles) ou au-dessous (sous-sol) des autres. Avec
- * `copierMurs`, les murs (type « mur ») du niveau voisin sont repris, les pièces recalculées.
+ * `copierMurs`, les murs (type « mur ») du niveau voisin sont repris, les pièces recalculées ;
+ * avec `batiment`, seulement ceux du bâtiment choisi (maison sans le garage, par exemple).
  */
 export function ajouterNiveau(
   s: Scene,
-  e: { type: TypeNiveau; copierMurs: boolean },
+  e: {
+    type: TypeNiveau;
+    copierMurs: boolean;
+    /** Point du bâtiment choisi : seuls ses murs sont repris (sinon tous). */
+    batiment?: Point;
+  },
   ctx: Contexte,
 ): Resultat<Scene & { niveauId: string }> {
   if (s.niveaux.length >= 10) return echec('PRECONDITION', { message: '10 niveaux au plus.' });
@@ -68,8 +75,9 @@ export function ajouterNiveau(
   const altitude = dessous
     ? voisin.altitude - hauteurTotale(base)
     : voisin.altitude + hauteurTotale(voisin);
+  const repris = (e.batiment && batimentEn(voisin.murs, e.batiment)) || voisin.murs;
   const murs = e.copierMurs
-    ? voisin.murs
+    ? repris
         .filter((m) => m.type === 'mur')
         .map((m) => ({
           ...m,

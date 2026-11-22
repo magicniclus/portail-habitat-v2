@@ -79,7 +79,8 @@ export type SymboleObjet =
   | 'abri'
   | 'transat'
   | 'parasol'
-  | 'jardiniere';
+  | 'jardiniere'
+  | 'bureau';
 
 /** Rôle d'un meuble de cuisine : plan de travail, triangle d'activité (DES-23). */
 export type ModuleCuisine = 'bas' | 'haut' | 'colonne' | 'evier' | 'plaque' | 'frigo';

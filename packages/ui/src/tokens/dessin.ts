@@ -287,6 +287,8 @@ export const COULEURS_3D = {
   bois: '#a87b52',
   /** Tissu des canapés par défaut (lin). */
   tissu: '#cfc8bc',
+  /** Plateaux des tables et bureaux par défaut (chêne). */
+  plateau: '#c9a36f',
   poignee: '#b4b8bb',
   mur: '#f4f1ec',
   tranche: '#d9d4cc',

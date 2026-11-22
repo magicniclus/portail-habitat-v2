@@ -26,6 +26,7 @@ export * from './niveaux';
 export * from './objets';
 export * from './cuisineCouleurs';
 export * from './mursExterieurs';
+export * from './batiments';
 export * from './placement';
 export * from './ouvertures';
 export * from './poseOuverture';

@@ -18,7 +18,8 @@ export type Teinte =
   | 'plan'
   | 'poignee'
   | 'bois'
-  | 'tissu';
+  | 'tissu'
+  | 'plateau';
 
 export interface Primitive {
   /** Prisme : toit à deux pans, faîtage le long de x, base p, hauteur h. */

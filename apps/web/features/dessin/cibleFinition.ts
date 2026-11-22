@@ -33,7 +33,9 @@ export function cotesDuMur(n: ReturnType<typeof niveauDe>, murId: string) {
     const p = pieceDevant(n, murId, f);
     return p ? `Côté ${p.nom}` : 'Côté extérieur';
   };
-  return { a: cote('a'), b: cote('b') };
+  const [a, b] = [cote('a'), cote('b')];
+  // Mur isolé (ses deux côtés dehors, ou dans la même pièce) : on précise lequel.
+  return a === b ? { a: `${a} (gauche)`, b: `${b} (droit)` } : { a, b };
 }
 
 /** Toutes les faces qui donnent dehors, en une fois ; chacune reste modifiable seule ensuite. */

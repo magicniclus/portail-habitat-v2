@@ -33,8 +33,8 @@ describe('volumes simples des meubles et aménagements (DES-33)', () => {
     const compte = (motif: RegExp) => CATALOGUE_OBJETS.filter((o) => motif.test(o.id)).length;
     expect(compte(/^canape-/)).toBeGreaterThanOrEqual(15);
     expect(compte(/^fauteuil/)).toBeGreaterThanOrEqual(4);
-    expect(compte(/^table-(\d|ronde|haute)/)).toBeGreaterThanOrEqual(5);
-    expect(compte(/^(table-basse|bout-de-canape)/)).toBeGreaterThanOrEqual(5);
+    expect(compte(/^table-(?!basse)/)).toBeGreaterThanOrEqual(14);
+    expect(compte(/^(table-basse|bout-de-canape)/)).toBeGreaterThanOrEqual(13);
     expect(compte(/^hotte-/)).toBeGreaterThanOrEqual(3);
     expect(compte(/^(refrigerateur|frigo-|colonne-frigo)/)).toBeGreaterThanOrEqual(3);
     expect(compte(/^plaque-/)).toBeGreaterThanOrEqual(3);
@@ -43,6 +43,7 @@ describe('volumes simples des meubles et aménagements (DES-33)', () => {
     expect(compte(/^baignoire/)).toBeGreaterThanOrEqual(5);
     expect(compte(/vasque/)).toBeGreaterThanOrEqual(3);
     expect(compte(/^pergola/)).toBeGreaterThanOrEqual(4);
+    expect(compte(/^bureau/)).toBeGreaterThanOrEqual(12);
   });
 
   it('cuisine personnalisable : plan de travail et poignées ont leur propre teinte', () => {

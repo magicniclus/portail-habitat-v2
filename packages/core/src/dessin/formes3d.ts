@@ -1,9 +1,11 @@
 import type { SymboleObjet } from './catalogue';
 import { formeBain } from './formes3dBain';
+import { formeBureau } from './formes3dBureau';
 import { formeCuisine } from './formes3dCuisine';
 import { formeExterieur } from './formes3dExterieur';
 import { formeMobilier } from './formes3dMobilier';
 import { formeSejour } from './formes3dSejour';
+import { formeTable } from './formes3dTables';
 import { boite, cylindre, facade, pieds, sphere, type Primitive } from './formes3dOutils';
 
 /**
@@ -23,6 +25,8 @@ export function formeObjet3D(
     formeCuisine(symbole, d, style) ??
     formeBain(symbole, d, style) ??
     formeSejour(symbole, d, style) ??
+    formeTable(symbole, d, style) ??
+    formeBureau(symbole, d, style) ??
     formeMobilier(symbole, d) ??
     formeExterieur(symbole, d, style);
   if (simple) return simple;
@@ -37,9 +41,9 @@ export function formeObjet3D(
       ];
     }
     case 'table':
-      return [boite(0, 0, h - 40, l, p, 40), ...pieds(l, p, h - 40)];
+      return [boite(0, 0, h - 40, l, p, 40, 'plateau'), ...pieds(l, p, h - 40)];
     case 'table_ronde':
-      return [cylindre(0, 0, h - 40, l, 40, 'principal'), cylindre(0, 0, 0, 80, h - 40, 'sombre')];
+      return [cylindre(0, 0, h - 40, l, 40, 'plateau'), cylindre(0, 0, 0, 80, h - 40, 'sombre')];
     case 'chaise':
       return [
         boite(0, 0, 430, l, p, 40),

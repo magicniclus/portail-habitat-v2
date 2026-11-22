@@ -1,5 +1,7 @@
 import type { CategorieObjet, Ligne } from './catalogue';
+import { LIGNES_BUREAU } from './catalogueBureau';
 import { LIGNES_CANAPES } from './catalogueCanapes';
+import { LIGNES_TABLES } from './catalogueTables';
 import { MUR } from './catalogueOptions';
 
 /** Catalogue d'objets (DES-21) : chambres, dressing, bureau, séjour. */
@@ -40,29 +42,7 @@ export const LIGNES_MAISON: Partial<Record<CategorieObjet, Ligne[]>> = {
     ['lit-enfant', 'Lit enfant 90 × 190', 'lit', 900, 1900, 450, MUR],
     ['bureau-enfant', 'Bureau enfant', 'table', 1000, 480, 580, MUR],
   ],
-  bureau: [
-    ['bureau', 'Bureau', 'table', 1400, 700, 750, { ...MUR, plages: { l: [1000, 2000] } }],
-    ['chaise-bureau', 'Chaise de bureau', 'chaise', 600, 600, 1000],
-    [
-      'bibliotheque',
-      'Bibliothèque',
-      'armoire',
-      900,
-      350,
-      2000,
-      { ...MUR, plages: { l: [600, 2400] } },
-    ],
-    [
-      'etagere-bureau',
-      'Étagère à tiroirs',
-      'etagere',
-      1140,
-      490,
-      1880,
-      { ...MUR, plages: { l: [400, 2400] } },
-    ],
-    ['caisson', 'Caisson de bureau', 'buffet', 420, 550, 600],
-  ],
+  bureau: LIGNES_BUREAU,
   sejour: [
     ...LIGNES_CANAPES,
     // Fauteuils et assises
@@ -71,60 +51,9 @@ export const LIGNES_MAISON: Partial<Record<CategorieObjet, Ligne[]>> = {
     ['fauteuil-classique', 'Fauteuil classique', 'canape', 800, 720, 1000],
     ['fauteuil-cosy', 'Fauteuil cosy', 'canape', 850, 850, 800, { style: 'fauteuil' }],
     ['pouf', 'Pouf', 'rectangle', 800, 560, 420],
-    // Tables
-    [
-      'table-4',
-      'Table 4 personnes',
-      'table',
-      1130,
-      710,
-      790,
-      { plages: { l: [900, 1600], p: [700, 1000] } },
-    ],
-    [
-      'table-6',
-      'Table 6 personnes',
-      'table',
-      1800,
-      900,
-      750,
-      { plages: { l: [1200, 2600], p: [800, 1100] } },
-    ],
-    [
-      'table-8',
-      'Table 8 personnes',
-      'table',
-      2400,
-      1000,
-      750,
-      { plages: { l: [2000, 3200], p: [900, 1200] } },
-    ],
-    [
-      'table-ronde',
-      'Table ronde',
-      'table_ronde',
-      1200,
-      1200,
-      750,
-      { plages: { l: [900, 1600], p: [900, 1600] } },
-    ],
-    [
-      'table-ronde-design',
-      'Table ronde pied central',
-      'table_ronde',
-      1100,
-      1100,
-      750,
-      { plages: { l: [800, 1500], p: [800, 1500] } },
-    ],
-    ['chaise', 'Chaise', 'chaise', 450, 500, 900],
-    // Tables basses
-    ['table-basse', 'Table basse', 'table', 1100, 600, 400],
-    ['table-basse-ronde', 'Table basse ronde', 'table_ronde', 1000, 1000, 380],
-    ['table-basse-design', 'Table basse design', 'table', 1100, 1100, 340],
-    ['table-basse-etagere', 'Table basse à étagère', 'table', 1200, 600, 420, { style: 'etagere' }],
-    ['table-basse-bloc', 'Table basse bloc', 'table', 900, 900, 350, { style: 'bloc' }],
+    ...LIGNES_TABLES,
     ['bout-de-canape', 'Bout de canapé industriel', 'table', 600, 580, 490],
+    ['chaise', 'Chaise', 'chaise', 450, 500, 900],
     // Rangements
     ['buffet', 'Buffet', 'buffet', 1800, 450, 850, MUR],
     ['buffet-haut', 'Buffet haut', 'buffet', 1000, 450, 1300, MUR],

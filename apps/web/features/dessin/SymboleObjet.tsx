@@ -1,6 +1,6 @@
 import type { SymboleObjet } from '@ph/core/dessin';
 import { SymboleAmenagement } from './SymbolesAmenagement';
-import { Canape, Lit } from './SymbolesMobilier';
+import { Lit, VueDessus } from './SymbolesMobilier';
 
 /**
  * Symbole d'un objet vu de dessus, dans son repère : centre en (0, 0), largeur l (x),
@@ -28,6 +28,9 @@ export function SymboleObjetSvg({
     <rect x={x} y={y} width={l} height={p} fill={couleur} {...t} {...extra} />
   );
   const m = Math.min(l, p);
+  // Tables en variante (ovale, gigognes, tulipe…) : vue de dessus tirée du volume.
+  if (style && (symbole === 'table' || symbole === 'table_ronde'))
+    return <VueDessus symbole={symbole} l={l} p={p} couleur={couleur} style={style} />;
   switch (symbole) {
     case 'rond':
     case 'table_ronde':
@@ -126,7 +129,9 @@ export function SymboleObjetSvg({
     case 'lit':
       return <Lit l={l} p={p} couleur={couleur} />;
     case 'canape':
-      return <Canape l={l} p={p} couleur={couleur} style={style} />;
+      return <VueDessus symbole="canape" l={l} p={p} couleur={couleur} style={style} />;
+    case 'bureau':
+      return <VueDessus symbole="bureau" l={l} p={p} couleur={couleur} style={style} />;
     case 'chaise':
       return (
         <g>

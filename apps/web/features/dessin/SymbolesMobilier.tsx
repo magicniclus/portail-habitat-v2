@@ -52,27 +52,44 @@ export function Lit({ l, p, couleur }: Props) {
 }
 
 /**
- * Canapé vu de dessus, tiré de son volume 3D : chaque bloc (assise, coussins, accoudoirs,
- * retour d'angle) en plan, du plus bas au plus haut ; les pieds ne sont pas dessinés.
+ * Meuble vu de dessus, tiré de son volume 3D (canapés, bureaux) : chaque bloc en plan, du plus
+ * bas au plus haut ; les pieds et petits détails ne sont pas dessinés.
  */
-export function Canape({ l, p, couleur, style }: Props & { style?: string }) {
-  const blocs = formeObjet3D('canape', { l, p, h: 850 }, style)
-    .filter((f) => f.forme === 'boite' && f.taille.l > 60 && f.taille.p > 60)
-    .sort((a, b) => a.centre.z - b.centre.z);
+export function VueDessus({
+  symbole,
+  l,
+  p,
+  couleur,
+  style,
+}: Props & { symbole: 'canape' | 'bureau' | 'table' | 'table_ronde'; style?: string }) {
+  const blocs = formeObjet3D(symbole, { l, p, h: 850 }, style)
+    .filter((f) => !f.pente && f.taille.l > 60 && f.taille.p > 60)
+    .sort((a, b) => a.centre.z + a.taille.h / 2 - (b.centre.z + b.taille.h / 2));
   return (
     <g>
-      {blocs.map((f, i) => (
-        <rect
-          key={i}
-          x={f.centre.x - f.taille.l / 2}
-          y={f.centre.y - f.taille.p / 2}
-          width={f.taille.l}
-          height={f.taille.p}
-          rx={Math.min(f.arrondi ?? 0, 80)}
-          fill={couleur}
-          {...t}
-        />
-      ))}
+      {blocs.map((f, i) =>
+        f.forme === 'cylindre' ? (
+          <circle
+            key={i}
+            cx={f.centre.x}
+            cy={f.centre.y}
+            r={f.taille.l / 2}
+            fill={couleur}
+            {...t}
+          />
+        ) : (
+          <rect
+            key={i}
+            x={f.centre.x - f.taille.l / 2}
+            y={f.centre.y - f.taille.p / 2}
+            width={f.taille.l}
+            height={f.taille.p}
+            rx={Math.min(f.arrondi ?? 0, 80)}
+            fill={couleur}
+            {...t}
+          />
+        ),
+      )}
     </g>
   );
 }

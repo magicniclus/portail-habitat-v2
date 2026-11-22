@@ -40,6 +40,7 @@ function Volume({ o, choisi }: { o: Objet; choisi: boolean }) {
   const choisies: Partial<Record<Teinte, string | undefined>> = {
     principal: o.materiaux.facade,
     tissu: o.materiaux.facade,
+    plateau: o.materiaux.facade,
     plan: o.materiaux.plan,
     poignee: o.materiaux.poignee,
   };

@@ -34,7 +34,7 @@ export function ResumeFinitions({
   return (
     <section aria-label="Revêtements" className="grid gap-2">
       <ul className="m-0 grid list-none gap-1.5 p-0">
-        {surfaces.map((s) => {
+        {surfaces.map((s, i) => {
           const contenu = (
             <>
               {/* Pastille : la couleur posée, ou le gris du mur brut (non revêtu). */}
@@ -48,7 +48,7 @@ export function ResumeFinitions({
             </>
           );
           return (
-            <li key={s.libelle}>
+            <li key={i}>
               {s.choisir ? (
                 <button
                   type="button"
