@@ -84,7 +84,9 @@ export function MorceauMur3D({
     let h = m.taille.h;
     // Mur entre la caméra et le centre de la maison : on l'abaisse ; un linteau au-dessus
     // de la hauteur abaissée disparaît.
-    const devant = poupee && devantLaCamera(camera, centre, m.centre.x, m.centre.y);
+    // Tout le mur décide d'un bloc (pas morceau par morceau) : abaissé en entier ou pas du tout.
+    const pivot = m.milieuMur ?? m.centre;
+    const devant = poupee && devantLaCamera(camera, centre, pivot.x, pivot.y);
     mesh.visible = !(devant && bas >= POUPEE);
     if (devant && bas < POUPEE) h = Math.min(m.taille.h, POUPEE - bas);
     mesh.scale.y = h / m.taille.h;

@@ -37,6 +37,8 @@ describe('géométrie 3D (DES-33)', () => {
     expect(surface).toBe((10_300 + 300) * 2_500 - o.largeur * o.hauteur);
     const allege = morceaux.find((x) => x.centre.z < o.allege && x.taille.l === o.largeur)!;
     expect(allege.taille).toMatchObject({ l: o.largeur, h: o.allege });
+    // Tous les morceaux du mur partagent le même milieu (maison de poupée : décision d'un bloc).
+    expect(new Set(morceaux.map((p) => JSON.stringify(p.milieuMur))).size).toBe(1);
     // Aucune jonction en T : chaque sommet d'un pavé est sur la grille commune.
     const xs = new Set(
       morceaux.flatMap((p) => [p.centre.x - p.taille.l / 2, p.centre.x + p.taille.l / 2]),

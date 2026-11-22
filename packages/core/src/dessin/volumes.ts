@@ -28,6 +28,11 @@ export interface MorceauMur extends Pave {
    * collé au morceau voisin n'est pas dessiné : il marquerait la façade d'un trait d'ombre.
    */
   visibles?: { debut: boolean; fin: boolean };
+  /**
+   * Milieu du mur entier (axe) : tous les morceaux d'un mur, et ses menuiseries, décident
+   * ensemble s'ils sont « devant » la caméra (maison de poupée), jamais morceau par morceau.
+   */
+  milieuMur?: Point;
 }
 
 export interface Dalle {
@@ -105,6 +110,7 @@ export function morceauxDeMur(
     const milieu = (de + a) / 2;
     return {
       visibles,
+      milieuMur: { x: (m.a.x + m.b.x) / 2, y: (m.a.y + m.b.y) / 2 },
       murId: m.id,
       empreinte: empreinte(de, a),
       faceA: m.faceA,

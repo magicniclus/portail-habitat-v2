@@ -4,7 +4,6 @@ import {
   CATALOGUE_OUVERTURES,
   materiauDe,
   menuiserie3D,
-  pointSurMur,
   type Matiere,
   type Niveau,
   type Ouverture,
@@ -53,7 +52,8 @@ export function Menuiseries3D({
         if (!mur) return [];
         const porte = CATALOGUE_OUVERTURES[o.type].famille === 'porte';
         const pieces = menuiserie3D(o, mur, n, portesOuvertes && porte ? 0.9 : 0);
-        const milieu = pointSurMur(mur, o.position + o.largeur / 2);
+        // Même décision que son mur (milieu du mur) : abaissés ou visibles ensemble.
+        const milieu = { x: (mur.a.x + mur.b.x) / 2, y: (mur.a.y + mur.b.y) / 2 };
         return [{ o, pieces, milieu }];
       }),
     [n, portesOuvertes],

@@ -16,6 +16,7 @@ import { Inspecteur } from './Inspecteur';
 import { Panneau } from './Panneau';
 import { AideRaccourcis } from './AideRaccourcis';
 import { AnnonceSelection } from './AnnonceSelection';
+import { ReglagesVue3D } from './vue3d/ReglagesVue3D';
 import { Bandeaux } from './Bandeaux';
 import { connexionEssai, FournisseurEssai } from './essai';
 import { Facades } from './Facades';
@@ -140,7 +141,10 @@ export function EspaceDeTravail(p: {
               ) : etat.vue === 'photo' ? (
                 <Photo etat={etat} dispatch={dispatch} espace={p.espace} planId={p.planId} />
               ) : (
-                <Vue3D etat={etat} ortho={ortho?.url ?? null} />
+                <>
+                  <Vue3D etat={etat} ortho={ortho?.url ?? null} />
+                  <ReglagesVue3D etat={etat} dispatch={dispatch} />
+                </>
               )}
             </div>
             <Bandeaux
