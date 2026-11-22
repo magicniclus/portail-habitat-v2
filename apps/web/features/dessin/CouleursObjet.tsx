@@ -38,7 +38,7 @@ export function CouleursObjet({
   );
   if (!cuisine) return facade;
   return (
-    <Section titre="Couleurs de la cuisine">
+    <Section titre="Couleurs du meuble">
       <div className="grid gap-4">
         {facade}
         <Nuancier

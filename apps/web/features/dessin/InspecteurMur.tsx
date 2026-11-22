@@ -14,9 +14,12 @@ export function InspecteurMur({
   fusionnable,
   face,
   finitionsOuvert,
+  cotes,
   dispatch,
 }: {
   mur: Mur;
+  /** Ce que regarde chaque côté : « Côté Salon », « Côté extérieur ». */
+  cotes: Record<'a' | 'b', string>;
   /** Mur voisin aligné et identique : on peut les fusionner (DES-09). */
   fusionnable: string | null;
   /** Côté choisi (sinon le mur entier). */
@@ -91,7 +94,7 @@ export function InspecteurMur({
       </div>
       <ResumeFinitions
         surfaces={(['a', 'b'] as const).map((f) => ({
-          libelle: f === 'a' ? 'Côté gauche' : 'Côté droit',
+          libelle: cotes[f],
           revetement: f === 'a' ? mur.faceA : mur.faceB,
           choisie: face === f,
           // Le côté choisi se voit sur le plan ; ses matériaux sont dans Finitions.

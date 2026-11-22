@@ -5,6 +5,7 @@ import { COULEURS_3D } from '@ph/ui/tokens';
 import { Edges } from '@react-three/drei';
 import { useEffect, useMemo } from 'react';
 import { ExtrudeGeometry, Shape } from 'three';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { M } from './Batiment3D';
 import { Modele3D } from './Modele3D';
 import { materiauUni } from './textures';
@@ -26,11 +27,19 @@ function GeometriePrisme({ l, p, h }: { l: number; p: number; h: number }) {
   return <primitive object={g} attach="geometry" />;
 }
 
+/** Boîte aux arêtes adoucies (coussins, accoudoirs) : dimensions et rayon en m. */
+function GeometrieDouce({ l, p, h, r }: { l: number; p: number; h: number; r: number }) {
+  const g = useMemo(() => new RoundedBoxGeometry(l, h, p, 3, r), [l, p, h, r]);
+  useEffect(() => () => g.dispose(), [g]);
+  return <primitive object={g} attach="geometry" />;
+}
+
 function Volume({ o, choisi }: { o: Objet; choisi: boolean }) {
   const c = objetDuCatalogue(o.catalogueId);
   // Couleurs choisies dans l'inspecteur : façades, plan de travail, poignées.
   const choisies: Partial<Record<Teinte, string | undefined>> = {
     principal: o.materiaux.facade,
+    tissu: o.materiaux.facade,
     plan: o.materiaux.plan,
     poignee: o.materiaux.poignee,
   };
@@ -46,7 +55,9 @@ function Volume({ o, choisi }: { o: Objet; choisi: boolean }) {
       castShadow
       receiveShadow
     >
-      {f.forme === 'boite' ? (
+      {f.forme === 'boite' && f.arrondi ? (
+        <GeometrieDouce l={M(f.taille.l)} p={M(f.taille.p)} h={M(f.taille.h)} r={M(f.arrondi)} />
+      ) : f.forme === 'boite' ? (
         <boxGeometry args={[M(f.taille.l), M(f.taille.h), M(f.taille.p)]} />
       ) : f.forme === 'sphere' ? (
         <sphereGeometry args={[0.5, 24, 16]} />

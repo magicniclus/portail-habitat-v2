@@ -88,9 +88,10 @@ export function RenduMenu({
         {coche('Afficher seulement ce niveau', r.niveauSeul, (v) => regler({ niveauSeul: v }))}
         <li>
           <p className="m-0 px-1 pt-1 text-[13px] leading-5 text-neutre-700">
-            La 3D sert à voir : tout se modifie sur le plan 2D. Glissez pour tourner, molette ou
-            deux doigts pour zoomer. En visite : ZQSD ou flèches pour marcher (on traverse les
-            murs), glisser pour regarder, joystick sur téléphone.
+            La 3D sert à voir : tout se modifie sur le plan 2D. Glissez pour déplacer la vue, Espace
+            + glisser (ou clic droit) pour tourner, molette ou deux doigts pour zoomer. En visite :
+            ZQSD ou flèches pour marcher (on traverse les murs), glisser pour regarder, joystick sur
+            téléphone.
           </p>
         </li>
       </SousSection>

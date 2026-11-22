@@ -284,6 +284,9 @@ export const COULEURS_3D = {
   vegetal: '#8fa77f',
   /** Plan de travail et poignées par défaut (cuisine personnalisable). */
   plan: '#f4f3ef',
+  bois: '#a87b52',
+  /** Tissu des canapés par défaut (lin). */
+  tissu: '#cfc8bc',
   poignee: '#b4b8bb',
   mur: '#f4f1ec',
   tranche: '#d9d4cc',

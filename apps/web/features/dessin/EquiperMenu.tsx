@@ -13,6 +13,7 @@ import { CaretLeftIcon, MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useState, type Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from './etat';
 import { CartesObjets, MiniatureObjet } from './CartesObjets';
+import { CouleursCuisineMenu } from './CouleursCuisineMenu';
 import { Ligne } from './LigneMenu';
 
 const CONSEILS = {
@@ -79,6 +80,7 @@ export function EquiperMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
           <p className="m-0 px-1 text-[13px] leading-5 text-neutre-800">
             Choisissez un élément puis cliquez sur le plan. Près d’un mur, il s’y colle, dos au mur.
           </p>
+          {categorie === 'cuisine' ? <CouleursCuisineMenu etat={etat} dispatch={dispatch} /> : null}
           <CartesObjets
             objets={CATALOGUE_OBJETS.filter((o) => o.categorie === categorie)}
             choisi={choisi}

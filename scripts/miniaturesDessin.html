@@ -19,6 +19,7 @@
       import * as THREE from 'three';
       import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
       import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+      import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
       const TAILLE = 256;
       const rendu = new THREE.WebGLRenderer({
@@ -50,13 +51,15 @@
         for (const f of primitives) {
           const [l, p, h] = [M(f.taille.l), M(f.taille.p), M(f.taille.h)];
           const g =
-            f.forme === 'boite'
-              ? new THREE.BoxGeometry(l, h, p)
-              : f.forme === 'prisme'
-                ? prisme(l, p, h)
-                : f.forme === 'sphere'
-                  ? new THREE.SphereGeometry(0.5, 24, 16).scale(l, h, p)
-                  : new THREE.CylinderGeometry(l / 2, l / 2, h, 32);
+            f.forme === 'boite' && f.arrondi
+              ? new RoundedBoxGeometry(l, h, p, 3, M(f.arrondi))
+              : f.forme === 'boite'
+                ? new THREE.BoxGeometry(l, h, p)
+                : f.forme === 'prisme'
+                  ? prisme(l, p, h)
+                  : f.forme === 'sphere'
+                    ? new THREE.SphereGeometry(0.5, 24, 16).scale(l, h, p)
+                    : new THREE.CylinderGeometry(l / 2, l / 2, h, 32);
           const verre = f.teinte === 'verre';
           const mat = new THREE.MeshStandardMaterial({
             color: couleurs[f.teinte],

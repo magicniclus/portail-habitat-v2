@@ -31,7 +31,7 @@ describe('volumes simples des meubles et aménagements (DES-33)', () => {
 
   it('assez de choix : canapés, fauteuils, tables, cuisine, salle de bain, pergolas', () => {
     const compte = (motif: RegExp) => CATALOGUE_OBJETS.filter((o) => motif.test(o.id)).length;
-    expect(compte(/^canape-/)).toBeGreaterThanOrEqual(6);
+    expect(compte(/^canape-/)).toBeGreaterThanOrEqual(15);
     expect(compte(/^fauteuil/)).toBeGreaterThanOrEqual(4);
     expect(compte(/^table-(\d|ronde|haute)/)).toBeGreaterThanOrEqual(5);
     expect(compte(/^(table-basse|bout-de-canape)/)).toBeGreaterThanOrEqual(5);

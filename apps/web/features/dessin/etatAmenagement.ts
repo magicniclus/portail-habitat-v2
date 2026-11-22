@@ -6,10 +6,13 @@ import {
   deplacerObjet,
   modifierObjet,
   harmoniserCuisine,
+  colorerCuisine,
+  deCuisine,
   orienterObjet,
   poserObjet,
   pointDansPolygone,
   revetirMursDeLaPiece,
+  revetirMursExterieurs,
   panDeMur,
   revetirPan,
   revetirZone,
@@ -35,7 +38,10 @@ const ZONE_DEFAUT: Revetement = { famille: 'carrelage', format: { l: 600, p: 600
 export function poserAmenagement(e: EtatEditeur, point: Point): EtatEditeur | null {
   if (e.outil === 'objet') {
     const suite = surNiveau(e, (n) =>
-      poserObjet(n, { catalogueId: e.catalogueId, position: point }, ctx, { aimant: e.aimant }),
+      poserObjet(n, { catalogueId: e.catalogueId, position: point }, ctx, {
+        aimant: e.aimant,
+        cuisine: e.couleursCuisine,
+      }),
     );
     const pose = niveauDe(suite).objets.at(-1);
     return suite.erreur || !pose
@@ -132,6 +138,12 @@ export function reduireAmenagement(e: EtatEditeur, a: Action): EtatEditeur | nul
       return surNiveau(e, (n) => modifierObjet(n, a.id, a.modif));
     case 'harmoniserCuisine':
       return surNiveau(e, (n) => harmoniserCuisine(n, a.depuis));
+    case 'colorerCuisine': {
+      const suite = { ...e, couleursCuisine: { ...e.couleursCuisine, ...a.couleurs } };
+      return niveauDe(e).objets.some((o) => deCuisine(o.catalogueId))
+        ? surNiveau(suite, (n) => colorerCuisine(n, a.couleurs))
+        : suite;
+    }
     case 'dupliquerObjet': {
       let copieId = '';
       const suite = surNiveau(e, (n) => {
@@ -163,6 +175,8 @@ export function reduireAmenagement(e: EtatEditeur, a: Action): EtatEditeur | nul
     }
     case 'revetirMurs':
       return surNiveau(e, (n) => revetirMursDeLaPiece(n, a.pieceId, a.revetement));
+    case 'revetirMursExterieurs':
+      return surNiveau(e, (n) => revetirMursExterieurs(n, a.revetement));
     case 'revetirZone':
       return surNiveau(e, (n) => revetirZone(n, a.id, a.revetement));
     case 'copierStyle':

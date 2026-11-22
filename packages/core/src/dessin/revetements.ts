@@ -102,7 +102,7 @@ export const FAMILLES_A_POSE: readonly FamilleRevetement[] = [
 ];
 
 /** Point juste devant une face de mur (a : à gauche en allant de a vers b). */
-function devant(m: Niveau['murs'][number], face: 'a' | 'b'): Point {
+export function devant(m: Niveau['murs'][number], face: 'a' | 'b'): Point {
   const l = longueurMur(m);
   const s = face === 'a' ? 1 : -1;
   const d = m.epaisseur / 2 + 50;

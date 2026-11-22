@@ -50,6 +50,48 @@ describe('éditeur Dessin : désélection', () => {
   });
 });
 
+describe('éditeur Dessin : extrémité de mur aimantée', () => {
+  const piece = () =>
+    jouer(vide(), [
+      { type: 'outil', outil: 'piece' },
+      { type: 'poserPoint', point: { x: 0, y: 0 } },
+      { type: 'poserPoint', point: { x: 5000, y: 4000 } },
+      { type: 'outil', outil: 'selection' },
+    ]);
+  const coin = (e: ReturnType<typeof piece>) => {
+    const m = niveauDe(e).murs.find((x) => x.a.x === 5000 && x.a.y === 4000)!;
+    return { m, bout: 'a' as const };
+  };
+
+  it('tirée presque à angle droit, elle s’y accroche', () => {
+    const e = piece();
+    const { m } = coin(e);
+    const apres = reduire(e, {
+      type: 'deplacerExtremite',
+      murId: m.id,
+      extremite: 'a',
+      vers: { x: 5180, y: 4013 },
+    });
+    const suite = niveauDe(apres).murs.find((x) => x.id === m.id)!;
+    // L'autre bout du mur est sur la même verticale ou horizontale : angle droit retrouvé.
+    expect(suite.a.x === suite.b.x || suite.a.y === suite.b.y).toBe(true);
+    expect(suite.a.x % 50).toBe(0);
+  });
+
+  it('avec Alt, elle reste où on la lâche', () => {
+    const e = piece();
+    const { m } = coin(e);
+    const apres = reduire(e, {
+      type: 'deplacerExtremite',
+      murId: m.id,
+      extremite: 'a',
+      vers: { x: 5180, y: 4013 },
+      libre: true,
+    });
+    expect(niveauDe(apres).murs.find((x) => x.id === m.id)!.a).toEqual({ x: 5180, y: 4013 });
+  });
+});
+
 describe('éditeur Dessin : tracé', () => {
   it('trace des murs à la suite, puis s’arrête', () => {
     const e = jouer(vide(), [

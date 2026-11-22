@@ -91,7 +91,14 @@ export function useGlisser(
         });
       else if (g.genre === 'extremite') {
         const [murId, bout] = g.id.split(':') as [string, 'a' | 'b'];
-        dispatch({ type: 'deplacerExtremite', murId, extremite: bout, vers, geste: g.cle });
+        dispatch({
+          type: 'deplacerExtremite',
+          murId,
+          extremite: bout,
+          vers,
+          geste: g.cle,
+          libre,
+        });
       } else if (g.genre === 'mur')
         dispatch({
           type: 'deplacerMur',

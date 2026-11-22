@@ -1,9 +1,7 @@
 'use client';
 
-import { useMediaQuery } from '@/lib/useMediaQuery';
 import { directionSoleil, niveauxTries, niveauSuperieur } from '@ph/core/dessin';
 import { COULEURS_3D } from '@ph/ui/tokens';
-import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useMemo } from 'react';
 import { niveauDe, sceneDe, type EtatEditeur } from '../etat';
@@ -12,6 +10,7 @@ import { useReserveTelephone } from '../papier';
 import { Cadrage, DecalageBas, useCadreMaison, ZoomCamera } from './Cadrage';
 import { Terrain3D } from './Terrain3D';
 import { Objets3D } from './Objets3D';
+import { Orbite } from './Orbite';
 import { Orthophoto3D } from './Orthophoto3D';
 
 /**
@@ -28,7 +27,6 @@ export default function Vue3D({
   ortho?: string | null;
 }) {
   const scene = sceneDe(etat);
-  const mouvementReduit = useMediaQuery('(prefers-reduced-motion: reduce)', false);
   const courant = niveauDe(etat);
   const niveaux = useMemo(() => {
     const tries = niveauxTries(scene);
@@ -104,14 +102,7 @@ export default function Vue3D({
       <Cadrage centre={centre} rayon={rayon} cle={`${courant.id}-${etat.ajustement}`} bas={bas} />
       <DecalageBas bas={bas} />
       <ZoomCamera zoom={etat.zoom} />
-      <OrbitControls
-        makeDefault
-        // Réduire les animations (DES-47) : pas d'inertie de la caméra.
-        enableDamping={!mouvementReduit}
-        maxPolarAngle={Math.PI / 2 - 0.05}
-        minDistance={1}
-        maxDistance={rayon * 6}
-      />
+      <Orbite rayon={rayon} />
     </Canvas>
   );
 }

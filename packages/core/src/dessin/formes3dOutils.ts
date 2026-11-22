@@ -8,7 +8,17 @@
  * travail, `poignee` celle des poignées (cuisine personnalisable) ; les autres sont fixes.
  */
 export type Teinte =
-  'principal' | 'clair' | 'sombre' | 'verre' | 'metal' | 'textile' | 'vegetal' | 'plan' | 'poignee';
+  | 'principal'
+  | 'clair'
+  | 'sombre'
+  | 'verre'
+  | 'metal'
+  | 'textile'
+  | 'vegetal'
+  | 'plan'
+  | 'poignee'
+  | 'bois'
+  | 'tissu';
 
 export interface Primitive {
   /** Prisme : toit à deux pans, faîtage le long de x, base p, hauteur h. */
@@ -19,6 +29,8 @@ export interface Primitive {
   teinte: Teinte;
   /** Boîte inclinée (pans de toit, dossier) : radians autour de l'axe x, > 0 = monte vers +y. */
   pente?: number;
+  /** Boîte aux arêtes adoucies (coussins, accoudoirs) : rayon en mm. */
+  arrondi?: number;
 }
 
 export type Dimensions = { l: number; p: number; h: number };
@@ -116,3 +128,18 @@ export const facade = (
     );
   return [...joints, ...mains];
 };
+
+/** Boîte aux arêtes adoucies (coussins, accoudoirs, assises). */
+export const douce = (
+  x: number,
+  y: number,
+  z: number,
+  l: number,
+  p: number,
+  h: number,
+  rayon: number,
+  teinte: Teinte = 'principal',
+): Primitive => ({
+  ...boite(x, y, z, l, p, h, teinte),
+  arrondi: Math.max(0, Math.min(rayon, l / 2 - 1, p / 2 - 1, h / 2 - 1)),
+});

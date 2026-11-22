@@ -168,12 +168,12 @@ describe('clavier et cibles des finitions', () => {
     expect(reduire(e, { type: 'tournerSelection' })).toBe(e);
   });
 
-  it('pièce : sol, murs, plafond ; mur : un ou deux côtés ; rien : aucune', () => {
+  it('pièce : sol, murs, plafond ; mur : un ou deux côtés ; rien : les façades', () => {
     let e = etatInitial(maison());
-    expect(ciblesDe(e)).toEqual([]);
+    expect(ciblesDe(e).map((c) => c.cle)).toEqual(['exterieurs']);
     const n = niveauDe(e);
     e = reduire(e, { type: 'selectionner', selection: { genre: 'piece', id: n.pieces[0]!.id } });
-    expect(ciblesDe(e).map((c) => c.cle)).toEqual(['sol', 'murs', 'plafond']);
+    expect(ciblesDe(e).map((c) => c.cle)).toEqual(['sol', 'murs', 'plafond', 'exterieurs']);
     const parquet = { famille: 'parquet' as const, couleur: '#d9b98c' };
     e = ciblesDe(e)[0]!.appliquer(parquet).reduce(reduire, e);
     expect(niveauDe(e).pieces[0]!.sol).toEqual(parquet);
@@ -184,6 +184,19 @@ describe('clavier et cibles des finitions', () => {
       faceA: { couleur: '#b7c4b1' },
       faceB: { couleur: '#b7c4b1' },
     });
+    // Côtés nommés par ce qu'ils regardent ; toutes les façades d'un coup, puis une seule.
+    expect(ciblesDe(e).map((c) => c.libelle)).toEqual(
+      expect.arrayContaining(['Côté extérieur', 'Tous les murs extérieurs']),
+    );
+    const enduit = { famille: 'enduit' as const, couleur: '#d8d2c4' };
+    e = ciblesDe(e)
+      .find((c) => c.cle === 'exterieurs')!
+      .appliquer(enduit)
+      .reduce(reduire, e);
+    const dehors = niveauDe(e).murs.filter(
+      (m) => m.faceA.couleur === '#d8d2c4' || m.faceB.couleur === '#d8d2c4',
+    );
+    expect(dehors.length).toBe(niveauDe(e).murs.filter((m) => m.type !== 'separation').length);
   });
 });
 

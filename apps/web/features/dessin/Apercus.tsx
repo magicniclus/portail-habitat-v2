@@ -167,7 +167,13 @@ export function ApercuObjet({ o }: { o: ObjetCatalogue }) {
   return (
     <Vignette vue={`${-cote / 2} ${-cote / 2} ${cote} ${cote}`}>
       <g className="stroke-texte">
-        <SymboleObjetSvg symbole={o.symbole} l={l} p={p} couleur={COULEURS_PLAN.etiquette} />
+        <SymboleObjetSvg
+          symbole={o.symbole}
+          style={o.style}
+          l={l}
+          p={p}
+          couleur={COULEURS_PLAN.etiquette}
+        />
       </g>
     </Vignette>
   );

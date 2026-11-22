@@ -3,6 +3,7 @@ import {
   enregistrer,
   type Alignement,
   type CalqueScene,
+  type CouleursCuisine,
   type Copie,
   type Element,
   type CibleRevetement,
@@ -135,6 +136,8 @@ export interface EtatEditeur {
   /** Le dernier « Ajuster » montre toute la parcelle (implantation), pas seulement la maison. */
   ajusterParcelle: boolean;
   aimant: boolean;
+  /** Couleurs de cuisine choisies dans Équiper (reprises par les meubles posés ensuite). */
+  couleursCuisine: CouleursCuisine;
   vue: Vue;
   facade: Facade;
   /** Trait de coupe tracé sur le plan (non enregistré). */
@@ -223,7 +226,15 @@ export type Action =
   /** Réglages d'un mur (DES-07) ; couper au milieu, fusionner avec le voisin (DES-09). */
   | { type: 'modifierMur'; murId: string; modif: ModificationMur }
   | { type: 'couperMur'; murId: string }
-  | { type: 'deplacerExtremite'; murId: string; extremite: 'a' | 'b'; vers: Point; geste?: string }
+  | {
+      type: 'deplacerExtremite';
+      murId: string;
+      extremite: 'a' | 'b';
+      vers: Point;
+      geste?: string;
+      /** Alt : sans aimant. */
+      libre?: boolean;
+    }
   | { type: 'fusionnerMur'; murId: string; avec: string }
   | { type: 'deplacerMur'; murId: string; delta: Point; geste?: string }
   | { type: 'finGeste' }
@@ -253,8 +264,12 @@ export type Action =
   | { type: 'modifierObjet'; id: string; modif: ModificationObjet }
   /** Couleurs de façade, plan de travail et poignées d'un meuble sur toute la cuisine. */
   | { type: 'harmoniserCuisine'; depuis: string }
+  /** Couleurs de toute la cuisine (Équiper > Cuisine), aussi pour les meubles à venir. */
+  | { type: 'colorerCuisine'; couleurs: CouleursCuisine }
   | { type: 'dupliquerObjet'; id: string }
   | { type: 'revetirMurs'; pieceId: string; revetement: Revetement }
+  /** Toutes les faces de murs qui donnent dehors (façades). */
+  | { type: 'revetirMursExterieurs'; revetement: Revetement }
   | { type: 'revetirPan'; murId: string; face: 'a' | 'b'; s: number; revetement: Revetement }
   | { type: 'revetirZone'; id: string; revetement: Revetement }
   | { type: 'copierStyle'; revetement: Revetement }
@@ -332,6 +347,7 @@ export function etatInitial(scene: Scene): EtatEditeur {
     ajustement: 1,
     ajusterParcelle: false,
     aimant: true,
+    couleursCuisine: {},
     vue: 'plan',
     facade: 'sud',
     coupe: null,

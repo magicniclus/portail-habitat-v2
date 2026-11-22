@@ -100,6 +100,7 @@ function ObjetsSvgBrut({
           >
             <SymboleObjetSvg
               symbole={c?.symbole ?? 'rectangle'}
+              style={c?.style}
               l={o.dimensions.l}
               p={o.dimensions.p}
               couleur={couleur}

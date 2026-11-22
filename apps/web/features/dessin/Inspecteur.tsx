@@ -21,6 +21,7 @@ import { inspecteurParcelle } from './InspecteurParcelle';
 import { InspecteurEscalier } from './InspecteurEscalier';
 import { InspecteurOuverture } from './InspecteurStructure';
 import { InspecteurMur } from './InspecteurMur';
+import { cotesDuMur } from './cibleFinition';
 import { ResumeFinitions } from './ResumeFinitions';
 import { Info, surtitre } from './blocs';
 
@@ -102,6 +103,7 @@ export function Inspecteur({ etat, dispatch }: { etat: EtatEditeur; dispatch: Di
         mur={mur}
         fusionnable={voisinFusionnable(n, mur.id, contexteNavigateur)}
         finitionsOuvert={etat.menu === 'finitions'}
+        cotes={cotesDuMur(n, mur.id)}
         dispatch={dispatch}
       />
     );

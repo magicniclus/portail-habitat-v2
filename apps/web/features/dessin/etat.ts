@@ -15,12 +15,14 @@ import {
 import {
   contexteNavigateur as ctx,
   etatInitial,
+  niveauDe,
   surNiveau,
   ZOOM_MAX,
   ZOOM_MIN,
   type Action,
   type EtatEditeur,
 } from './etatBase';
+import { viserExtremite } from './etatAimant';
 import { reduireAmenagement } from './etatAmenagement';
 import { reduireNiveaux } from './etatNiveaux';
 import { finirEscalier, reduireEscalier } from './etatEscalier';
@@ -80,12 +82,17 @@ function reduireBrut(e: EtatEditeur, a: Action): EtatEditeur {
       return surNiveau(e, (n) => modifierLongueurMur(n, a.murId, a.longueur, ctx));
     case 'modifierMur':
       return surNiveau(e, (n) => modifierMur(n, a.murId, a.modif, ctx));
-    case 'deplacerExtremite':
+    case 'deplacerExtremite': {
+      const vers =
+        e.aimant && !a.libre
+          ? viserExtremite(niveauDe(e), a.murId, a.extremite, a.vers, e.zoom)
+          : a.vers;
       return surNiveau(
         e,
-        (n) => deplacerExtremite(n, a.murId, a.extremite, a.vers, ctx),
+        (n) => deplacerExtremite(n, a.murId, a.extremite, vers, ctx),
         a.geste ?? null,
       );
+    }
     case 'couperMur':
       return surNiveau(e, (n) => couperMurAuMilieu(n, a.murId, ctx));
     case 'fusionnerMur':

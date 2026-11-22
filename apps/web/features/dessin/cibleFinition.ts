@@ -2,7 +2,9 @@
 
 import {
   longueurMur,
+  facesExterieures,
   panDeMur,
+  pieceDevant,
   revetementDe,
   revetementDuTerrain,
   type Revetement,
@@ -24,6 +26,29 @@ function memeRevetement(n: ReturnType<typeof niveauDe>, murId: string): Reveteme
   const b = revetementDe(n, { genre: 'mur', murId, face: 'b' });
   return JSON.stringify(a) === JSON.stringify(b) ? a : null;
 }
+
+/** Côtés d'un mur nommés par ce qu'ils regardent : la pièce, ou l'extérieur. */
+export function cotesDuMur(n: ReturnType<typeof niveauDe>, murId: string) {
+  const cote = (f: 'a' | 'b') => {
+    const p = pieceDevant(n, murId, f);
+    return p ? `Côté ${p.nom}` : 'Côté extérieur';
+  };
+  return { a: cote('a'), b: cote('b') };
+}
+
+/** Toutes les faces qui donnent dehors, en une fois ; chacune reste modifiable seule ensuite. */
+const exterieurs = (n: ReturnType<typeof niveauDe>): Cible[] =>
+  facesExterieures(n).length
+    ? [
+        {
+          cle: 'exterieurs',
+          libelle: 'Tous les murs extérieurs',
+          surface: 'mur',
+          actuel: null,
+          appliquer: (r) => [{ type: 'revetirMursExterieurs', revetement: r }],
+        },
+      ]
+    : [];
 
 /** Surfaces qu'on peut revêtir pour la sélection courante (pièce, mur, zone). */
 export function ciblesDe(etat: EtatEditeur): Cible[] {
@@ -58,10 +83,12 @@ export function ciblesDe(etat: EtatEditeur): Cible[] {
         appliquer: (r) => [{ type: 'revetirMurs', pieceId, revetement: r }],
       },
       { cle: 'plafond', libelle: 'Plafond', surface: 'plafond', ...sur('plafond') },
+      ...exterieurs(n),
     ];
   }
   if (s?.genre === 'mur' && n.murs.some((m) => m.id === s.id)) {
     const murId = s.id;
+    const noms = cotesDuMur(n, murId);
     const face = (f: 'a' | 'b', r: Revetement): Action => ({
       type: 'revetement',
       cible: { genre: 'mur', murId, face: f },
@@ -70,14 +97,14 @@ export function ciblesDe(etat: EtatEditeur): Cible[] {
     const cotes: Cible[] = [
       {
         cle: 'a',
-        libelle: 'Côté gauche',
+        libelle: noms.a,
         surface: 'mur',
         actuel: revetementDe(n, { genre: 'mur', murId, face: 'a' }),
         appliquer: (r) => [face('a', r)],
       },
       {
         cle: 'b',
-        libelle: 'Côté droit',
+        libelle: noms.b,
         surface: 'mur',
         actuel: revetementDe(n, { genre: 'mur', murId, face: 'b' }),
         appliquer: (r) => [face('b', r)],
@@ -92,7 +119,10 @@ export function ciblesDe(etat: EtatEditeur): Cible[] {
       },
     ];
     // Côté cliqué en 3D proposé en premier ; un pan cliqué (entre deux cloisons) avant tout.
-    const ordonnes = s.face === 'b' ? [cotes[1]!, cotes[0]!, cotes[2]!] : cotes;
+    const ordonnes = [
+      ...(s.face === 'b' ? [cotes[1]!, cotes[0]!, cotes[2]!] : cotes),
+      ...exterieurs(n),
+    ];
     const pan = s.face && s.s !== undefined ? panDeMur(n, murId, s.face, s.s) : null;
     const m = n.murs.find((x) => x.id === murId)!;
     const entier = pan && pan.coupe[0] === 0 && Math.abs(pan.coupe[1] - longueurMur(m)) < 1;
@@ -120,7 +150,8 @@ export function ciblesDe(etat: EtatEditeur): Cible[] {
         appliquer: (r) => [{ type: 'revetirZone', id: z.id, revetement: r }],
       },
     ];
-  return [];
+  // Rien de choisi : on peut toujours habiller toutes les façades d'un coup.
+  return s ? [] : exterieurs(n);
 }
 
 export function useCibleFinition(etat: EtatEditeur, dispatch: Dispatch<Action>) {

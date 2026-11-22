@@ -13,8 +13,11 @@ export function SymboleObjetSvg({
   l,
   p,
   couleur,
+  style,
 }: {
   symbole: SymboleObjet;
+  /** Variante du catalogue (canapé d'angle, en U…). */
+  style?: string;
   l: number;
   p: number;
   couleur: string;
@@ -123,7 +126,7 @@ export function SymboleObjetSvg({
     case 'lit':
       return <Lit l={l} p={p} couleur={couleur} />;
     case 'canape':
-      return <Canape l={l} p={p} couleur={couleur} />;
+      return <Canape l={l} p={p} couleur={couleur} style={style} />;
     case 'chaise':
       return (
         <g>

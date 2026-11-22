@@ -50,6 +50,7 @@ function PoseObjetSvg({
       >
         <SymboleObjetSvg
           symbole={c.symbole}
+          style={c.style}
           l={o.dimensions.l}
           p={o.dimensions.p}
           couleur={COULEURS_PLAN.etiquette}

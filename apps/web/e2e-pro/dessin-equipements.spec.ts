@@ -46,7 +46,7 @@ test.describe('Plans — aimant, cuisine, salle de bains, peinture, style (DES-0
     await cliquer(3_000, 600);
     await expect(plan.getByRole('button', { name: 'Meuble évier' })).toBeVisible();
     // Cuisine personnalisable : façades, plan de travail, poignées, puis toute la cuisine.
-    const couleurs = page.getByRole('region', { name: 'Couleurs de la cuisine' });
+    const couleurs = page.getByRole('region', { name: 'Couleurs du meuble' });
     for (const [groupe, teinte] of [
       [/^Façades/, 'Bleu nuit'],
       [/^Plan de travail/, 'Chêne'],

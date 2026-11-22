@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { contexteTest, niveauMaquette, ok } from './aidesTest';
-import { harmoniserCuisine } from './cuisineCouleurs';
+import { colorerCuisine, couleursCuisine, harmoniserCuisine } from './cuisineCouleurs';
 import { modifierObjet, poserObjet } from './objets';
 
 describe('couleurs de la cuisine (DES-23)', () => {
@@ -34,5 +34,21 @@ describe('couleurs de la cuisine (DES-23)', () => {
     expect(r.objets.find((o) => o.id === evier!.id)!.materiaux).toEqual({});
     expect(harmoniserCuisine(n, canape!.id).ok).toBe(false);
     expect(harmoniserCuisine(n, 'inconnu').ok).toBe(false);
+  });
+
+  it('colore toute la cuisine d’un coup, et le meuble posé ensuite suit', () => {
+    const r = ok(colorerCuisine(n, { plan: '#2b2c2e' }));
+    for (const id of [bas!.id, evier!.id, hautMeuble!.id])
+      expect(r.objets.find((o) => o.id === id)!.materiaux.plan).toBe('#2b2c2e');
+    expect(r.objets.find((o) => o.id === canape!.id)!.materiaux).toEqual({});
+    expect(couleursCuisine(r)).toMatchObject({ plan: '#2b2c2e', facade: '#344a63' });
+    const suite = ok(poserObjet(r, { catalogueId: 'four', position: { x: 7000, y: 500 } }, ctx));
+    expect(suite.objets.at(-1)!.materiaux).toMatchObject({ plan: '#2b2c2e', facade: '#344a63' });
+    // Un canapé posé ensuite ne prend pas les couleurs de la cuisine.
+    const canape2 = ok(
+      poserObjet(r, { catalogueId: 'canape-2', position: { x: 7000, y: 4000 } }, ctx),
+    );
+    expect(canape2.objets.at(-1)!.materiaux).toEqual({});
+    expect(colorerCuisine({ ...n, objets: [] }, { plan: '#000000' }).ok).toBe(false);
   });
 });

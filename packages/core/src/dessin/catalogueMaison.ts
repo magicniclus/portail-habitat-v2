@@ -1,4 +1,5 @@
 import type { CategorieObjet, Ligne } from './catalogue';
+import { LIGNES_CANAPES } from './catalogueCanapes';
 import { MUR } from './catalogueOptions';
 
 /** Catalogue d'objets (DES-21) : chambres, dressing, bureau, séjour. */
@@ -63,46 +64,7 @@ export const LIGNES_MAISON: Partial<Record<CategorieObjet, Ligne[]>> = {
     ['caisson', 'Caisson de bureau', 'buffet', 420, 550, 600],
   ],
   sejour: [
-    // Canapés
-    [
-      'canape-3',
-      'Canapé 3 places',
-      'canape',
-      2200,
-      950,
-      850,
-      { ...MUR, plages: { l: [1600, 2800] } },
-    ],
-    [
-      'canape-2',
-      'Canapé 2 places sur pieds',
-      'canape',
-      1700,
-      880,
-      820,
-      { ...MUR, plages: { l: [1300, 2200] }, style: 'pieds' },
-    ],
-    [
-      'canape-4',
-      'Grand canapé 4 places',
-      'canape',
-      2800,
-      1000,
-      850,
-      { ...MUR, plages: { l: [2400, 3600] } },
-    ],
-    [
-      'canape-angle',
-      'Canapé d’angle',
-      'canape',
-      2600,
-      2000,
-      850,
-      { ...MUR, plages: { l: [2000, 3600], p: [1600, 3000] }, style: 'angle' },
-    ],
-    ['canape-meridienne', 'Méridienne', 'canape', 1900, 800, 800, { style: 'meridienne' }],
-    ['canape-chesterfield', 'Canapé Chesterfield', 'canape', 2300, 780, 940, MUR],
-    ['canape-classique', 'Canapé classique', 'canape', 1600, 670, 810, MUR],
+    ...LIGNES_CANAPES,
     // Fauteuils et assises
     ['fauteuil', 'Fauteuil', 'canape', 850, 850, 850],
     ['fauteuil-lounge', 'Fauteuil lounge', 'canape', 850, 1000, 980],

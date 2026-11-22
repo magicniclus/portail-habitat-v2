@@ -1,6 +1,7 @@
 import { echec, succes, type Resultat } from '../resultat';
 import { objet as schemaObjet, type Niveau, type Objet, type Point } from '../schemas/dessinScene';
 import { objetDuCatalogue, plagesDe } from './catalogue';
+import { couleursCuisine, type CouleursCuisine } from './cuisineCouleurs';
 import { contourObjet } from './emprise';
 import type { Contexte } from './commandes';
 import { arrondir, radians } from './geometrie';
@@ -19,7 +20,7 @@ export function objetAPoser(
   n: Niveau,
   catalogueId: string,
   position: Point,
-  options: { aimant?: boolean; id?: string } = {},
+  options: { aimant?: boolean; id?: string; cuisine?: CouleursCuisine } = {},
 ): { objet: Objet; guides: Guide[] } | null {
   const c = objetDuCatalogue(catalogueId);
   if (!c) return null;
@@ -29,6 +30,8 @@ export function objetAPoser(
     position: arrondir(position),
     dimensions: c.dimensions,
     altitude: c.altitude ?? 0,
+    // Un meuble de cuisine reprend les couleurs choisies, puis celles de la cuisine posée.
+    materiaux: c.cuisine ? { ...options.cuisine, ...couleursCuisine(n) } : {},
   });
   return options.aimant === false ? { objet: o, guides: [] } : placerIdealement(o, n);
 }
@@ -37,7 +40,7 @@ export function poserObjet(
   n: Niveau,
   e: { catalogueId: string; position: Point },
   ctx: Contexte,
-  options: { aimant?: boolean } = {},
+  options: { aimant?: boolean; cuisine?: CouleursCuisine } = {},
 ): Resultat<Niveau> {
   if (!objetDuCatalogue(e.catalogueId)) return echec('INTROUVABLE');
   const r = objetAPoser(n, e.catalogueId, e.position, { ...options, id: ctx.nouvelId('obj') })!;
