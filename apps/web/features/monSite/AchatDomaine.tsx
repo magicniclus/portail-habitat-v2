@@ -22,9 +22,12 @@ export function AchatDomaine({ sitePro, voulu }: { sitePro: boolean; voulu?: str
   const [autre, setAutre] = useState(false);
   const recherche = useAppelSite();
   const achat = useAppelSite();
-  // Reste montée quand l'écran passe sur « mis de côté » après le choix (rafraîchissement).
+  // Reste montée quand l'écran passe sur « mis de côté » après le choix (rafraîchissement) : la
+  // clé la garde d'un affichage à l'autre (elle n'est pas au même rang), sinon la formule cochée
+  // était perdue si le rafraîchissement arrivait après le choix (DOM-02, 22/11/2026).
   const fenetre = (
     <FenetreOffre
+      key="fenetre-offre"
       formule="site_pro"
       raison="Le domaine personnel est inclus dans Site Pro."
       ouverte={offre}
