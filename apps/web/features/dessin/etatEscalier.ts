@@ -1,12 +1,13 @@
 import {
+  aimanterAngle,
   deplacerEscalier,
   deplacerPointEscalier,
   distance,
   hauteurVersLeHaut,
   MODELES_ESCALIER,
-  orthogonal,
   poserEscalierTrace,
   toleranceEnMm,
+  versRepere,
   type Point,
 } from '@ph/core/dessin';
 import { niveauDe, sceneDe, surNiveau, contexteNavigateur as ctx } from './etatBase';
@@ -14,14 +15,15 @@ import type { Action, EtatEditeur } from './etatBase';
 
 /**
  * Escalier tracé (DES-15), comme un mur : un clic au départ, un clic à chaque virage, puis
- * double-clic, Échap ou un clic sur le dernier point pour finir. Les volées sont d'équerre
- * (horizontales ou verticales depuis le point précédent).
+ * double-clic, Échap ou un clic sur le dernier point pour finir. Les virages s'aimantent aux
+ * angles courants (tous les 45°) et restent libres entre deux.
  */
 export function poserPointEscalier(e: EtatEditeur, point: Point): EtatEditeur | null {
   const modele = MODELES_ESCALIER[e.modeleEscalier];
   if (e.outil !== 'escalier' || !modele.trace) return null;
   const dernier = e.cheminEscalier.at(-1);
-  const p = dernier ? orthogonal(dernier, point) : point;
+  // Aimant doux : les virages s'accrochent aux angles courants (droit, 45°…), sinon libres.
+  const p = dernier ? aimanterAngle(dernier, point) : point;
   // Clic sur le dernier point (ou double-clic) : l'escalier est fini.
   if (dernier && distance(dernier, p) <= toleranceEnMm(12, e.zoom)) return finirEscalier(e);
   return {
@@ -60,6 +62,11 @@ export function reduireEscalier(e: EtatEditeur, a: Action): EtatEditeur | null {
   if (a.type === 'deplacerEscalier')
     return surNiveau(e, (n) => deplacerEscalier(n, a.id, a.delta), a.geste ?? null);
   if (a.type !== 'pointEscalier') return null;
-  const suite = surNiveau(e, (n) => deplacerPointEscalier(n, a.id, a.i, a.vers), a.geste ?? null);
+  // La poignée s'aimante aux angles courants depuis le point voisin du tracé.
+  const esc = niveauDe(e).escaliers.find((x) => x.id === a.id);
+  const voisin = esc?.chemin?.[a.i === 0 ? 1 : a.i - 1];
+  const vers =
+    esc && voisin ? aimanterAngle(versRepere(esc.position, esc.rotation)(voisin), a.vers) : a.vers;
+  const suite = surNiveau(e, (n) => deplacerPointEscalier(n, a.id, a.i, vers), a.geste ?? null);
   return suite.erreur ? e : suite;
 }

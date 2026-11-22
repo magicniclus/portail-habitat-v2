@@ -209,7 +209,7 @@ describe('escalier tracé (DES-15)', () => {
       { type: 'outil', outil: 'escalier', modeleEscalier: 'palier' },
       { type: 'poserPoint', point: { x: 1_000, y: 1_000 } },
       { type: 'poserPoint', point: { x: 1_000, y: 3_500 } },
-      // Un peu de travers : redressé à l'horizontale depuis le virage.
+      // Un peu de travers : aimanté à l'horizontale depuis le virage.
       { type: 'poserPoint', point: { x: 4_000, y: 3_620 } },
       { type: 'terminerTrace' },
     ]);
@@ -217,7 +217,7 @@ describe('escalier tracé (DES-15)', () => {
     expect(esc.chemin).toEqual([
       { x: 0, y: 0 },
       { x: 0, y: 2_500 },
-      { x: 3_000, y: 2_500 },
+      { x: 3_002, y: 2_500 },
     ]);
     expect(esc.virage).toBe('palier');
     expect(e).toMatchObject({ outil: 'selection', cheminEscalier: [], trace: null });

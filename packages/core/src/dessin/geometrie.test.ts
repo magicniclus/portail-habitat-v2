@@ -8,6 +8,7 @@ import {
   decalerVersInterieur,
   distancePointSegment,
   intersectionSegments,
+  aimanterAngle,
   orthogonal,
   perimetre,
   pointALongueur,
@@ -193,6 +194,11 @@ describe('tracé au clavier (DES-06)', () => {
   it('Maj : horizontal ou vertical selon le plus grand écart', () => {
     expect(orthogonal({ x: 0, y: 0 }, { x: 4000, y: 300 })).toEqual({ x: 4000, y: 0 });
     expect(orthogonal({ x: 0, y: 0 }, { x: 200, y: -3000 })).toEqual({ x: 0, y: -3000 });
+    // Aimant doux des angles courants : accroché près de 0°, 45°, 90°… ; libre ailleurs.
+    expect(aimanterAngle({ x: 0, y: 0 }, { x: 3000, y: 300 })).toEqual({ x: 3015, y: 0 });
+    expect(aimanterAngle({ x: 0, y: 0 }, { x: 2000, y: 2100 })).toEqual({ x: 2051, y: 2051 });
+    expect(aimanterAngle({ x: 0, y: 0 }, { x: 3000, y: 1000 })).toEqual({ x: 3000, y: 1000 });
+    expect(aimanterAngle({ x: 5, y: 5 }, { x: 5, y: 5 })).toEqual({ x: 5, y: 5 });
   });
   it('longueur tapée dans la direction du curseur', () => {
     expect(pointALongueur({ x: 0, y: 0 }, { x: 10, y: 0 }, 4200)).toEqual({ x: 4200, y: 0 });

@@ -1,11 +1,11 @@
 import {
+  aimanterAngle,
   brouillonEscalier,
   emprise,
   formatLongueur,
   hauteurVersLeHaut,
   marchesDroites,
   MODELES_ESCALIER,
-  orthogonal,
   versRepere,
   type Escalier,
   type Point,
@@ -78,7 +78,7 @@ export function PoigneesEscalier({
 
 /**
  * Escalier en cours de tracé : l'escalier se dessine jusqu'au pointeur, marches comprises, avec
- * la longueur de chaque volée ; la dernière volée reste d'équerre.
+ * la longueur de chaque volée ; la dernière volée s'aimante aux angles courants.
  */
 export function ApercuEscalierTrace({
   etat,
@@ -94,7 +94,7 @@ export function ApercuEscalierTrace({
   if (!modele) return null;
   // Avant le premier clic : la croix de visée suffit.
   if (!dernier) return null;
-  const chemin = [...etat.cheminEscalier, orthogonal(dernier, pointeur)];
+  const chemin = [...etat.cheminEscalier, aimanterAngle(dernier, pointeur)];
   const e = brouillonEscalier(chemin, hauteurVersLeHaut(sceneDe(etat), etat.niveauId), modele);
   return (
     <g pointerEvents="none" className="text-accent" opacity={0.85}>
