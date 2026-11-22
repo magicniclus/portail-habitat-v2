@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Miniatures des objets</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/apps/web/node_modules/three/build/three.module.js",
+          "three/addons/": "/apps/web/node_modules/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body style="margin: 0">
+    <script type="module">
+      // Rendu des miniatures du menu Équiper (scripts/miniaturesDessin.ts) : un objet par appel,
+      // vu de trois quarts avant, fond transparent. Même ajustement que Modele3D et Objets3D.
+      import * as THREE from 'three';
+      import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+      import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+
+      const TAILLE = 256;
+      const rendu = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        preserveDrawingBuffer: true,
+      });
+      rendu.setSize(TAILLE, TAILLE);
+      rendu.outputColorSpace = THREE.SRGBColorSpace;
+      rendu.toneMapping = THREE.ACESFilmicToneMapping;
+      document.body.appendChild(rendu.domElement);
+      const chargeur = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+      const M = (mm) => mm / 1000;
+
+      function prisme(l, p, h) {
+        const s = new THREE.Shape();
+        s.moveTo(-p / 2, -h / 2);
+        s.lineTo(p / 2, -h / 2);
+        s.lineTo(0, h / 2);
+        s.closePath();
+        const g = new THREE.ExtrudeGeometry(s, { depth: l, bevelEnabled: false });
+        g.rotateY(Math.PI / 2);
+        g.translate(-l / 2, 0, 0);
+        return g;
+      }
+
+      function formes(primitives, couleurs) {
+        const groupe = new THREE.Group();
+        for (const f of primitives) {
+          const [l, p, h] = [M(f.taille.l), M(f.taille.p), M(f.taille.h)];
+          const g =
+            f.forme === 'boite'
+              ? new THREE.BoxGeometry(l, h, p)
+              : f.forme === 'prisme'
+                ? prisme(l, p, h)
+                : f.forme === 'sphere'
+                  ? new THREE.SphereGeometry(0.5, 24, 16).scale(l, h, p)
+                  : new THREE.CylinderGeometry(l / 2, l / 2, h, 32);
+          const verre = f.teinte === 'verre';
+          const mat = new THREE.MeshStandardMaterial({
+            color: couleurs[f.teinte],
+            roughness: verre ? 0.1 : 0.75,
+            metalness: f.teinte === 'metal' ? 0.4 : 0,
+            transparent: verre,
+            opacity: verre ? 0.45 : 1,
+          });
+          const m = new THREE.Mesh(g, mat);
+          m.position.set(M(f.centre.x), M(f.centre.z), M(f.centre.y));
+          m.rotation.x = -(f.pente ?? 0);
+          // Arêtes fines, comme un croquis : les volumes clairs restent lisibles en petit.
+          const aretes = new THREE.LineSegments(
+            new THREE.EdgesGeometry(g, 30),
+            new THREE.LineBasicMaterial({
+              color: couleurs.sombre,
+              transparent: true,
+              opacity: 0.5,
+            }),
+          );
+          m.add(aretes);
+          groupe.add(m);
+        }
+        return groupe;
+      }
+
+      async function modele(url, d) {
+        const { scene } = await chargeur.loadAsync(url);
+        const b = new THREE.Box3().setFromObject(scene);
+        const t = b.getSize(new THREE.Vector3());
+        scene.position.set(-(b.min.x + t.x / 2), -b.min.y, -(b.min.z + t.z / 2));
+        const groupe = new THREE.Group();
+        groupe.add(scene);
+        groupe.scale.set(M(d.l) / (t.x || 1), M(d.h) / (t.y || 1), M(d.p) / (t.z || 1));
+        return groupe;
+      }
+
+      window.rendre = async ({ url, primitives, dimensions, couleurs }) => {
+        const scene = new THREE.Scene();
+        scene.add(new THREE.HemisphereLight(0xffffff, 0xd8d2c8, 1.6));
+        const soleil = new THREE.DirectionalLight(0xffffff, 2.2);
+        soleil.position.set(3, 6, 4);
+        scene.add(soleil);
+        const objet = url ? await modele(url, dimensions) : formes(primitives, couleurs);
+        scene.add(objet);
+        const boite = new THREE.Box3().setFromObject(objet);
+        const sphere = boite.getBoundingSphere(new THREE.Sphere());
+        const camera = new THREE.PerspectiveCamera(28, 1, 0.01, 1000);
+        const dir = new THREE.Vector3(0.75, 0.6, 1).normalize();
+        const distance = (sphere.radius / Math.sin(THREE.MathUtils.degToRad(14))) * 0.98;
+        camera.position.copy(sphere.center).addScaledVector(dir, distance);
+        camera.lookAt(sphere.center);
+        rendu.render(scene, camera);
+        return rendu.domElement.toDataURL('image/png');
+      };
+      window.pret = true;
+    </script>
+  </body>
+</html>

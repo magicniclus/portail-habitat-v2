@@ -8,15 +8,12 @@ import {
   LIBELLES_CATEGORIE,
   triangleActivite,
   type CategorieObjet,
-  type ObjetCatalogue,
 } from '@ph/core/dessin';
 import { CaretLeftIcon, MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useState, type Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from './etat';
-import { ApercuObjet } from './Apercus';
+import { CartesObjets, MiniatureObjet } from './CartesObjets';
 import { Ligne } from './LigneMenu';
-
-const cm = (mm: number) => Math.round(mm / 10);
 
 const CONSEILS = {
   trop_petit: 'Évier, plaque et réfrigérateur sont très proches : on se gêne en cuisinant.',
@@ -24,33 +21,20 @@ const CONSEILS = {
   trop_grand: 'Évier, plaque et réfrigérateur sont éloignés : beaucoup de pas en cuisinant.',
 } as const;
 
-function Objets({
-  objets,
-  etat,
-  dispatch,
-}: {
-  objets: readonly ObjetCatalogue[];
-  etat: EtatEditeur;
-  dispatch: Dispatch<Action>;
-}) {
-  return (
-    <ul className="m-0 grid list-none gap-0.5 p-0">
-      {objets.map((o) => {
-        const actif = etat.outil === 'objet' && etat.catalogueId === o.id;
-        return (
-          <Ligne
-            key={o.id}
-            titre={o.libelle}
-            detail={`${cm(o.dimensions.l)} × ${cm(o.dimensions.p)} cm${o.contreMur ? ' · contre un mur' : ''}`}
-            apercu={<ApercuObjet o={o} />}
-            pressee={actif}
-            onClick={() => dispatch({ type: 'outil', outil: 'objet', catalogueId: o.id })}
-          />
-        );
-      })}
-    </ul>
-  );
-}
+/** Objet montré pour chaque univers dans la liste des univers. */
+const VITRINE: Record<CategorieObjet, string> = {
+  cuisine: 'evier-120',
+  salle_de_bain: 'baignoire',
+  chambre: 'lit-160',
+  dressing: 'penderie',
+  enfant: 'lit-enfant',
+  bureau: 'bureau',
+  sejour: 'canape-3',
+  deco: 'plante-pot',
+  electricite: 'prise',
+  chauffage: 'radiateur',
+  exterieur: 'salon-jardin',
+};
 
 /** Menu Équiper (DES-21 à DES-24) : recherche, univers, objets à placer d'un clic. */
 export function EquiperMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dispatch<Action> }) {
@@ -58,6 +42,8 @@ export function EquiperMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
   const [categorie, setCategorie] = useState<CategorieObjet | null>(null);
   const trouves = chercherObjets(recherche);
   const triangle = triangleActivite(niveauDe(etat));
+  const choisi = etat.outil === 'objet' ? etat.catalogueId : null;
+  const choisir = (id: string) => dispatch({ type: 'outil', outil: 'objet', catalogueId: id });
   return (
     <div className="grid gap-3">
       <label className="relative block">
@@ -76,7 +62,7 @@ export function EquiperMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
       </label>
       {recherche.trim() ? (
         trouves.length ? (
-          <Objets objets={trouves} etat={etat} dispatch={dispatch} />
+          <CartesObjets objets={trouves} choisi={choisi} choisir={choisir} />
         ) : (
           <p className="m-0 px-1 text-sm text-neutre-800">Aucun résultat.</p>
         )
@@ -93,10 +79,10 @@ export function EquiperMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
           <p className="m-0 px-1 text-[13px] leading-5 text-neutre-800">
             Choisissez un élément puis cliquez sur le plan. Près d’un mur, il s’y colle, dos au mur.
           </p>
-          <Objets
+          <CartesObjets
             objets={CATALOGUE_OBJETS.filter((o) => o.categorie === categorie)}
-            etat={etat}
-            dispatch={dispatch}
+            choisi={choisi}
+            choisir={choisir}
           />
           {categorie === 'cuisine' && triangle ? (
             <p role="status" className="m-0 rounded-[10px] bg-neutre-100 p-3 text-sm leading-5">
@@ -109,12 +95,13 @@ export function EquiperMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
         <ul className="m-0 grid list-none gap-0.5 p-0">
           {CATEGORIES_OBJETS.map((c) => {
             const objets = CATALOGUE_OBJETS.filter((o) => o.categorie === c);
+            const vitrine = objets.find((o) => o.id === VITRINE[c]) ?? objets[0];
             return (
               <Ligne
                 key={c}
                 titre={LIBELLES_CATEGORIE[c]}
                 detail={`${objets.length} élément${objets.length > 1 ? 's' : ''}`}
-                apercu={objets[0] ? <ApercuObjet o={objets[0]} /> : undefined}
+                apercu={vitrine ? <MiniatureObjet o={vitrine} taille={48} /> : undefined}
                 onClick={() => setCategorie(c)}
               />
             );

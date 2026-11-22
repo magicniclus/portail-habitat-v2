@@ -1,7 +1,7 @@
 import type { SymboleObjet } from './catalogue';
 import { formeExterieur } from './formes3dExterieur';
 import { formeMobilier } from './formes3dMobilier';
-import { boite, cylindre, pieds, type Primitive } from './formes3dOutils';
+import { boite, cylindre, facade, pieds, sphere, type Primitive } from './formes3dOutils';
 
 /**
  * Volumes simples et reconnaissables des meubles en 3D (DES-33, D88 en attendant les modèles) :
@@ -51,28 +51,36 @@ export function formeObjet3D(
         boite(0, 10, 0, l, p - 20, 100, 'sombre'),
         boite(0, 0, 100, l, p, h - 140),
         boite(0, 15, h - 40, l, p + 30, 40, 'clair'),
+        ...(symbole === 'lave_vaisselle'
+          ? [boite(0, p / 2 + 12, h - 130, l - 120, 16, 16, 'metal')]
+          : facade(l, p, 100, h - 140, 450)),
       ];
     case 'evier':
       return [
         boite(0, 0, 0, l, p, h - 40),
         boite(0, 15, h - 40, l, p + 30, 40, 'clair'),
         boite(-l * 0.15, 30, h - 30, l * 0.45, p * 0.6, 30, 'metal'),
+        ...facade(l, p, 0, h - 40, 450),
       ];
     case 'plaque':
       return [
         boite(0, 0, 0, l, p, h - 40),
         boite(0, 15, h - 40, l, p + 30, 40, 'clair'),
         boite(0, 30, h, l * 0.85, p * 0.8, 8, 'verre'),
+        ...facade(l, p, 0, h - 40, 450),
       ];
     case 'meuble_haut':
     case 'hotte':
-      return [boite(0, 0, 0, l, p, h, symbole === 'hotte' ? 'metal' : 'principal')];
+      return symbole === 'hotte'
+        ? [boite(0, 0, 0, l, p, h, 'metal')]
+        : [boite(0, 0, 0, l, p, h), ...facade(l, p, 0, h, 450, 'bas')];
     case 'colonne':
     case 'armoire':
     case 'frigo':
       return [
         boite(0, 0, 0, l, p, h, symbole === 'frigo' ? 'metal' : 'principal'),
         boite(0, p / 2, h * 0.45, 20, 10, 300, 'metal'),
+        ...(symbole === 'frigo' ? [] : facade(l, p, 0, h, 600, 'aucune')),
       ];
     case 'baignoire':
       return [boite(0, 0, 0, l, p, h), boite(0, 0, h - 5, l - 120, p - 120, 10, 'clair')];
@@ -89,8 +97,24 @@ export function formeObjet3D(
         cylindre(0, p * 0.1, 0, Math.min(l, p * 0.7), h, 'clair'),
       ];
     case 'rond':
-    case 'plante':
-      return [cylindre(0, 0, 0, Math.min(l, p), h, symbole === 'plante' ? 'vegetal' : 'principal')];
+      return [cylindre(0, 0, 0, Math.min(l, p), h, 'principal')];
+    case 'plante': {
+      // Tronc (ou tige) puis couronne arrondie.
+      const d = Math.min(l, p);
+      const pied = h * 0.3;
+      return [
+        cylindre(0, 0, 0, Math.max(60, d * 0.1), pied + h * 0.1, 'sombre'),
+        sphere(pied, l, p, h - pied, 'vegetal'),
+      ];
+    }
+    case 'prise':
+    case 'interrupteur':
+      return [
+        boite(0, 0, 0, l, p, h, 'clair'),
+        ...(symbole === 'prise'
+          ? [-l / 5, l / 5].map((x) => boite(x, p / 2 + 2, h / 2 - 6, 10, 4, 12, 'sombre'))
+          : [boite(0, p / 2 + 4, h * 0.2, l * 0.55, 8, h * 0.6, 'principal')]),
+      ];
     case 'point_lumineux':
       return [cylindre(0, 0, 0, Math.min(l, p), Math.max(h, 30), 'clair')];
     case 'tapis':

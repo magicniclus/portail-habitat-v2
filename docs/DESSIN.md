@@ -196,6 +196,7 @@ apps/web/public/dessin/modeles, textures
 **Dépendances réellement ajoutées** (toutes signalées et acceptées) :
 - `apps/web` : `three` 0.187.0, `@react-three/fiber` 9.8.2, `@react-three/drei` 10.7.9, `@react-three/postprocessing` 3.2.2, `postprocessing` 6.39.6 (chargés seulement au passage en 3D, visite ou photo) ; `pdfjs-dist` 6.4.299 (chargé seulement au choix d'un PDF à importer). `pdfkit` était déjà là.
 - Racine (développement seulement) : `@gltf-transform/cli`, script `pnpm dessin:modele`.
+- Miniatures du menu Équiper : `pnpm dessin:miniatures` (scripts/miniaturesDessin.ts) rend chaque objet du catalogue en 3D, vu de trois quarts, avec le vrai modèle ou la forme simple, dans `apps/web/public/dessin/miniatures/{id}.webp` (112 px, environ 3 Ko). À relancer après tout ajout ou changement d'objet ; un test vérifie qu'aucune ne manque. Le menu montre les objets en cartes à deux colonnes ; sans image, le symbole vu de dessus.
 
 **Prévues mais non ajoutées** (inutiles à ce stade) : `zustand`, `immer`, `comlink`, `idb-keyval`, `clipper2-ts`, `polygon-clipping`, `maplibre-gl`. Il n'y a **pas de Web Worker** : à 500 murs et 1 000 objets, le métré prend environ 1,5 ms (DES-48).
 

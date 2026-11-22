@@ -99,3 +99,6 @@ export function texturePhoto(materiauId: string | undefined): TexturePhoto | nul
 
 /** Matériaux qui ont une texture photo. */
 export const MATERIAUX_AVEC_TEXTURE: readonly string[] = Object.keys(TEXTURES);
+
+/** Miniature 3D d'un objet du catalogue, vue de trois quarts (menu Équiper ; pnpm dessin:miniatures). */
+export const miniatureObjet = (catalogueId: string) => `/dessin/miniatures/${catalogueId}.webp`;

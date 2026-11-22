@@ -1,12 +1,5 @@
 import type { SymboleObjet } from './catalogue';
-import {
-  boite,
-  cylindre,
-  pieds,
-  repartir,
-  type Dimensions,
-  type Primitive,
-} from './formes3dOutils';
+import { boite, facade, cylindre, pieds, type Dimensions, type Primitive } from './formes3dOutils';
 
 /** Plinthe, caisson et plan de travail d'un meuble bas de cuisine (hauteur totale h). */
 const caissonCuisine = (l: number, p: number, h: number) => [
@@ -14,14 +7,6 @@ const caissonCuisine = (l: number, p: number, h: number) => [
   boite(0, 0, 100, l, p, h - 140),
   boite(0, 15, h - 40, l, p + 30, 40, 'clair'),
 ];
-
-/** Traits verticaux des portes sur la face avant (y = +p/2). */
-const portes = (l: number, p: number, z: number, h: number, largeurPorte = 500) => {
-  const n = Math.max(1, Math.round(l / largeurPorte));
-  return repartir(l, n + 1)
-    .slice(1, -1)
-    .map((x) => boite(x, p / 2 + 2, z + 20, 8, 4, h - 40, 'sombre'));
-};
 
 /**
  * Mobilier au dessin simple (cuisine, séjour, rangement) : volumes lisibles, sans détail
@@ -39,7 +24,7 @@ export function formeMobilier(symbole: SymboleObjet, d: Dimensions): Primitive[]
         boite(0, y + 10, 0, l - 20, caisson - 20, 100, 'sombre'),
         boite(0, y, 100, l, caisson, h - 140),
         boite(0, 0, h - 40, l, p, 40, 'clair'),
-        ...portes(l, caisson, 100, h - 140, 600).map((b) => ({
+        ...facade(l, caisson, 100, h - 140, 600, 'aucune').map((b) => ({
           ...b,
           centre: { ...b.centre, y: y - caisson / 2 - 2 },
         })),
@@ -67,7 +52,7 @@ export function formeMobilier(symbole: SymboleObjet, d: Dimensions): Primitive[]
         ...pieds(l, p, piedsH, 40, 30),
         boite(0, 0, piedsH, l, p, h - piedsH - 20),
         boite(0, 0, h - 20, l, p, 20, 'clair'),
-        ...portes(l, p, piedsH, h - piedsH - 20),
+        ...facade(l, p, piedsH, h - piedsH - 20, 500, 'aucune'),
       ];
     }
     case 'etagere': {

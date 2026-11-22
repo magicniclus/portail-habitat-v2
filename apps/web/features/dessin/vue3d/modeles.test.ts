@@ -1,7 +1,9 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
+  CATALOGUE_OBJETS,
   MATERIAUX_AVEC_TEXTURE,
+  miniatureObjet,
   TEXTURE_COUVERTURE,
   modele3D,
   OBJETS_AVEC_MODELE,
@@ -18,6 +20,11 @@ const licences = JSON.parse(
 };
 
 describe('fichiers des modèles 3D (D88)', () => {
+  it('chaque objet du catalogue a sa miniature 3D (pnpm dessin:miniatures)', () => {
+    for (const o of CATALOGUE_OBJETS)
+      expect(existsSync(join(racine, 'apps/web/public', miniatureObjet(o.id))), o.id).toBe(true);
+  });
+
   it('chaque modèle existe dans public/ et a sa licence CC0 notée', () => {
     for (const id of OBJETS_AVEC_MODELE) {
       const url = modele3D(id)!;

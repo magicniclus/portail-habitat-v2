@@ -32,6 +32,7 @@
     "admin:permissions": "tsx scripts/recalculerPermissions.ts",
     "migrer": "tsx scripts/migrer.ts",
     "captures": "tsx scripts/captures.ts",
+    "dessin:miniatures": "tsx scripts/miniaturesDessin.ts",
     "dessin:modele": "gltf-transform optimize --compress meshopt --texture-compress webp --texture-size 512 --simplify true --simplify-ratio 0.5 --simplify-error 0.001"
   },
   "devDependencies": {

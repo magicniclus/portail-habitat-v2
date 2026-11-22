@@ -36,12 +36,15 @@ function Volume({ o, choisi }: { o: Objet; choisi: boolean }) {
       // Repère de l'objet : x largeur, y profondeur (→ z 3D), z hauteur (→ y 3D).
       position={[M(f.centre.x), M(f.centre.z), M(f.centre.y)]}
       rotation={[-(f.pente ?? 0), 0, 0]}
+      scale={f.forme === 'sphere' ? [M(f.taille.l), M(f.taille.h), M(f.taille.p)] : 1}
       material={materiauUni(teinte(f.teinte), { transparent: f.teinte === 'verre' })}
       castShadow
       receiveShadow
     >
       {f.forme === 'boite' ? (
         <boxGeometry args={[M(f.taille.l), M(f.taille.h), M(f.taille.p)]} />
+      ) : f.forme === 'sphere' ? (
+        <sphereGeometry args={[0.5, 24, 16]} />
       ) : f.forme === 'prisme' ? (
         <GeometriePrisme l={M(f.taille.l)} p={M(f.taille.p)} h={M(f.taille.h)} />
       ) : (
