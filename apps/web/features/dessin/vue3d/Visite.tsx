@@ -6,6 +6,7 @@ import {
   niveauALaHauteur,
   niveauSuperieur,
   regardVisite,
+  tremies,
 } from '@ph/core/dessin';
 import { COULEURS_3D } from '@ph/ui/tokens';
 import { Canvas } from '@react-three/fiber';
@@ -109,6 +110,7 @@ export default function Visite({ etat }: { etat: EtatEditeur }) {
               n={niv}
               dessus={niveauSuperieur(scene, niv.id)}
               parcelle={scene.terrain?.parcelle ?? null}
+              tremies={tremies(scene, niv.id)}
               centre={new Vector3()}
               poupee={false}
               plafonds

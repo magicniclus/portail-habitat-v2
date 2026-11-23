@@ -1,6 +1,6 @@
 'use client';
 
-import { directionSoleil, niveauxTries, niveauSuperieur } from '@ph/core/dessin';
+import { directionSoleil, niveauxTries, niveauSuperieur, tremies } from '@ph/core/dessin';
 import { COULEURS_3D } from '@ph/ui/tokens';
 import { Canvas, useThree } from '@react-three/fiber';
 import { EffectComposer, N8AO, ToneMapping, Vignette } from '@react-three/postprocessing';
@@ -101,6 +101,7 @@ export function ScenePhoto({
             n={n}
             dessus={niveauSuperieur(scene, n.id)}
             parcelle={scene.terrain?.parcelle ?? null}
+            tremies={tremies(scene, n.id)}
             centre={centre}
             poupee={etat.rendu.poupee && n.id === courant.id}
             plafonds={false}

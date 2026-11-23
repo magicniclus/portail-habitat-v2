@@ -3,7 +3,6 @@
 import type { Scene } from '@ph/core/dessin';
 import type { Route } from 'next';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
 import { useEffect, useReducer, useState } from 'react';
 import { usePresence } from './usePresence';
 import { VueDessus } from './VueDessus';
@@ -18,7 +17,8 @@ import { AideRaccourcis } from './AideRaccourcis';
 import { AnnonceSelection } from './AnnonceSelection';
 import { ReglagesVue3D } from './vue3d/ReglagesVue3D';
 import { Bandeaux } from './Bandeaux';
-import { connexionEssai, FournisseurEssai } from './essai';
+import { FournisseurEssai } from './essai';
+import { useModaleEssai } from './EssaiCompte';
 import { Facades } from './Facades';
 import { HistoriqueVersions } from './HistoriqueVersions';
 import { Plan2D } from './Plan2D';
@@ -60,7 +60,7 @@ export function EspaceDeTravail(p: {
     revisionInitiale: p.revision,
     ...(p.essai ? { essai: true } : {}),
   });
-  const router = useRouter();
+  const compte = useModaleEssai();
   const fond = useFond(p.espace, p.planId, sceneDe(etat).fondImage?.storagePath ?? null);
   const ortho = useFond(p.espace, p.planId, sceneDe(etat).terrain?.orthophoto?.storagePath ?? null);
   const telephone = useMediaQuery('(max-width: 899px)', false);
@@ -101,11 +101,12 @@ export function EspaceDeTravail(p: {
           sauvegarde={s.etat}
           enregistrer={() =>
             p.essai
-              ? void s.enregistrerMaintenant().then(() => router.push(connexionEssai()))
+              ? void s.enregistrerMaintenant().then(compte.ouvrir)
               : void s.enregistrerMaintenant('Enregistrement manuel')
           }
           {...(p.essai ? {} : { versions: () => setVersions(true) })}
         />
+        {p.essai ? compte.modale : null}
         <div className="relative flex min-h-0 flex-1">
           <RailMenus etat={etat} dispatch={dispatch} />
           {menu.rendu ? (

@@ -369,8 +369,8 @@ describe('toiture facile : automatique et par hauteurs', () => {
     const r = ok(reglerHauteursToit(m, { egout: 3_000, faitage: 7_000 }));
     expect(r.murs.every((x) => x.hauteur === 3_000)).toBe(true);
     expect(Math.abs(toit3D(r)!.faitage - 7_000)).toBeLessThan(20);
-    // 4 m de haut pour 4,30 m de demi-largeur : environ 43°.
-    expect(r.toiture!.pentes[0]! / 10).toBeCloseTo((Math.atan(4 / 4.3) * 180) / Math.PI, 0);
+    // 4 m de haut pour 4,30 m de demi-largeur plus 40 cm de débord (surcroît compris) : ≈ 40°.
+    expect(r.toiture!.pentes[0]! / 10).toBeCloseTo((Math.atan(4 / 4.7) * 180) / Math.PI, 0);
     expect(reglerHauteursToit(m, { faitage: 2_550 })).toMatchObject({ code: 'PRECONDITION' });
     expect(reglerHauteursToit(m, { egout: 100 })).toMatchObject({ code: 'PRECONDITION' });
     expect(reglerHauteursToit(niveauMaquette(ctx), { egout: 3_000 })).toMatchObject({
@@ -381,6 +381,18 @@ describe('toiture facile : automatique et par hauteurs', () => {
     expect(ok(reglerHauteursToit(plat, { faitage: 9_000 })).toiture!.pentes).toEqual(
       plat.toiture!.pentes,
     );
+  });
+});
+
+describe('surcroît : les débords ne descendent pas devant les fenêtres', () => {
+  it('le bout du débord d’égout est au haut des murs ; une bande de mur ferme le dessous', () => {
+    const n = ok(definirToiture(niveauMaquette(contexteTest()), 'deux_pans'));
+    const t = toit3D(n)!;
+    const egout = Math.min(...t.pans.flat().map((p) => p.z));
+    expect(Math.abs(egout - t.egout)).toBeLessThan(2);
+    expect(t.ailes[0]!.surcroit).toBeGreaterThan(200);
+    // Deux pignons et deux bandes de surcroît le long des égouts.
+    expect(t.murs).toHaveLength(4);
   });
 });
 

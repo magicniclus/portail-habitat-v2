@@ -15,7 +15,7 @@ import { COULEURS_3D, COULEURS_ELEVATION, COULEURS_ESCALIER, COULEURS_PLAN } fro
 import { Edges } from '@react-three/drei';
 import { useMemo } from 'react';
 import type { Vector3 } from 'three';
-import { DoubleSide, Shape } from 'three';
+import { DoubleSide, Path, Shape } from 'three';
 import type { Selection3D } from './selection3d';
 import { Exterieur3D } from './Exterieur3D';
 import { Menuiseries3D } from './Menuiseries3D';
@@ -44,8 +44,14 @@ function Dalle3D({
     // Forme dans le plan XY en mètres, couchée ensuite à l'horizontale (y du plan → z 3D).
     const s = new Shape();
     d.contour.forEach((p, i) => (i ? s.lineTo(M(p.x), M(p.y)) : s.moveTo(M(p.x), M(p.y))));
+    // Trémies d'escalier : le sol ou le plafond est percé.
+    for (const t of d.trous ?? []) {
+      const h = new Path();
+      t.forEach((p, i) => (i ? h.lineTo(M(p.x), M(p.y)) : h.moveTo(M(p.x), M(p.y))));
+      s.holes.push(h);
+    }
     return s;
-  }, [d.contour]);
+  }, [d.contour, d.trous]);
   const materiau = useMemo(() => {
     const m = materiauRevetement(d.revetement, COULEURS_3D.sol).clone();
     m.side = DoubleSide;
@@ -64,6 +70,8 @@ function Dalle3D({
   );
 }
 
+const SANS_TREMIE: Point[][] = [];
+
 /** Un niveau en 3D : murs découpés, sols, plafonds (visite), escaliers. */
 export function Niveau3D({
   n,
@@ -75,6 +83,7 @@ export function Niveau3D({
   toit = false,
   dessus = null,
   parcelle = null,
+  tremies = SANS_TREMIE,
   selection,
 }: {
   n: Niveau;
@@ -90,6 +99,8 @@ export function Niveau3D({
   dessus?: Niveau | null;
   /** Parcelle de la scène (affichée avec l'extérieur du niveau). */
   parcelle?: Point[] | null;
+  /** Trémies du sol de ce niveau (escaliers du niveau du dessous). */
+  tremies?: Point[][];
   /** Sélection faite en 2D, montrée sur le niveau courant (la 3D ne sert qu'à voir). */
   selection?: Selection3D;
 }) {
@@ -102,7 +113,12 @@ export function Niveau3D({
       morceauxDeMur(m, n, contours.get(m.id), dessus && murSousEtage(m, dessus) ? rehausse : 0),
     );
   }, [n, dessus]);
-  const dalles = useMemo(() => dallesDuNiveau(n), [n]);
+  // Clé stable : les trémies sont recalculées à chaque affichage, les dalles seulement si elles changent.
+  const cleTremies = JSON.stringify(tremies);
+  const dalles = useMemo(
+    () => dallesDuNiveau(n, JSON.parse(cleTremies) as Point[][]),
+    [n, cleTremies],
+  );
   const escaliers = useMemo(
     () =>
       n.escaliers.map((e) => ({
@@ -138,7 +154,8 @@ export function Niveau3D({
         selection={selection}
       />
       {toit ? <Toit3D n={n} dessus={dessus} /> : null}
-      <Exterieur3D n={n} parcelle={parcelle} />
+      {/* La limite de parcelle est au sol : seulement au rez-de-chaussée (pas une copie par étage). */}
+      <Exterieur3D n={n} parcelle={n.altitude === 0 ? parcelle : null} />
       {escaliers.map(({ e, pieces }) => {
         // Marches et limons dans le matériau choisi, socle enduit.
         const teinte: Record<MatiereEscalier, string> = {

@@ -1,9 +1,8 @@
 'use client';
 
 import { Banner, Button } from '@ph/ui';
-import { useRouter } from 'next/navigation';
 import type { Dispatch } from 'react';
-import { connexionEssai } from './essai';
+import { BandeauEssai } from './EssaiCompte';
 import type { Action, EtatEditeur } from './etat';
 import type { EtatSauvegarde } from './useSauvegarde';
 
@@ -21,7 +20,6 @@ export function Bandeaux({
   essai: boolean;
   resoudreConflit: (garderLaMienne: boolean) => void;
 }) {
-  const router = useRouter();
   return (
     <div className="pointer-events-none absolute inset-x-3 top-3 grid gap-2 [&>*]:pointer-events-auto">
       {sauvegarde.etat === 'conflit' ? (
@@ -36,19 +34,7 @@ export function Bandeaux({
           </div>
         </Banner>
       ) : null}
-      {essai ? (
-        <Banner
-          tone="info"
-          titre="Essai sans compte"
-          action={
-            <Button taille="sm" onClick={() => router.push(connexionEssai())}>
-              Créer mon compte
-            </Button>
-          }
-        >
-          Votre plan reste sur cet appareil. Créez votre compte gratuit pour l’enregistrer.
-        </Banner>
-      ) : null}
+      {essai ? <BandeauEssai /> : null}
       {sauvegarde.etat === 'erreur' && sauvegarde.message ? (
         <Banner tone="danger">{sauvegarde.message}</Banner>
       ) : null}

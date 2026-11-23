@@ -1,5 +1,7 @@
 import type { Mur, Niveau, Point, Revetement } from '../schemas/dessinScene';
 import { longueurMur } from './murs';
+import { aireSignee, decalerVersInterieur, distancePointSegment } from './geometrie';
+import { emprise } from './escaliers';
 
 /**
  * Géométrie 3D tirée de la scène (DES-33), sans dépendance au moteur de rendu : pavés et
@@ -43,7 +45,45 @@ export interface Dalle {
   /** Altitude du dessus (sol) ou du dessous (plafond). */
   z: number;
   revetement: Revetement;
+  /** Trémies d'escalier percées dans ce sol ou ce plafond (dans le contour). */
+  trous?: Point[][];
 }
+
+/** Partie d'un polygone dans un polygone convexe (Sutherland–Hodgman) : trémie dans la pièce. */
+export function decouperConvexe(sujet: readonly Point[], convexe: readonly Point[]): Point[] {
+  const sens = aireSignee(convexe) > 0 ? 1 : -1;
+  const dedans = (p: Point, a: Point, b: Point) =>
+    sens * ((b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x)) >= 0;
+  let sortie = [...sujet];
+  convexe.forEach((a, i) => {
+    const b = convexe[(i + 1) % convexe.length]!;
+    const entree = sortie;
+    sortie = [];
+    entree.forEach((p, k) => {
+      const q = entree[(k + 1) % entree.length]!;
+      const [pIn, qIn] = [dedans(p, a, b), dedans(q, a, b)];
+      if (pIn) sortie.push(p);
+      if (pIn !== qIn) {
+        const i2 = intersectionDroites(p, q, a, b);
+        if (i2) sortie.push(i2);
+      }
+    });
+  });
+  return sortie;
+}
+
+function intersectionDroites(p: Point, q: Point, a: Point, b: Point): Point | null {
+  const d = (q.x - p.x) * (b.y - a.y) - (q.y - p.y) * (b.x - a.x);
+  if (Math.abs(d) < 1e-9) return null;
+  const t = ((a.x - p.x) * (b.y - a.y) - (a.y - p.y) * (b.x - a.x)) / d;
+  return { x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t };
+}
+
+/** Trémies (emprises d'escalier, convexes) limitées au contour : trous valides pour la 3D. */
+const trousDans = (contour: readonly Point[], tremies: readonly Point[][]) =>
+  tremies
+    .map((t) => decouperConvexe(contour, t))
+    .filter((t) => t.length >= 3 && Math.abs(aireSignee(t)) > 10_000);
 
 /** Intervalles [début, fin] le long du mur occupés par les ouvertures, avec leur hauteur. */
 type Trou = { de: number; a: number; bas: number; haut: number };
@@ -145,12 +185,38 @@ export function morceauxDeMur(
 }
 
 /** Sols (dessus à l'altitude du niveau) et plafonds (sous la hauteur sous plafond). */
-export function dallesDuNiveau(n: Niveau): { sols: Dalle[]; plafonds: Dalle[] } {
+/**
+ * Sol d'une pièce prolongé sous ses murs jusqu'à leur axe : sous une porte, les sols des deux
+ * pièces se rejoignent au milieu du passage (jamais de trou où l'on verrait le terrain).
+ */
+export function solSousLesMurs(n: Pick<Niveau, 'murs'>, contour: readonly Point[]): Point[] {
+  const distances = contour.map((p, i) => {
+    const q = contour[(i + 1) % contour.length]!;
+    const m = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 };
+    const mur = n.murs.find(
+      (w) => w.type !== 'separation' && distancePointSegment(m, w.a, w.b) <= w.epaisseur / 2 + 20,
+    );
+    return mur ? -distancePointSegment(m, mur.a, mur.b) : 0;
+  });
+  return decalerVersInterieur(contour, distances).map((p) => ({
+    x: Math.round(p.x),
+    y: Math.round(p.y),
+  }));
+}
+
+export function dallesDuNiveau(
+  n: Niveau,
+  /** Trémies du sol de ce niveau (escaliers du niveau du dessous). */
+  tremiesSol: readonly Point[][] = [],
+): { sols: Dalle[]; plafonds: Dalle[] } {
+  // Plafond percé au-dessus des escaliers qui montent de ce niveau.
+  const tremiesPlafond = n.escaliers.map(emprise);
   return {
     sols: [
       ...n.pieces.map((p) => ({
         pieceId: p.id,
-        contour: p.contour,
+        contour: solSousLesMurs(n, p.contour),
+        trous: trousDans(solSousLesMurs(n, p.contour), tremiesSol),
         z: n.altitude,
         revetement: p.sol,
       })),
@@ -174,6 +240,7 @@ export function dallesDuNiveau(n: Niveau): { sols: Dalle[]; plafonds: Dalle[] } 
       contour: p.contour,
       z: n.altitude + n.hauteurSousPlafond,
       revetement: p.plafond,
+      trous: trousDans(p.contour, tremiesPlafond),
     })),
   };
 }

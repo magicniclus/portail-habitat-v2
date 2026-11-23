@@ -158,7 +158,43 @@ export function egoutsLocaux(e: Emprise): Loc[][] {
 }
 
 /** Murs sous le toit : pignons aux bouts libres, mur haut d'un appentis, acrotères. */
+/**
+ * Bandes de surcroît : mur entre le haut des murs et le toit relevé, le long des égouts
+ * (les pignons, eux, descendent déjà jusqu'au haut des murs).
+ */
+function bandesSurcroit(e: Emprise): Point3[][] {
+  const s = e.surcroit ?? 0;
+  if (s < 1 || e.type === 'plate') return [];
+  const [L0, P0] = [e.L0 / 2, e.P0 / 2];
+  const ext = (c: keyof Emprise['cotes']) => e.cotes[c] === 'exterieur';
+  const cotes: [Loc, Loc, keyof Emprise['cotes']][] =
+    e.type === 'monopente'
+      ? [e.sens === 1 ? [[-L0, -P0], [L0, -P0], 'b0'] : [[-L0, P0], [L0, P0], 'b1']]
+      : [
+          [[-L0, -P0], [L0, -P0], 'b0'],
+          [[-L0, P0], [L0, P0], 'b1'],
+          ...(e.type === 'quatre_pans' || e.type === 'croupe'
+            ? ([
+                [[-L0, -P0], [-L0, P0], 'a0'],
+                [[L0, -P0], [L0, P0], 'a1'],
+              ] as [Loc, Loc, keyof Emprise['cotes']][])
+            : []),
+        ];
+  return cotes
+    .filter(([, , c]) => ext(c))
+    .map(([p, q]) => [
+      versMonde(e, p[0], p[1], 0),
+      versMonde(e, q[0], q[1], 0),
+      versMonde(e, q[0], q[1], s),
+      versMonde(e, p[0], p[1], s),
+    ]);
+}
+
 export function mursLocaux(t: Toiture, e: Emprise): Point3[][] {
+  return [...mursDuToit(t, e), ...bandesSurcroit(e)];
+}
+
+function mursDuToit(t: Toiture, e: Emprise): Point3[][] {
   const [L0, P0] = [e.L0 / 2, e.P0 / 2];
   const z = (a: number, b: number) => hauteurLocale(t, e, a, b);
   const ext = (c: keyof Emprise['cotes']) => e.cotes[c] === 'exterieur';

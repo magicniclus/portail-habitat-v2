@@ -129,6 +129,13 @@ test.describe('Plans — exports, partage, essai (DES-03, DES-41 à DES-43)', ()
     ).toBeAttached({
       timeout: 10_000,
     });
+    // Le bandeau se réduit en pastille, toujours visible ; « Enregistrer » ouvre une fenêtre.
+    await page.getByRole('button', { name: 'Réduire le bandeau d’essai' }).click();
+    await expect(page.getByText('Essai sans compte')).toBeVisible();
+    await page.getByRole('button', { name: 'Enregistrer une version' }).click();
+    await expect(page.getByRole('dialog', { name: 'Enregistrez votre plan' })).toBeVisible();
+    await page.getByRole('button', { name: 'Continuer l’essai' }).click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     // Rechargé : l'essai est toujours là ; les fonctions serveur invitent au compte.
     await page.reload();
     await expect(page.getByTestId('plan-2d').getByText(/m²$/).first()).toBeVisible();

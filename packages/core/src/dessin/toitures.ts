@@ -56,6 +56,8 @@ export interface Emprise {
   /** Altitude du haut des murs (base du toit) et hauteur des murs au-dessus du sol du niveau. */
   base: number;
   hMurs: number;
+  /** Relevé du toit au-dessus du haut des murs (surcroît), en mm : voir `surcroitDe`. */
+  surcroit?: number;
   /**
    * Pente maximale (tangente) de cette aile : un appentis contre l'étage s'arrête sous ses
    * fenêtres, quitte à être moins pentu que le reste du toit (légère cassure de pente).
@@ -92,7 +94,7 @@ export function emprisesToit(n: Niveau, dessus: Niveau | null = null): Emprise[]
     const [L0, P0] = selonA ? [w.a1 - w.a0, w.b1 - w.b0] : [w.b1 - w.b0, w.a1 - w.a0];
     const deb = (c: Cote) => (c === 'exterieur' ? t.debord : 0);
     const appentis = t.type !== 'plate' && (cotes.b0 === 'etage' || cotes.b1 === 'etage');
-    return {
+    const aile: Emprise = {
       cle,
       centre,
       u,
@@ -112,11 +114,13 @@ export function emprisesToit(n: Niveau, dessus: Niveau | null = null): Emprise[]
         ? {
             kMax: Math.max(
               K_APPENTIS_MIN,
-              (dessus.altitude + HAUT_APPENTIS - (n.altitude + hMurs)) / Math.max(1, P0),
+              // Débord bas compris : le surcroît relève l'appentis d'autant.
+              (dessus.altitude + HAUT_APPENTIS - (n.altitude + hMurs)) / Math.max(1, P0 + t.debord),
             ),
           }
         : {}),
     };
+    return { ...aile, surcroit: Math.round(surcroitDe(t, aile)) };
   });
 }
 
@@ -129,12 +133,22 @@ const penteDe = (t: Toiture) => t.pentes[0]! / 10;
  * Hauteur du toit au-dessus du haut des murs au point local (a, b) ; négative dans les débords.
  * Les pans ont tous la même pente (sauf brisis de mansarde et croupe, plus raide).
  */
-export function hauteurLocale(
-  t: Toiture,
-  e: Pick<Emprise, 'L0' | 'P0'> & Partial<Pick<Emprise, 'cotes' | 'type' | 'sens' | 'kMax'>>,
-  a: number,
-  b: number,
-): number {
+type FormeAile = Pick<Emprise, 'L0' | 'P0'> &
+  Partial<Pick<Emprise, 'cotes' | 'type' | 'sens' | 'kMax' | 'surcroit'>>;
+
+export function hauteurLocale(t: Toiture, e: FormeAile, a: number, b: number): number {
+  return (e.surcroit ?? 0) + hauteurBrute(t, e, a, b);
+}
+
+/**
+ * Surcroît (mm) : le toit est relevé pour que le bout des débords d'égout arrive au haut des
+ * murs, au lieu de descendre devant les fenêtres de l'étage ; une bande de mur le ferme.
+ */
+export function surcroitDe(t: Toiture, e: FormeAile & Pick<Emprise, 'bMin' | 'bMax'>): number {
+  return Math.max(0, -hauteurBrute(t, e, 0, e.bMin), -hauteurBrute(t, e, 0, e.bMax));
+}
+
+function hauteurBrute(t: Toiture, e: FormeAile, a: number, b: number): number {
   const k = Math.min(tan(penteDe(t)), e.kMax ?? Infinity);
   const versB = e.P0 / 2 - Math.abs(b);
   // Croupe ou quatre pans : la pente de bout n'existe qu'aux bouts libres (pas contre une aile).

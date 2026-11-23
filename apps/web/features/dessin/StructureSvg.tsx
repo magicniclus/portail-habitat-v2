@@ -2,6 +2,7 @@
 
 import {
   CATALOGUE_OUVERTURES,
+  centroide,
   contourMur,
   contoursRaccordes,
   longueurMur,
@@ -122,15 +123,66 @@ export function ReperesNiveauSvg({
           opacity={0.15}
         />
       ))}
-      {tremies.map((t, i) => (
-        <polygon
-          key={i}
-          points={points(t)}
-          className="stroke-danger"
-          {...trait}
-          strokeDasharray="8 6"
-        />
-      ))}
+      {/* Trémie (vide au-dessus de l'escalier) : hachurée, en croix, nommée, comme sur un plan. */}
+      {tremies.length ? (
+        <defs>
+          <pattern
+            id="hachures-tremie"
+            patternUnits="userSpaceOnUse"
+            width={150}
+            height={150}
+            patternTransform="rotate(45)"
+          >
+            <line
+              x1={0}
+              y1={0}
+              x2={0}
+              y2={150}
+              stroke={COULEURS_PLAN.mur}
+              strokeWidth={12}
+              opacity={0.35}
+            />
+          </pattern>
+        </defs>
+      ) : null}
+      {tremies.map((t, i) => {
+        const c = centroide(t);
+        const xs = t.map((p) => p.x);
+        const ys = t.map((p) => p.y);
+        const [x0, x1, y0, y1] = [
+          Math.min(...xs),
+          Math.max(...xs),
+          Math.min(...ys),
+          Math.max(...ys),
+        ];
+        return (
+          <g key={i} data-testid="tremie">
+            <polygon points={points(t)} fill={COULEURS_PLAN.pieceVide} />
+            <polygon
+              points={points(t)}
+
+              className="stroke-texte"
+              {...trait}
+              fill="url(#hachures-tremie)"
+            />
+            <line x1={x0} y1={y0} x2={x1} y2={y1} className="stroke-texte" {...trait} />
+            <text
+              x={c.x}
+              y={c.y}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize={Math.min(260, (x1 - x0) / 5)}
+              fontWeight={600}
+              className="fill-texte"
+              paintOrder="stroke"
+              stroke="white"
+              strokeWidth={40}
+            >
+              Trémie
+            </text>
+          </g>
+        );
+      })}
     </g>
   );
 }

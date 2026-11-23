@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { CATALOGUE_OBJETS } from './catalogue';
 import { contexteTest, niveauMaquette, ok } from './aidesTest';
 import { formeObjet3D } from './formes3d';
-import { poserEscalier } from './escaliers';
+import { emprise, poserEscalier } from './escaliers';
 import { poserOuverture } from './ouvertures';
 import { directionSoleil } from './soleil';
 import { marchesEscalier } from './escaliers3d';
 import { contoursRaccordes } from './raccords';
-import { dallesDuNiveau, morceauxDeMur } from './volumes';
+import { dallesDuNiveau, decouperConvexe, morceauxDeMur, solSousLesMurs } from './volumes';
 const ctx = contexteTest();
 const n = niveauMaquette(ctx);
 
@@ -137,6 +137,46 @@ describe('géométrie 3D (DES-33)', () => {
         expect(f.taille.h).toBeGreaterThan(0);
       }
     }
+  });
+
+  it('sol prolongé sous les murs jusqu’à leur axe : pas de trou sous une porte', () => {
+    const n = niveauMaquette(contexteTest());
+    const p = n.pieces[0]!;
+    const sol = solSousLesMurs(n, p.contour);
+    const xs = sol.map((q) => q.x);
+    const ys = sol.map((q) => q.y);
+    // Maison 10,60 × 8,60 m, murs de 30 cm : axe des murs à 15 cm du nu extérieur.
+    expect(Math.min(...xs)).toBe(150);
+    expect(Math.max(...xs)).toBe(10_450);
+    expect(Math.min(...ys)).toBe(150);
+    expect(Math.max(...ys)).toBe(8_450);
+    expect(dallesDuNiveau(n).sols[0]!.contour).toEqual(sol);
+  });
+
+  it('trémie : plafond percé au-dessus de l’escalier, sol de l’étage percé aussi', () => {
+    const ctx = contexteTest();
+    const n = ok(
+      poserEscalier(
+        niveauMaquette(ctx),
+        { type: 'droit', position: { x: 2_000, y: 2_000 }, hauteurAMonter: 2_700 },
+        ctx,
+      ),
+    );
+    const d = dallesDuNiveau(n);
+    const trous = d.plafonds.flatMap((p) => p.trous ?? []);
+    expect(trous).toHaveLength(1);
+    // Le trou reste dans la pièce (découpé), aire non nulle.
+    for (const q of trous[0]!) expect(q.x >= 150 && q.y >= 150).toBe(true);
+    const etage = dallesDuNiveau(niveauMaquette(ctx), [emprise(n.escaliers[0]!)]);
+    expect(etage.sols.flatMap((s) => s.trous ?? [])).toHaveLength(1);
+    // Une trémie à cheval sur le mur extérieur est coupée au contour.
+    const dehors = decouperConvexe(n.pieces[0]!.contour, [
+      { x: -1_000, y: 1_000 },
+      { x: 1_000, y: 1_000 },
+      { x: 1_000, y: 2_000 },
+      { x: -1_000, y: 2_000 },
+    ]);
+    expect(Math.min(...dehors.map((q) => q.x))).toBeGreaterThanOrEqual(150);
   });
 
   it('soleil : à l’est le matin, au sud et haut à midi, tourne avec le nord', () => {
