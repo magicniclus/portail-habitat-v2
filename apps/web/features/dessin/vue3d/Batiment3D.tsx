@@ -22,7 +22,7 @@ import { Menuiseries3D } from './Menuiseries3D';
 import { MorceauMur3D } from './Mur3D';
 import { SurlignagePan } from './SurlignagePan';
 import { Toit3D } from './Toit3D';
-import { HabillageTremies } from './Tremies3D';
+import { DalleSousLesMurs, HabillageTremies } from './Tremies3D';
 import { M } from './unites';
 import { materiauRevetement, materiauUni } from './textures';
 
@@ -140,6 +140,7 @@ export function Niveau3D({
           selection={selection}
         />
       ))}
+      <DalleSousLesMurs n={n} />
       {dalles.sols.map((d) => (
         <Dalle3D key={d.zoneId ?? d.pieceId} d={d} selection={selection} />
       ))}

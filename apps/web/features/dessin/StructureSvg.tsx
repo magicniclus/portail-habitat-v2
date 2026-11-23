@@ -2,7 +2,7 @@
 
 import {
   CATALOGUE_OUVERTURES,
-  centroide,
+  placeEtiquette,
   contourMur,
   contoursRaccordes,
   longueurMur,
@@ -146,32 +146,33 @@ export function ReperesNiveauSvg({
         </defs>
       ) : null}
       {tremies.map((t, i) => {
-        const c = centroide(t);
-        const xs = t.map((p) => p.x);
-        const ys = t.map((p) => p.y);
-        const [x0, x1, y0, y1] = [
-          Math.min(...xs),
-          Math.max(...xs),
-          Math.min(...ys),
-          Math.max(...ys),
-        ];
+        // Nom au cœur de la forme (même en L), diagonale seulement sur une trémie rectangulaire.
+        const { centre: c, rayon } = placeEtiquette(t);
         return (
           <g key={i} data-testid="tremie">
             <polygon points={points(t)} fill={COULEURS_PLAN.pieceVide} />
             <polygon
               points={points(t)}
-
               className="stroke-texte"
               {...trait}
               fill="url(#hachures-tremie)"
             />
-            <line x1={x0} y1={y0} x2={x1} y2={y1} className="stroke-texte" {...trait} />
+            {t.length === 4 ? (
+              <line
+                x1={t[0]!.x}
+                y1={t[0]!.y}
+                x2={t[2]!.x}
+                y2={t[2]!.y}
+                className="stroke-texte"
+                {...trait}
+              />
+            ) : null}
             <text
               x={c.x}
               y={c.y}
               textAnchor="middle"
               dominantBaseline="middle"
-              fontSize={Math.min(260, (x1 - x0) / 5)}
+              fontSize={Math.max(120, Math.min(240, rayon / 2.2))}
               fontWeight={600}
               className="fill-texte"
               paintOrder="stroke"

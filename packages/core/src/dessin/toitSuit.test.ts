@@ -68,4 +68,35 @@ describe('le toit suit les murs (DES-16)', () => {
     };
     expect(toituresSuivies(avecToit, retire)).toBe(retire);
   });
+
+  it('murs déplacés sous un étage qui couvre tout, ou partie déjà découverte : rien ne change', () => {
+    const s = ok(
+      toitureAutomatique(
+        ok(ajouterNiveau(base(), { type: 'etage', copierMurs: true }, ctx)),
+        'deux_pans',
+      ),
+    );
+    const bouge = (x: Scene, id = 'n_rdc0') => ({
+      ...x,
+      niveaux: x.niveaux.map((n) =>
+        n.id === id ? { ...n, murs: n.murs.map((m) => ({ ...m })) } : n,
+      ),
+    });
+    // Étage complet au-dessus : le rez-de-chaussée reste couvert, pas de toit ajouté.
+    const r = bouge(s);
+    expect(toituresSuivies(s, r)).toBe(r);
+    // Toit du rez-de-chaussée retiré exprès en même temps que ses murs changent : il était
+    // déjà découvert, on respecte le choix (le modèle vient de l'étage vide).
+    const avant = {
+      ...s,
+      niveaux: s.niveaux.map((n) =>
+        n.id === 'n_rdc0' ? ok(definirToiture(n, 'deux_pans')) : { ...n, murs: [] },
+      ),
+    };
+    const apres = bouge({
+      ...avant,
+      niveaux: avant.niveaux.map((n) => (n.id === 'n_rdc0' ? { ...n, toiture: null } : n)),
+    });
+    expect(toituresSuivies(avant, apres)).toBe(apres);
+  });
 });

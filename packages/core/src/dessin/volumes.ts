@@ -1,6 +1,11 @@
 import type { Mur, Niveau, Point, Revetement } from '../schemas/dessinScene';
 import { longueurMur } from './murs';
-import { aireSignee, decalerVersInterieur, distancePointSegment } from './geometrie';
+import {
+  aireSignee,
+  decalerVersInterieur,
+  distancePointSegment,
+  pointDansPolygone,
+} from './geometrie';
 import { emprise } from './escaliers';
 
 /**
@@ -79,10 +84,35 @@ function intersectionDroites(p: Point, q: Point, a: Point, b: Point): Point | nu
   return { x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t };
 }
 
-/** Trémies (emprises d'escalier, convexes) limitées au contour : trous valides pour la 3D. */
+/** Polygone convexe (tous les virages dans le même sens). */
+const estConvexe = (p: readonly Point[]) => {
+  const signes = p.map((a, i) => {
+    const [b, c] = [p[(i + 1) % p.length]!, p[(i + 2) % p.length]!];
+    return Math.sign((b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x));
+  });
+  return signes.every((s) => s >= 0) || signes.every((s) => s <= 0);
+};
+
+/**
+ * Trémies (emprises d'escalier) dans le contour : telles quelles si elles y tiennent (escalier
+ * droit, en L, en U…), sinon découpées au contour (forme convexe) ; trous valides pour la 3D.
+ */
 const trousDans = (contour: readonly Point[], tremies: readonly Point[][]) =>
   tremies
-    .map((t) => decouperConvexe(contour, t))
+    // Rentrée de 2 mm : un escalier contre un mur touche le contour, le trou reste dedans.
+    .map((t) =>
+      decalerVersInterieur(
+        t,
+        t.map(() => 2),
+      ),
+    )
+    .map((t) =>
+      t.every((q) => pointDansPolygone(q, contour))
+        ? t
+        : estConvexe(t)
+          ? decouperConvexe(contour, t)
+          : [],
+    )
     .filter((t) => t.length >= 3 && Math.abs(aireSignee(t)) > 10_000);
 
 /** Intervalles [début, fin] le long du mur occupés par les ouvertures, avec leur hauteur. */

@@ -177,6 +177,17 @@ describe('géométrie 3D (DES-33)', () => {
       { x: -1_000, y: 2_000 },
     ]);
     expect(Math.min(...dehors.map((q) => q.x))).toBeGreaterThanOrEqual(150);
+    // Escalier quart tournant (trémie en L) : le trou garde sa forme en L.
+    const quart = ok(
+      poserEscalier(
+        niveauMaquette(ctx),
+        { type: 'quart_bas', position: { x: 3_000, y: 3_000 }, hauteurAMonter: 2_700 },
+        ctx,
+      ),
+    );
+    const enL = dallesDuNiveau(quart).plafonds.flatMap((p) => p.trous ?? []);
+    expect(enL).toHaveLength(1);
+    expect(enL[0]!.length).toBe(emprise(quart.escaliers[0]!).length);
   });
 
   it('soleil : à l’est le matin, au sud et haut à midi, tourne avec le nord', () => {
