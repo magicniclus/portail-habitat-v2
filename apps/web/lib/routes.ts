@@ -91,6 +91,9 @@ export const routes = {
   /** Plans (DES-03) : page publique et essai sans compte. */
   dessin: r('/dessin'),
   dessinEssai: r('/dessin/essai'),
+  /** Landing SEO « plan de maison gratuit » et ses guides (ouverts avec la page publique Plans). */
+  planMaison: r('/plan-maison-gratuit'),
+  planMaisonGuide: (slug: string) => r(`/plan-maison-gratuit/${slug}`),
   simulateurPlan: (planId: string) => r(`/simulateur?plan=${encodeURIComponent(planId)}`),
   /** « Demander un devis » depuis une fiche : la demande cible cet artisan (`source: fiche_artisan`). */
   simulateurArtisan: (artisanId: string) =>

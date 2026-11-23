@@ -21,8 +21,8 @@ test.describe('Plans sur les pages d’acquisition', () => {
   test('annuaire : « Plan 3D » dans l’en-tête et le pied de page', async ({ page }) => {
     await page.goto('/artisans');
     await expect(
-      page.locator('footer').getByRole('link', { name: 'Plan de maison 2D et 3D' }),
-    ).toHaveAttribute('href', '/dessin');
+      page.locator('footer').getByRole('link', { name: 'Plan de maison gratuit' }),
+    ).toHaveAttribute('href', '/plan-maison-gratuit');
     const enTete = page.locator('header').first();
     const lienEnTete = enTete.getByRole('link', { name: 'Plan 3D' });
     // Sur téléphone, le lien est dans le menu.
@@ -31,7 +31,7 @@ test.describe('Plans sur les pages d’acquisition', () => {
     }
     await expect(page.getByRole('link', { name: 'Plan 3D' }).first()).toHaveAttribute(
       'href',
-      '/dessin',
+      '/plan-maison-gratuit',
     );
   });
 

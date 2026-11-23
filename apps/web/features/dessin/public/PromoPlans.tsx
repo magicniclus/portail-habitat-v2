@@ -63,7 +63,7 @@ export async function SectionPlansAccueil() {
             Dessiner mon plan gratuitement
           </Link>
           <Link
-            href={routes.dessin}
+            href={routes.planMaison}
             className={bouton({ variant: 'fantome', taille: 'lg', className: 'min-h-[52px]' })}
           >
             Découvrir l’outil
@@ -80,7 +80,7 @@ export async function LienPlansHero() {
   if (!(await plansPublicsOuverts())) return null;
   return (
     <Link
-      href={routes.dessin}
+      href={routes.planMaison}
       data-promo-plans="hero"
       className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-pill bg-blanc px-4 text-[15px] font-semibold text-accent-700 no-underline shadow-sm hover:text-accent-800"
     >

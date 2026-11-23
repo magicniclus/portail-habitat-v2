@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import { PageDessinPublic } from '@/features/dessin/public/PageDessinPublic';
+import { routes } from '@/lib/routes';
 import { exigerDessinPublic } from '@/server/pageDessin';
 
 export const metadata: Metadata = {
   title: { absolute: 'Plan de maison gratuit en 2D et 3D · Portail Travaux' },
   description:
     'Dessinez gratuitement le plan de votre maison, voyez-le en 3D, puis demandez des devis avec votre plan. Sans inscription pour essayer.',
-  alternates: { canonical: '/dessin' },
+  // Page de l'outil ; la page de référence pour Google est la landing (pas de doublon).
+  alternates: { canonical: routes.planMaison },
 };
 
 // Suit le flag `dessinPublic` sans délai tant que la page est fermée ; à l'ouverture,

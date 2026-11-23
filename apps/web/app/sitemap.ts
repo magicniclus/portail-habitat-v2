@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { GUIDES_PLAN } from '@/features/planMaison/contenu';
 import { pagesDuSitemap } from '@/features/vitrine/indexation';
 import { LANDINGS } from '@ph/core/landings';
 import { lireSlugs } from '@/server/annuaire';
@@ -22,8 +23,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     LANDINGS.chantiers.route,
     ...(site ? [LANDINGS.site.route] : []),
     ...(devis ? [LANDINGS.devis.route] : []),
-    // Page publique Plans (DES-03) : seulement quand Plans et sa page publique sont ouverts.
-    ...(dessin && dessinPublic ? [routes.dessin as string] : []),
+    // Landing « plan de maison gratuit » et ses guides : seulement quand Plans et sa page publique
+    // sont ouverts. /dessin n'y figure plus : sa page canonique est la landing.
+    ...(dessin && dessinPublic
+      ? [routes.planMaison as string, ...GUIDES_PLAN.map((g) => routes.planMaisonGuide(g.slug))]
+      : []),
   ];
   // Pages permanentes de référencement local : index, métiers, métiers courants × communes mises
   // en avant, travaux × Bordeaux. Les autres combinaisons sont atteintes par les liens internes.

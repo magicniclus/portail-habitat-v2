@@ -56,7 +56,7 @@ export function enTeteParticuliersPour(plans: boolean): EnTetePublicProps {
   if (!plans) return enTeteParticuliers;
   return {
     ...enTeteParticuliers,
-    liens: [{ libelle: 'Plan 3D', href: routes.dessin }, ...enTeteParticuliers.liens],
+    liens: [{ libelle: 'Plan 3D', href: routes.planMaison }, ...enTeteParticuliers.liens],
   };
 }
 
@@ -70,7 +70,7 @@ export function piedParticuliersPour(plans: boolean): typeof piedParticuliers {
         ...premiere!,
         liens: [
           ...premiere!.liens.slice(0, 2),
-          { libelle: 'Plan de maison 2D et 3D', href: routes.dessin },
+          { libelle: 'Plan de maison gratuit', href: routes.planMaison },
           ...premiere!.liens.slice(2),
         ],
       },
