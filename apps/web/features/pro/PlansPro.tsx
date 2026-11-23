@@ -1,6 +1,6 @@
 import { bouton } from '@ph/ui';
 import { CheckCircleIcon, CubeIcon } from '@phosphor-icons/react/dist/ssr';
-import { IllustrationPlan } from '@/features/dessin/public/IllustrationPlan';
+import { Curseur2D3D } from '@/features/dessin/public/Curseur2D3D';
 import { plansProOuverts } from '@/server/plansAcquisition';
 import { conteneurPro } from './Sections';
 
@@ -64,13 +64,7 @@ export async function PlansPro() {
             Créer mon compte gratuit
           </a>
         </div>
-        <div className="relative rounded-[18px] bg-blanc p-3 shadow-lg">
-          <IllustrationPlan />
-          <span className="absolute top-6 right-6 inline-flex items-center gap-1.5 rounded-pill bg-accent px-3 py-1.5 text-[13px] font-bold text-blanc shadow-md">
-            <CubeIcon size={16} weight="bold" aria-hidden="true" />
-            2D · 3D
-          </span>
-        </div>
+        <Curseur2D3D />
       </div>
     </section>
   );

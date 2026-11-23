@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Section } from '@/features/vitrine/Section';
 import { routes } from '@/lib/routes';
 import { plansPublicsOuverts } from '@/server/plansAcquisition';
-import { IllustrationPlan } from './IllustrationPlan';
+import { Curseur2D3D } from './Curseur2D3D';
 
 /**
  * Plans mis en avant sur les pages d'acquisition particuliers (demande du propriétaire du
@@ -70,18 +70,7 @@ export async function SectionPlansAccueil() {
           </Link>
         </div>
       </div>
-      <Link
-        href={routes.dessinEssai}
-        prefetch={false}
-        aria-label="Essayer l’outil Plans"
-        className="group relative block rounded-[18px] bg-blanc p-3 shadow-lg transition-transform hover:-translate-y-0.5 motion-reduce:transition-none"
-      >
-        <IllustrationPlan />
-        <span className="absolute top-6 right-6 inline-flex items-center gap-1.5 rounded-pill bg-accent px-3 py-1.5 text-[13px] font-bold text-blanc shadow-md">
-          <CubeIcon size={16} weight="bold" aria-hidden="true" />
-          2D · 3D
-        </span>
-      </Link>
+      <Curseur2D3D />
     </Section>
   );
 }

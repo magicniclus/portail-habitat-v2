@@ -18,7 +18,7 @@ import { conteneur, ListeFaq, Section } from '@/features/vitrine/Section';
 import { faqPage } from '@/features/vitrine/seo';
 import { routes } from '@/lib/routes';
 import { ETAPES_PLANS, FAQ_PLANS, FONCTIONS_PLANS } from './contenu';
-import { IllustrationPlan } from './IllustrationPlan';
+import { Curseur2D3D } from './Curseur2D3D';
 
 const ICONES = {
   murs: WallIcon,
@@ -79,7 +79,7 @@ export function PageDessinPublic() {
               </Link>
             </div>
           </div>
-          <IllustrationPlan />
+          <Curseur2D3D />
         </section>
 
         <Section etiquette="Ce que vous pouvez faire" fond="bg-neutre-100">
