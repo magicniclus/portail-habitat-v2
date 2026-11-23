@@ -105,6 +105,7 @@ Routes réelles de `apps/web/app` au 19/11/2026 (groupes de routes entre parenth
 | Laisser un Avis · Mon Espace Particulier | `/avis` (`?jeton=`) · `/mon-espace`, `/mon-espace/demandes/[id]`, `/mon-espace/avis`, `/mon-espace/compte` |
 | Dessin (particulier) | `/dessin` (page publique) · `/dessin/essai` (essai sans compte) · `/mon-espace/plans` (Mes plans) · `/mes-plans/[planId]` (éditeur plein écran) |
 | Dessin (partage) | `/plan/[jeton]` (lecture seule, sans compte, non indexé) |
+| — (landing SEO Plans, sans maquette, gabarit `features/planMaison`) | `/plan-maison-gratuit` (landing, page canonique de `/dessin`) · `/plan-maison-gratuit/[sujet]` : 17 guides en 4 familles — formes (`plain-pied`, `etage`, `maison-en-l`, `maison-en-u`, `maison-toit-plat`, `plan-3d`), pièces (`appartement`, `cuisine`, `salle-de-bain`, `combles`), extérieur (`jardin-terrasse`, `garage`, `plan-de-masse`), projets (`extension`, `renovation`, `facades-coupes`, `a-imprimer`) ; ouverts avec `dessinPublic` |
 | Acquisition Artisans v2 | `/pro` (+ variante `?utm_source=facebook`, `?metier=`) |
 | Landing Outil (Landing Trouver des chantiers, Site internet artisan, Logiciel devis factures) | `/pro/trouver-des-chantiers` · `/pro/site-internet-artisan` · `/pro/logiciel-devis-factures` |
 | Onboarding Etape 2 et 3 | `/pro/inscription/zone` · `/pro/inscription/compte` |
@@ -151,6 +152,7 @@ Routes réelles de `apps/web/app` au 19/11/2026 (groupes de routes entre parenth
 - [ ] Clés API OVH (compte client ordinaire, moyen de paiement enregistré) ou jeton Gandi en secours ; produit Stripe `site_pro` (9,90 € HT/mois) ; DNS wildcard `*.portailtravaux.fr` ; hébergement des sites tranché (D45 : Cloudflare prévu, Vercel en place)
 - [ ] Secrets fournis (CLES.md) : `ANTHROPIC_API_KEY`, `IBAN_CLE_CHIFFREMENT`, `VERCEL_API_TOKEN`, Turnstile, DataForSEO (D68), clés du Studio (YouTube, Meta, TikTok, ElevenLabs, `STUDIO_RENDU_CLE`, `STUDIO_CHIFFREMENT_CLE`)
 - [ ] Studio : robot de rendu déployé sur Cloud Run par le propriétaire (`scripts/deployerStudio.sh`)
-- [ ] Plans : services IGN (adresses, cadastre, photo aérienne) vérifiés en préproduction ; `/dessin` passé en `revalidate = 3600` à l'ouverture ; flags `dessin` et `dessinPublic` ouverts seulement sur décision
+- [ ] Plans : services IGN (adresses, cadastre, photo aérienne) vérifiés en préproduction ; `/dessin` et `/plan-maison-gratuit` (+ guides) passés en `revalidate = 3600` à l'ouverture ; flags `dessin` et `dessinPublic` ouverts seulement sur décision
+- [ ] Landing SEO Plans : mots-clés des 18 pages confirmés avec un outil (volume, difficulté < 10) ; pages soumises à la Search Console ; textes réajustés selon les requêtes réelles
 - [ ] Factur-X et plateforme agréée (D62 ⏳) avant l'échéance légale de la facturation électronique
 - [ ] Tous les critères d'ACCEPTANCE.md passent en CI (identifiants encore sans test Playwright : voir ACCEPTANCE.md, « Couverture des tests »)

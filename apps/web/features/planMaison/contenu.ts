@@ -15,8 +15,18 @@ export interface QuestionPlan {
   r: string;
 }
 
+/** Familles de guides : regroupent les cartes sur la landing et le maillage entre guides. */
+export const FAMILLES_GUIDES = {
+  maison: 'Formes et styles de maison',
+  pieces: 'Pièces et intérieurs',
+  exterieur: 'Terrain et extérieur',
+  projet: 'Projets et documents',
+} as const;
+export type FamilleGuide = keyof typeof FAMILLES_GUIDES;
+
 export interface GuidePlan {
   slug: string;
+  famille: FamilleGuide;
   /** Nom court (cartes, fil d'Ariane). */
   nom: string;
   /** Balise title (moins de 60 signes avec la marque). */
@@ -167,6 +177,7 @@ export const FAQ_LANDING: readonly QuestionPlan[] = [
 export const GUIDES_PLAN: readonly GuidePlan[] = [
   {
     slug: 'plain-pied',
+    famille: 'maison',
     nom: 'Maison de plain-pied',
     titre: 'Plan de maison plain-pied gratuit, en 2D et 3D',
     description:
@@ -223,6 +234,7 @@ export const GUIDES_PLAN: readonly GuidePlan[] = [
   },
   {
     slug: 'etage',
+    famille: 'maison',
     nom: 'Maison à étage',
     titre: 'Plan de maison à étage gratuit, en 2D et 3D',
     description:
@@ -277,6 +289,7 @@ export const GUIDES_PLAN: readonly GuidePlan[] = [
   },
   {
     slug: 'maison-en-l',
+    famille: 'maison',
     nom: 'Maison en L',
     titre: 'Plan de maison en L gratuit, en 2D et 3D',
     description:
@@ -331,6 +344,7 @@ export const GUIDES_PLAN: readonly GuidePlan[] = [
   },
   {
     slug: 'appartement',
+    famille: 'pieces',
     nom: 'Appartement',
     titre: 'Plan d’appartement gratuit en 2D et 3D',
     description:
@@ -386,6 +400,7 @@ export const GUIDES_PLAN: readonly GuidePlan[] = [
   },
   {
     slug: 'extension',
+    famille: 'projet',
     nom: 'Extension de maison',
     titre: 'Plan d’extension de maison gratuit, en 2D et 3D',
     description:
@@ -441,6 +456,7 @@ export const GUIDES_PLAN: readonly GuidePlan[] = [
   },
   {
     slug: 'plan-3d',
+    famille: 'maison',
     nom: 'Plan de maison 3D',
     titre: 'Plan de maison 3D gratuit en ligne',
     description:
@@ -490,6 +506,613 @@ export const GUIDES_PLAN: readonly GuidePlan[] = [
       {
         q: 'Peut-on partager la 3D ?',
         r: 'Oui, par un lien en lecture seule, sans compte pour la personne qui l’ouvre.',
+      },
+    ],
+  },
+  {
+    slug: 'plan-de-masse',
+    famille: 'exterieur',
+    nom: 'Plan de masse',
+    titre: 'Plan de masse gratuit avec le cadastre',
+    description:
+      'Faites gratuitement le plan de masse de votre maison : parcelle du cadastre, photo aérienne, distances aux limites et nord. Pour préparer votre projet en ligne.',
+    h1: 'Plan de masse gratuit, sur votre vraie parcelle',
+    intro:
+      'Le plan de masse montre la maison posée sur son terrain : limites de la parcelle, distances, orientation. Saisissez votre adresse, la parcelle du cadastre se place autour de votre plan.',
+    parties: [
+      {
+        titre: 'Votre parcelle en quelques secondes',
+        paragraphes: [
+          'Tapez l’adresse du terrain, choisissez-la dans la liste : la parcelle cadastrale est récupérée auprès des services publics de l’IGN, avec la photo aérienne. La maison se pose au centre ; recalez-la aux flèches et tournez-la si besoin.',
+          'Cette vue est disponible avec votre compte gratuit, en France métropolitaine.',
+        ],
+        points: [
+          'Limites cadastrales et photo aérienne',
+          'Distances de la maison aux limites',
+          'Flèche du nord qui tourne avec la parcelle',
+          'Terrasse, piscine, allées et clôtures',
+        ],
+      },
+      {
+        titre: 'À quoi sert le plan de masse',
+        paragraphes: [
+          'C’est l’une des pièces demandées pour un permis de construire ou une déclaration préalable : il situe la construction, ses dimensions et ses distances aux limites.',
+          'Notre plan vous aide à préparer et vérifier votre implantation, mais les distances restent indicatives : la pièce officielle du dossier doit respecter les exigences de votre mairie.',
+        ],
+      },
+      {
+        titre: 'Les distances aux limites',
+        paragraphes: [
+          'Le plan local d’urbanisme de votre commune fixe souvent un recul minimal par rapport à la rue et aux voisins. Les cotes affichées sur votre plan de masse permettent de le vérifier avant d’aller plus loin.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Comment faire un plan de masse gratuitement ?',
+        r: 'Dessinez votre maison, ouvrez l’implantation, saisissez l’adresse : la parcelle du cadastre et la photo aérienne se placent autour du plan.',
+      },
+      {
+        q: 'Mon adresse est-elle enregistrée ?',
+        r: 'Non. L’adresse sert seulement à trouver la parcelle ; elle n’est ni enregistrée ni montrée dans les liens de partage.',
+      },
+      {
+        q: 'Le plan de masse suffit-il pour le permis ?',
+        r: 'Il aide à préparer le dossier. Les distances sont indicatives : faites vérifier la pièce officielle par un professionnel.',
+      },
+      {
+        q: 'Est-ce gratuit ?',
+        r: 'Oui, avec votre compte gratuit.',
+      },
+    ],
+  },
+  {
+    slug: 'cuisine',
+    famille: 'pieces',
+    nom: 'Cuisine',
+    titre: 'Plan de cuisine gratuit en 3D',
+    description:
+      'Dessinez gratuitement le plan de votre cuisine en 3D : meubles bas et hauts, îlot, électroménager, couleurs des façades et du plan de travail. En ligne.',
+    h1: 'Plan de cuisine gratuit en 3D',
+    intro:
+      'Cuisine en L, en U, avec îlot ou ouverte sur le séjour : placez les meubles à leur taille réelle, choisissez les couleurs et voyez le résultat en 3D avant de demander des devis.',
+    parties: [
+      {
+        titre: 'Des meubles qui se calent contre les murs',
+        paragraphes: [
+          'Meubles bas, meubles hauts, évier, plaque, hotte, four, lave-vaisselle, réfrigérateur et îlot : chaque élément se pose contre le mur et s’aligne sur ses voisins.',
+        ],
+        points: [
+          'Meubles bas et hauts, colonnes',
+          'Îlot et table haute',
+          'Évier, plaque, hotte, électroménager',
+          'Couleurs de façade, plan de travail et poignées',
+        ],
+      },
+      {
+        titre: 'Toute la cuisine aux mêmes couleurs, d’un clic',
+        paragraphes: [
+          'Choisissez la couleur des façades, du plan de travail et des poignées, puis appliquez-la à toute la cuisine. Les meubles ajoutés ensuite reprennent les mêmes couleurs.',
+        ],
+      },
+      {
+        titre: 'Bien organiser sa cuisine',
+        paragraphes: [
+          'On place souvent l’évier, la plaque et le réfrigérateur en triangle, à quelques pas les uns des autres, avec un plan de travail entre la plaque et l’évier. Vérifiez sur votre plan que les portes et tiroirs s’ouvrent sans gêner le passage.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Comment faire le plan de sa cuisine ?',
+        r: 'Dessinez la pièce, posez portes et fenêtres, puis ajoutez les meubles de cuisine contre les murs et passez en 3D.',
+      },
+      {
+        q: 'Peut-on dessiner un îlot ?',
+        r: 'Oui, l’îlot se pose librement dans la pièce.',
+      },
+      {
+        q: 'Peut-on changer les couleurs ?',
+        r: 'Oui : façades, plan de travail et poignées, pour un meuble ou toute la cuisine.',
+      },
+      {
+        q: 'Est-ce gratuit ?',
+        r: 'Oui, entièrement gratuit, sans téléchargement.',
+      },
+    ],
+  },
+  {
+    slug: 'salle-de-bain',
+    famille: 'pieces',
+    nom: 'Salle de bains',
+    titre: 'Plan de salle de bain gratuit en 3D',
+    description:
+      'Dessinez gratuitement le plan de votre salle de bains en 3D : douche à l’italienne, baignoire, vasque, WC suspendu, carrelage et faïence. En ligne.',
+    h1: 'Plan de salle de bain gratuit en 3D',
+    intro:
+      'Dans une salle de bains, chaque centimètre compte. Placez douche, baignoire, vasque et WC à leur taille réelle, essayez plusieurs carrelages et vérifiez les passages en 3D.',
+    parties: [
+      {
+        titre: 'Les équipements, à la bonne taille',
+        paragraphes: [
+          'Douche à l’italienne, d’angle ou en niche, baignoire, vasque, WC suspendu, sèche-serviettes : posez-les contre les murs et déplacez-les jusqu’à trouver la bonne disposition.',
+        ],
+        points: [
+          'Douches, baignoire, vasques',
+          'WC suspendu ou au sol',
+          'Sèche-serviettes et rangements',
+          'Porte coulissante ou à galandage pour gagner de la place',
+        ],
+      },
+      {
+        titre: 'Carrelage et faïence',
+        paragraphes: [
+          'Choisissez le format des carreaux, la largeur et la couleur du joint, et la pose : droite, décalée, diagonale, chevron ou point de Hongrie. Le rendu apparaît sur le plan et en 3D.',
+        ],
+      },
+      {
+        titre: 'Penser aux arrivées d’eau',
+        paragraphes: [
+          'Rapprocher les équipements des arrivées et évacuations existantes limite les travaux de plomberie. Notez-les sur votre plan avant de déplacer la douche ou les WC, et demandez conseil à un plombier.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Comment faire le plan de sa salle de bains ?',
+        r: 'Dessinez la pièce, posez la porte et la fenêtre, puis ajoutez douche, baignoire, vasque et WC, et choisissez le carrelage.',
+      },
+      {
+        q: 'Peut-on dessiner une douche à l’italienne ?',
+        r: 'Oui, elle fait partie des équipements proposés.',
+      },
+      {
+        q: 'Peut-on choisir la pose du carrelage ?',
+        r: 'Oui : droite, décalée, diagonale, chevron ou point de Hongrie, avec la couleur du joint.',
+      },
+      {
+        q: 'Est-ce gratuit ?',
+        r: 'Oui, entièrement gratuit.',
+      },
+    ],
+  },
+  {
+    slug: 'jardin-terrasse',
+    famille: 'exterieur',
+    nom: 'Jardin et terrasse',
+    titre: 'Plan de jardin et terrasse gratuit en 3D',
+    description:
+      'Dessinez gratuitement votre jardin en 3D : terrasse, piscine, pergola, clôture, allées, arbres et potager, autour de votre maison. En ligne, sans téléchargement.',
+    h1: 'Plan de jardin et de terrasse gratuit',
+    intro:
+      'Le jardin se pense avec la maison. Tracez la terrasse, posez la piscine, la pergola et les clôtures, plantez les arbres, puis regardez l’ensemble en 3D.',
+    parties: [
+      {
+        titre: 'Terrasse sur mesure',
+        paragraphes: [
+          'Tracez la terrasse en deux coins, choisissez le matériau et le sens de pose des lames, sa hauteur : les marches côté jardin et le garde-corps se placent seuls. Ajoutez une pergola si vous voulez de l’ombre.',
+        ],
+        points: [
+          'Bois, composite, dallage',
+          'Marches et garde-corps automatiques',
+          'Pergola en bois, à toile ou bioclimatique',
+          'Salon de jardin et bains de soleil',
+        ],
+      },
+      {
+        titre: 'Piscine, clôtures et plantations',
+        paragraphes: [
+          'Piscine rectangulaire, ronde, ovale, en haricot, en L, couloir de nage ou hors-sol ; clôtures en bois, grillage, muret ou haie, portail ; arbres, arbustes, potager surélevé, abri de jardin, serre et carport.',
+        ],
+      },
+      {
+        titre: 'Le soleil au bon endroit',
+        paragraphes: [
+          'Orientez le plan vers le nord et réglez l’heure : les ombres de la maison et des arbres se déplacent en 3D. Idéal pour placer la terrasse et la piscine au soleil.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Comment faire le plan de son jardin ?',
+        r: 'Dessinez la maison et la parcelle, puis ajoutez terrasse, piscine, allées, clôtures et plantations.',
+      },
+      {
+        q: 'Peut-on voir les ombres ?',
+        r: 'Oui, selon l’heure et l’orientation du terrain.',
+      },
+      {
+        q: 'Peut-on ajouter une piscine ?',
+        r: 'Oui, de plusieurs formes, enterrée ou hors-sol.',
+      },
+      {
+        q: 'Est-ce gratuit ?',
+        r: 'Oui, entièrement gratuit.',
+      },
+    ],
+  },
+  {
+    slug: 'facades-coupes',
+    famille: 'projet',
+    nom: 'Façades et coupes',
+    titre: 'Plan de façade et coupe gratuits',
+    description:
+      'Obtenez gratuitement les façades nord, sud, est et ouest de votre maison et une coupe verticale, tirées de votre plan 2D. Toiture et ouvertures comprises.',
+    h1: 'Plans de façades et coupes gratuits',
+    intro:
+      'Les façades montrent la maison vue de l’extérieur, côté par côté ; la coupe montre l’intérieur tranché. Les deux se tirent directement de votre plan, sans rien redessiner.',
+    parties: [
+      {
+        titre: 'Quatre façades tirées du plan',
+        paragraphes: [
+          'Les élévations nord, sud, est et ouest suivent l’orientation de votre plan : portes, fenêtres, baies vitrées et toiture apparaissent à leur place et à leur hauteur.',
+        ],
+        points: [
+          'Façades nord, sud, est et ouest',
+          'Ouvertures et toiture à leur hauteur',
+          'Mises à jour quand le plan change',
+          'Visibles aussi par lien de partage',
+        ],
+      },
+      {
+        titre: 'Une coupe en deux clics',
+        paragraphes: [
+          'Tracez un trait sur le plan : la coupe verticale montre les murs, les planchers et le toit tranchés, avec les repères d’altitude de chaque niveau.',
+        ],
+      },
+      {
+        titre: 'Pour quoi faire ?',
+        paragraphes: [
+          'Les façades aident à juger de l’aspect de la maison et à préparer les pièces d’un dossier d’urbanisme ; elles restent indicatives et ne remplacent pas les pièces officielles exigées par votre mairie.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Comment obtenir les façades de ma maison ?',
+        r: 'Dessinez votre plan avec ses ouvertures et sa toiture, puis ouvrez la vue Façades.',
+      },
+      {
+        q: 'Peut-on faire une coupe ?',
+        r: 'Oui, tracez un trait en deux clics sur le plan.',
+      },
+      {
+        q: 'Faut-il redessiner quand je modifie le plan ?',
+        r: 'Non, façades et coupes suivent le plan.',
+      },
+      {
+        q: 'Est-ce gratuit ?',
+        r: 'Oui, entièrement gratuit.',
+      },
+    ],
+  },
+  {
+    slug: 'combles',
+    famille: 'pieces',
+    nom: 'Aménagement de combles',
+    titre: 'Plan d’aménagement de combles gratuit',
+    description:
+      'Dessinez gratuitement l’aménagement de vos combles : niveau sous la toiture, fenêtres de toit, escalier, chambre ou bureau. En 2D et en 3D, sans téléchargement.',
+    h1: 'Plan d’aménagement de combles gratuit',
+    intro:
+      'Aménager les combles crée une ou plusieurs pièces sans agrandir l’emprise de la maison. Dessinez le niveau sous la toiture, posez l’escalier et les fenêtres de toit, et vérifiez les volumes en 3D.',
+    parties: [
+      {
+        titre: 'Un niveau sous la toiture',
+        paragraphes: [
+          'Ajoutez un niveau de combles au-dessus de la maison, réglez sa hauteur sous plafond, puis tracez les cloisons des nouvelles pièces. La toiture se pose sur l’ensemble.',
+        ],
+        points: [
+          'Niveau de combles réglable',
+          'Fenêtres de toit',
+          'Escalier depuis l’étage du dessous',
+          'Vue 3D niveau par niveau',
+        ],
+      },
+      {
+        titre: 'Surface habitable et hauteur',
+        paragraphes: [
+          'Les parties dont la hauteur sous plafond est inférieure à 1,80 m ne comptent pas dans la surface habitable. Placez les rangements sous les pentes et les pièces de vie là où l’on tient debout.',
+        ],
+      },
+      {
+        titre: 'L’escalier, la clé du projet',
+        paragraphes: [
+          'L’escalier doit trouver sa place à l’étage du dessous et arriver dans les combles là où la hauteur est suffisante. L’éditeur signale les escaliers peu confortables et l’échappée trop basse.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Comment dessiner des combles aménagés ?',
+        r: 'Ajoutez un niveau de combles, réglez sa hauteur, tracez les cloisons et posez l’escalier et les fenêtres de toit.',
+      },
+      {
+        q: 'Peut-on ajouter des fenêtres de toit ?',
+        r: 'Oui, sur les pans de la toiture.',
+      },
+      {
+        q: 'Faut-il une autorisation ?',
+        r: 'Souvent oui si la surface de plancher augmente ou si l’aspect extérieur change : renseignez-vous en mairie.',
+      },
+      {
+        q: 'Est-ce gratuit ?',
+        r: 'Oui, entièrement gratuit.',
+      },
+    ],
+  },
+  {
+    slug: 'maison-en-u',
+    famille: 'maison',
+    nom: 'Maison en U',
+    titre: 'Plan de maison en U gratuit, en 2D et 3D',
+    description:
+      'Dessinez gratuitement le plan d’une maison en U autour d’un patio : forme prête à l’emploi, trois ailes, terrasse protégée. En 2D et en 3D, sans inscription.',
+    h1: 'Plan de maison en U gratuit',
+    intro:
+      'La maison en U entoure un patio sur trois côtés : un espace extérieur abrité, à l’écart de la rue et des voisins. Partez de la forme en U et ajustez chaque aile.',
+    parties: [
+      {
+        titre: 'Trois ailes autour d’un patio',
+        paragraphes: [
+          'Les pièces de vie occupent souvent l’aile du fond, les chambres une aile latérale, le garage ou une suite parentale l’autre. Toutes profitent de la lumière du patio.',
+        ],
+        points: [
+          'Patio abrité du vent et des regards',
+          'Baies vitrées sur trois côtés',
+          'Jour et nuit séparés',
+          'Plain-pied ou étage sur une aile',
+        ],
+      },
+      {
+        titre: 'Dessiner une maison en U',
+        paragraphes: [
+          'Choisissez la forme en U, indiquez les dimensions hors tout et la largeur des ailes, puis ajoutez cloisons et ouvertures. Tracez la terrasse au cœur du patio.',
+        ],
+      },
+      {
+        titre: 'Un volume plus grand à chauffer',
+        paragraphes: [
+          'Une maison en U a plus de façades qu’un rectangle de même surface : soignez l’isolation et l’orientation du patio, idéalement vers le sud.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Comment faire le plan d’une maison en U ?',
+        r: 'Choisissez la forme en U, réglez les ailes, puis ajoutez cloisons, portes et fenêtres.',
+      },
+      {
+        q: 'Peut-on voir le patio en 3D ?',
+        r: 'Oui, avec la terrasse et les baies vitrées.',
+      },
+      {
+        q: 'Une aile peut-elle avoir un étage ?',
+        r: 'Oui, ajoutez un niveau au-dessus de l’aile voulue.',
+      },
+      {
+        q: 'Est-ce gratuit ?',
+        r: 'Oui, entièrement gratuit.',
+      },
+    ],
+  },
+  {
+    slug: 'maison-toit-plat',
+    famille: 'maison',
+    nom: 'Maison à toit plat',
+    titre: 'Plan de maison à toit plat gratuit en 3D',
+    description:
+      'Dessinez gratuitement une maison contemporaine à toit plat : volumes cubiques, grandes baies vitrées, toiture plate. Plan 2D et maison en 3D, sans téléchargement.',
+    h1: 'Plan de maison à toit plat gratuit',
+    intro:
+      'Volumes nets, grandes baies, toit plat : la maison contemporaine se dessine simplement. Tracez les volumes, choisissez la toiture plate et regardez le résultat en 3D.',
+    parties: [
+      {
+        titre: 'Des volumes simples',
+        paragraphes: [
+          'Assemblez un ou plusieurs rectangles, de plain-pied ou à étage. Chaque volume reçoit sa toiture plate, et les décrochés donnent du caractère à la façade.',
+        ],
+        points: [
+          'Toiture plate sur chaque volume',
+          'Grandes baies coulissantes',
+          'Enduit ou bardage en façade',
+          'Terrasse dans le prolongement du séjour',
+        ],
+      },
+      {
+        titre: 'La lumière avant tout',
+        paragraphes: [
+          'Les grandes baies vitrées s’ouvrent sur le jardin. Réglez l’heure et l’orientation pour voir comment le soleil entre dans le séjour.',
+        ],
+      },
+      {
+        titre: 'Les règles locales',
+        paragraphes: [
+          'Certains plans locaux d’urbanisme encadrent les toits plats ou imposent des pentes et des matériaux. Vérifiez le règlement de votre zone en mairie avant d’arrêter votre projet.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Comment dessiner une maison à toit plat ?',
+        r: 'Tracez la maison, puis choisissez la toiture plate dans le menu de la toiture.',
+      },
+      {
+        q: 'Peut-on mélanger toit plat et toit en pente ?',
+        r: 'Oui, chaque volume peut avoir sa propre toiture.',
+      },
+      {
+        q: 'Peut-on choisir l’enduit ou le bardage ?',
+        r: 'Oui, dans les finitions de façade.',
+      },
+      {
+        q: 'Est-ce gratuit ?',
+        r: 'Oui, entièrement gratuit.',
+      },
+    ],
+  },
+  {
+    slug: 'renovation',
+    famille: 'projet',
+    nom: 'Rénovation',
+    titre: 'Plan de rénovation de maison gratuit',
+    description:
+      'Préparez gratuitement la rénovation de votre maison : dessinez l’existant, testez cloisons, cuisine et salle de bains en 3D, puis demandez des devis avec votre plan.',
+    h1: 'Plan de rénovation de maison gratuit',
+    intro:
+      'Une rénovation réussie commence par un relevé précis. Dessinez votre maison telle qu’elle est, essayez les changements en 3D, puis montrez votre plan aux artisans.',
+    parties: [
+      {
+        titre: 'Relever l’existant',
+        paragraphes: [
+          'Mesurez chaque pièce et reportez les cotes : les surfaces se calculent seules. Ce plan de départ servira de base à toutes vos idées.',
+        ],
+        points: [
+          'Cotes au centimètre',
+          'Surfaces de chaque pièce',
+          'Historique des versions de votre plan',
+          'PDF à l’échelle pour vos rendez-vous',
+        ],
+      },
+      {
+        titre: 'Tester avant de casser',
+        paragraphes: [
+          'Ouvrez une cuisine, déplacez la salle de bains, changez les sols : comparez les versions de votre plan avant de décider. Un mur porteur ne se supprime jamais sans l’avis d’un professionnel.',
+        ],
+      },
+      {
+        titre: 'Des devis plus justes',
+        paragraphes: [
+          'Avec votre compte gratuit, joignez votre plan à une demande de devis : surfaces, menuiseries et pièces sont lisibles d’un coup d’œil, ce qui évite les allers-retours. Le simulateur donne aussi une première estimation par type de travaux.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Comment préparer un plan de rénovation ?',
+        r: 'Dessinez l’existant avec vos mesures, puis créez une version avec les changements prévus.',
+      },
+      {
+        q: 'Peut-on comparer avant et après ?',
+        r: 'Oui, grâce à l’historique des versions de votre plan.',
+      },
+      {
+        q: 'Peut-on envoyer le plan aux artisans ?',
+        r: 'Oui, en le joignant à une demande de devis ou par un lien de partage.',
+      },
+      {
+        q: 'Est-ce gratuit ?',
+        r: 'Oui, le plan et la demande de devis sont gratuits.',
+      },
+    ],
+  },
+  {
+    slug: 'a-imprimer',
+    famille: 'projet',
+    nom: 'Plan à imprimer',
+    titre: 'Plan de maison à imprimer gratuit, en PDF',
+    description:
+      'Imprimez gratuitement le plan de votre maison en PDF à l’échelle 1/50 ou 1/100, en A4 ou A3, avec cotes et surfaces. Dessiné en ligne, sans logiciel.',
+    h1: 'Plan de maison à imprimer gratuit',
+    intro:
+      'Un plan papier reste pratique sur le chantier ou chez l’artisan. Dessinez votre maison en ligne, puis téléchargez un PDF à l’échelle, prêt à imprimer.',
+    parties: [
+      {
+        titre: 'Un PDF à l’échelle',
+        paragraphes: [
+          'Choisissez l’échelle, 1/50 ou 1/100, et le format, A4 ou A3 : l’éditeur vous conseille la combinaison qui fait tenir votre plan sur la feuille. Les cotes et les surfaces sont imprimées avec le plan.',
+        ],
+        points: [
+          'Échelle 1/50 ou 1/100',
+          'Format A4 ou A3',
+          'Cotes et surfaces des pièces',
+          'Téléchargement avec votre compte gratuit',
+        ],
+      },
+      {
+        titre: 'Lire un plan à l’échelle',
+        paragraphes: [
+          'À l’échelle 1/100, 1 cm sur le papier vaut 1 m en réalité ; à 1/50, 2 cm valent 1 m. Imprimez sans ajuster à la page pour garder l’échelle exacte.',
+        ],
+      },
+      {
+        titre: 'Partager sans imprimer',
+        paragraphes: [
+          'Vous pouvez aussi envoyer un lien en lecture seule : plan, 3D et façades s’ouvrent sans compte, et le lien se révoque quand vous voulez.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Comment imprimer le plan de ma maison ?',
+        r: 'Dessinez-le en ligne, puis téléchargez le PDF à l’échelle depuis votre compte gratuit et imprimez-le sans ajustement à la page.',
+      },
+      {
+        q: 'Quelles échelles sont proposées ?',
+        r: '1/50 et 1/100, en A4 ou A3.',
+      },
+      {
+        q: 'Les cotes sont-elles imprimées ?',
+        r: 'Oui, avec la surface des pièces.',
+      },
+      {
+        q: 'Est-ce gratuit ?',
+        r: 'Oui, entièrement gratuit.',
+      },
+    ],
+  },
+  {
+    slug: 'garage',
+    famille: 'exterieur',
+    nom: 'Garage et carport',
+    titre: 'Plan de garage gratuit, en 2D et 3D',
+    description:
+      'Dessinez gratuitement le plan de votre garage accolé ou séparé, avec porte de garage et rangements, ou d’un carport. En 2D et en 3D, sans téléchargement.',
+    h1: 'Plan de garage gratuit',
+    intro:
+      'Garage accolé à la maison, garage séparé ou simple carport : dessinez-le avec ses ouvertures et ses rangements, et voyez comment il s’intègre à la maison et au terrain.',
+    parties: [
+      {
+        titre: 'Garage accolé ou séparé',
+        paragraphes: [
+          'Tracez le garage comme une pièce contre la maison ou comme un volume à part sur la parcelle. Posez la porte de garage, une porte de service et une fenêtre, puis la toiture.',
+        ],
+        points: [
+          'Porte de garage',
+          'Porte de communication avec la maison',
+          'Étagères et rangements',
+          'Carport une ou deux voitures',
+        ],
+      },
+      {
+        titre: 'Penser aux dimensions',
+        paragraphes: [
+          'Prévoyez assez de place pour ouvrir les portières et circuler autour de la voiture, et ajoutez la largeur des rangements. Le plan à l’échelle permet de le vérifier facilement.',
+        ],
+      },
+      {
+        titre: 'Les autorisations',
+        paragraphes: [
+          'Comme pour une extension, un garage de 5 à 20 m² relève en général d’une déclaration préalable, au-delà d’un permis de construire. Les règles de votre commune priment : renseignez-vous en mairie.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Comment dessiner un garage ?',
+        r: 'Tracez-le contre la maison ou séparément, puis posez la porte de garage et la toiture.',
+      },
+      {
+        q: 'Peut-on dessiner un carport ?',
+        r: 'Oui, pour une ou deux voitures.',
+      },
+      {
+        q: 'Faut-il un permis pour un garage ?',
+        r: 'Cela dépend de la surface et de votre commune : déclaration préalable pour un petit garage, permis au-delà.',
+      },
+      {
+        q: 'Est-ce gratuit ?',
+        r: 'Oui, entièrement gratuit.',
       },
     ],
   },

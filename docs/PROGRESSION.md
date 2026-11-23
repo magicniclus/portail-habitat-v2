@@ -32,7 +32,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 | 13c | Comportement, IA | ✅ | 09/10/2026 | CMP-01 à 03 (e2e), CMP-04 et IA (émulateur, faux modèle) | RED-01 à 04 sans test Playwright |
 | 14 | Qualité, préparation de la mise en production | 🟡 | 09/10/2026 | ALL-02, 03, 06, en-têtes de sécurité, tâches planifiées | rien déployé ; reste : ALL-01 (captures comparées), sauvegardes à activer, mise en ligne (AVANCEMENT §23) |
 | Studio | Studio vidéo de l'admin (`/admin/studio`) | 🟡 | 05/11 au 09/11/2026 | STUDIO-EDIT, -SUIVI, -CAPTURES, -LIBRE, -SESSION… (e2e), studio sur émulateur | hors plan initial, demandé par le propriétaire (DECISIONS §6 bis). Reste : déployer le robot sur Cloud Run (par le propriétaire), clés YouTube, Meta, TikTok, ElevenLabs, `STUDIO_RENDU_CLE`, `STUDIO_CHIFFREMENT_CLE` ; Whisper à vérifier dans l'image |
-| 15 | Plans (Dessin) | 🟡 | 18/11 au 19/11/2026 | DES-01 à DES-48 (sauf DES-45, retiré) en e2e, iPhone 13 et ordinateur | 15a à 15j faits ; 15k recette en cours ; aucune mise en production ; flags `dessin` et `dessinPublic` éteints par défaut (AVANCEMENT §31) |
+| 15 | Plans (Dessin) | 🟡 | 18/11 au 19/11/2026 | DES-01 à DES-48 (sauf DES-45, retiré) en e2e, iPhone 13 et ordinateur | 15a à 15j faits ; 15k recette en cours ; landing SEO `/plan-maison-gratuit` + 17 guides (23/11) ; aucune mise en production ; flags `dessin` et `dessinPublic` éteints par défaut (AVANCEMENT §31) |
 
 ## Lot en cours
 - **Lot** : 15k, recette du lot 15 « Plans » (éditeur de plans 2D / 3D), fusionné dans la branche de développement le 19/11/2026 (commit `a5524a8d`).

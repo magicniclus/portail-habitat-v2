@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { FAQ_LANDING, GUIDES_PLAN, guideParSlug, LANDING_PLAN, PARTIES_LANDING } from './contenu';
+import {
+  FAMILLES_GUIDES,
+  FAQ_LANDING,
+  GUIDES_PLAN,
+  guideParSlug,
+  LANDING_PLAN,
+  PARTIES_LANDING,
+} from './contenu';
 
 const MARQUE = ' · Portail Travaux';
 const pages = [LANDING_PLAN, ...GUIDES_PLAN];
@@ -48,5 +55,10 @@ describe('landing et guides « plan de maison gratuit »', () => {
     const tout = JSON.stringify([LANDING_PLAN, PARTIES_LANDING, FAQ_LANDING, GUIDES_PLAN]);
     expect(tout.toLowerCase()).not.toMatch(/\blead/);
     expect(tout).not.toMatch(/\d+ ?%|★|avis client/);
+  });
+
+  it('chaque famille regroupe au moins deux guides (maillage entre voisins)', () => {
+    for (const f of Object.keys(FAMILLES_GUIDES))
+      expect(GUIDES_PLAN.filter((g) => g.famille === f).length).toBeGreaterThanOrEqual(2);
   });
 });

@@ -5,7 +5,25 @@ import { activerPlans } from './dessinOutils';
  * Landing SEO « plan de maison gratuit » et ses guides (demande du propriétaire du 23/11/2026) :
  * métadonnées, données structurées, maillage, essai sans compte, rien qui déborde sur téléphone.
  */
-const GUIDES = ['plain-pied', 'etage', 'maison-en-l', 'appartement', 'extension', 'plan-3d'];
+const GUIDES = [
+  'plain-pied',
+  'etage',
+  'maison-en-l',
+  'appartement',
+  'extension',
+  'plan-3d',
+  'plan-de-masse',
+  'cuisine',
+  'salle-de-bain',
+  'jardin-terrasse',
+  'facades-coupes',
+  'combles',
+  'maison-en-u',
+  'maison-toit-plat',
+  'renovation',
+  'a-imprimer',
+  'garage',
+];
 
 async function jsonLd(page: Page) {
   const blocs = await page.locator('script[type="application/ld+json"]').allTextContents();
@@ -64,8 +82,10 @@ test.describe('Plan de maison gratuit', () => {
           name: 'Plan de maison gratuit',
         }),
       ).toHaveAttribute('href', '/plan-maison-gratuit');
-      // Pas de lien vers soi-même dans « Autres plans gratuits ».
+      // Pas de lien vers soi-même ; un lien vers chacun des autres guides (maillage complet).
       await expect(page.locator(`main a[href="/plan-maison-gratuit/${g}"]`)).toHaveCount(0);
+      for (const autre of GUIDES.filter((x) => x !== g))
+        await expect(page.locator(`main a[href="/plan-maison-gratuit/${autre}"]`)).toHaveCount(1);
     }
     expect(titres.size).toBe(GUIDES.length);
     const reponse = await page.goto('/plan-maison-gratuit/inconnu');

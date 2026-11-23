@@ -51,7 +51,7 @@ export function PageGuidePlan({ guide }: { guide: GuidePlan }) {
           <ListeFaq faq={guide.faq} />
         </Section>
         <div className="mt-[clamp(44px,5.5vw,80px)]">
-          <GuidesLies sauf={guide.slug} titre="Autres plans gratuits" />
+          <GuidesLies courant={guide} titre="Autres plans gratuits" />
         </div>
         <AppelFinal titre={`${guide.h1}, en quelques minutes.`} />
       </main>

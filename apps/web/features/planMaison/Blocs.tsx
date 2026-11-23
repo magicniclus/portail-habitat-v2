@@ -5,7 +5,13 @@ import Link from 'next/link';
 import { Curseur2D3D } from '@/features/dessin/public/Curseur2D3D';
 import { conteneur, Section } from '@/features/vitrine/Section';
 import { routes } from '@/lib/routes';
-import { GUIDES_PLAN, type Partie } from './contenu';
+import {
+  FAMILLES_GUIDES,
+  GUIDES_PLAN,
+  type FamilleGuide,
+  type GuidePlan,
+  type Partie,
+} from './contenu';
 
 const boutonEssai = bouton({ taille: 'lg', className: 'min-h-[52px] px-[26px]' });
 export const titreH2 = 'm-0 mb-4 text-[clamp(25px,3vw,34px)] leading-[1.14]';
@@ -106,25 +112,75 @@ export function PartieTexte({ partie, id }: { partie: Partie; id?: string }) {
   );
 }
 
-/** Cartes vers les guides (maillage interne), sauf la page courante. */
-export function GuidesLies({ sauf, titre }: { sauf?: string; titre: string }) {
+function CarteGuide({ guide }: { guide: GuidePlan }) {
+  return (
+    <li>
+      <Link
+        href={routes.planMaisonGuide(guide.slug)}
+        className="group flex h-full min-h-11 flex-col gap-1.5 rounded-2xl bg-blanc p-5 text-texte no-underline ring-1 ring-trait transition-shadow hover:shadow-md"
+      >
+        <span className="text-[18px] font-bold">{guide.h1}</span>
+        <span className="text-[15px] leading-6 text-neutre-800">{guide.intro.split('. ')[0]}.</span>
+        <span className="mt-auto inline-flex items-center gap-1 pt-1 text-[15px] font-semibold text-accent-700">
+          Voir le guide <ArrowRightIcon aria-hidden="true" />
+        </span>
+      </Link>
+    </li>
+  );
+}
+
+const grille = 'm-0 grid list-none gap-3.5 p-0 min-[640px]:grid-cols-2 min-[1000px]:grid-cols-3';
+
+/**
+ * Maillage des guides. Landing : tous les guides, rangés par famille. Guide : les guides de la
+ * même famille en cartes, puis tous les autres en liens courts (chaque guide mène à tous).
+ */
+export function GuidesLies({ courant, titre }: { courant?: GuidePlan; titre: string }) {
+  if (!courant)
+    return (
+      <Section etiquette={titre} fond="bg-neutre-100">
+        <h2 className={titreH2}>{titre}</h2>
+        {(Object.keys(FAMILLES_GUIDES) as FamilleGuide[]).map((f) => (
+          <div key={f} className="mb-8 last:mb-0">
+            <h3 className="m-0 mb-3.5 text-[19px]">{FAMILLES_GUIDES[f]}</h3>
+            <ul className={grille}>
+              {GUIDES_PLAN.filter((g) => g.famille === f).map((g) => (
+                <CarteGuide key={g.slug} guide={g} />
+              ))}
+            </ul>
+          </div>
+        ))}
+      </Section>
+    );
+  const voisins = GUIDES_PLAN.filter((g) => g.famille === courant.famille && g !== courant);
+  const autres = GUIDES_PLAN.filter((g) => g.famille !== courant.famille);
   return (
     <Section etiquette={titre} fond="bg-neutre-100">
       <h2 className={titreH2}>{titre}</h2>
-      <ul className="m-0 grid list-none gap-3.5 p-0 min-[640px]:grid-cols-2 min-[1000px]:grid-cols-3">
-        {GUIDES_PLAN.filter((g) => g.slug !== sauf).map((g) => (
+      {voisins.length ? (
+        <ul className={cn(grille, 'mb-8')}>
+          {voisins.map((g) => (
+            <CarteGuide key={g.slug} guide={g} />
+          ))}
+        </ul>
+      ) : null}
+      <h3 className="m-0 mb-2 text-[17px]">Tous les plans gratuits</h3>
+      <ul className="m-0 flex list-none flex-wrap gap-x-5 p-0">
+        <li>
+          <Link
+            href={routes.planMaison}
+            className="inline-flex min-h-11 items-center text-[15.5px]"
+          >
+            Plan de maison gratuit
+          </Link>
+        </li>
+        {autres.map((g) => (
           <li key={g.slug}>
             <Link
               href={routes.planMaisonGuide(g.slug)}
-              className="group flex h-full min-h-11 flex-col gap-1.5 rounded-2xl bg-blanc p-5 text-texte no-underline ring-1 ring-trait transition-shadow hover:shadow-md"
+              className="inline-flex min-h-11 items-center text-[15.5px]"
             >
-              <span className="text-[18px] font-bold">{g.h1}</span>
-              <span className="text-[15px] leading-6 text-neutre-800">
-                {g.intro.split('. ')[0]}.
-              </span>
-              <span className="mt-auto inline-flex items-center gap-1 pt-1 text-[15px] font-semibold text-accent-700">
-                Voir le guide <ArrowRightIcon aria-hidden="true" />
-              </span>
+              {g.h1}
             </Link>
           </li>
         ))}
