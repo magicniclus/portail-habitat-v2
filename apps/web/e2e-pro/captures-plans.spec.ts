@@ -108,6 +108,17 @@ test('captures Plans 2D et 3D', async ({ page }, info) => {
   await choisir(/^Barbecue/);
   await page.keyboard.press('Delete');
   await expect(plan.getByRole('button', { name: /^Barbecue/ })).toHaveCount(0);
+  // Rien devant la baie : la bibliothèque et la plante du bas du séjour s'en vont.
+  await choisir(/^Bibliothèque/);
+  await page.keyboard.press('Delete');
+  await expect(plan.getByRole('button', { name: /^Bibliothèque/ })).toHaveCount(0);
+  const plantes = plan.getByRole('button', { name: /^Plante$/ });
+  const hauts = await plantes.evaluateAll((els) => els.map((e) => e.getBoundingClientRect().top));
+  const nbPlantes = hauts.length;
+  await plantes.nth(hauts.indexOf(Math.max(...hauts))).focus();
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Delete');
+  await expect(plantes).toHaveCount(nbPlantes - 1);
   await choisir(/^Porte-fenêtre/);
   await page.keyboard.press('Delete');
   await expect(plan.getByRole('button', { name: /^Porte-fenêtre/ })).toHaveCount(0);
