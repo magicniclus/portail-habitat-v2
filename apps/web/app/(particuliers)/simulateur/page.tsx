@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { EncartPlans } from '@/features/dessin/public/PromoPlans';
 import { Traceur } from '@/features/comportement/Traceur';
 import { PageParcours } from '@/features/parcours/PageParcours';
 import { Simulateur } from '@/features/simulateur/Simulateur';
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
  * Rendu par le serveur à chaque visite (lecture de `searchParams`) : l'étape demandée par l'adresse
  * est dans le HTML dès le premier affichage. En page statique, le simulateur (qui lit l'adresse)
  * n'apparaissait qu'une fois tout le JavaScript exécuté (≈ 3,3 s sur mobile, budget 2,5 s).
- * Aucune lecture en base : le coût serveur reste négligeable.
+ * Seule lecture en base : les flags (encart Plans), une fois par visite ; coût négligeable.
  */
 export default async function PageSimulateur({
   searchParams,
@@ -30,6 +31,7 @@ export default async function PageSimulateur({
       <Suspense>
         <Simulateur catalogue={lireCatalogueSimulateur()} />
       </Suspense>
+      <EncartPlans className="mt-8" />
       <Traceur page="simulateur" />
     </PageParcours>
   );

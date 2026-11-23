@@ -1,7 +1,7 @@
 'use client';
 
 import { evenementLanding, OUTILS_INCLUS, type OutilLanding } from '@ph/core/landings';
-import { PlayIcon } from '@phosphor-icons/react';
+import { CubeIcon, PlayIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { pousserEvenement } from '@/lib/dataLayer';
 import { FenetreVideoOutil } from './FenetreVideoOutil';
@@ -54,7 +54,14 @@ const outils = TUILES.map((t) => OUTILS_INCLUS.find((o) => o.id === t.id)!);
  * Tuiles des outils (bloc final des landings, fond nuit) : un bouton lecture en haut à droite de
  * chaque carte ouvre le film de l'outil dans une fenêtre (LAND-10), qui propose l'outil suivant.
  */
-export function TuilesOutils({ outil }: { outil: OutilLanding | 'pro' }) {
+export function TuilesOutils({
+  outil,
+  plans = false,
+}: {
+  outil: OutilLanding | 'pro';
+  /** Outil Plans ouvert (flag `dessin`) : 7e tuile, sans film pour l'instant. */
+  plans?: boolean;
+}) {
   const [ouvert, setOuvert] = useState<number | null>(null);
   const ouvrir = (i: number) => {
     setOuvert(i);
@@ -96,6 +103,21 @@ export function TuilesOutils({ outil }: { outil: OutilLanding | 'pro' }) {
             <span className="text-[14.5px] leading-[21px] text-blanc/80">{t.texte}</span>
           </li>
         ))}
+        {plans ? (
+          <li
+            data-tuile-plans
+            className="relative grid content-start gap-2.5 rounded-[12px] border border-accent/60 bg-blanc/10 p-5"
+          >
+            <span className="flex size-10 items-center justify-center rounded-[10px] bg-accent">
+              <CubeIcon size={20} weight="bold" aria-hidden="true" />
+            </span>
+            <span className="text-[17px] leading-[1.25] font-bold">Plans 2D et 3D</span>
+            <span className="text-[14.5px] leading-[21px] text-blanc/80">
+              Le plan du logement en quelques minutes, la visite en 3D, le métré et un PDF à
+              l’échelle.
+            </span>
+          </li>
+        ) : null}
       </ul>
       <FenetreVideoOutil
         outil={ouvert === null ? null : outils[ouvert]!}

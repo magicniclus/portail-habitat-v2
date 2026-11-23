@@ -19,9 +19,7 @@ import { Traceur } from '@/features/comportement/Traceur';
 import { Filtres, type OptionsFiltres } from '@/features/annuaire/Filtres';
 import { PanneauFiltres } from '@/features/annuaire/PanneauFiltres';
 import { Resultats } from '@/features/annuaire/Resultats';
-import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
-import { enTeteParticuliers, piedParticuliers } from '@/features/vitrine/navigation';
-import { PiedPublic } from '@/features/vitrine/PiedPublic';
+import { EnTeteParticuliers, PiedParticuliers } from '@/features/vitrine/CadreParticuliers';
 import { routes } from '@/lib/routes';
 import {
   artisansAlentour,
@@ -120,7 +118,7 @@ export default async function PageAnnuaire({ searchParams }: { searchParams: Par
 
   return (
     <>
-      <EnTetePublic {...enTeteParticuliers} />
+      <EnTeteParticuliers />
       <div className="border-b border-accent-200 bg-accent-100 px-[clamp(18px,4vw,44px)] py-[clamp(20px,2.6vw,32px)]">
         <div className="mx-auto max-w-[1320px]">
           <h1 className="m-0 mb-2 text-[clamp(24px,3vw,34px)] leading-[1.1]">
@@ -179,7 +177,7 @@ export default async function PageAnnuaire({ searchParams }: { searchParams: Par
         ) : null}
       </main>
       <Traceur page="annuaire" />
-      <PiedPublic {...piedParticuliers} />
+      <PiedParticuliers />
     </>
   );
 }

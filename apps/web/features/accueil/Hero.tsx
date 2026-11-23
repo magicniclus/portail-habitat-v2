@@ -2,6 +2,7 @@ import { conteneur } from '@/features/vitrine/Section';
 import { Etoiles } from '@/features/vitrine/Etoiles';
 import { Visuel } from '@/features/vitrine/Visuel';
 import { routes } from '@/lib/routes';
+import { LienPlansHero } from '@/features/dessin/public/PromoPlans';
 import { FormulaireProjet } from './FormulaireProjet';
 import type { ChiffresVitrine } from './vitrine';
 
@@ -55,6 +56,7 @@ export function Hero({ chiffres }: { chiffres: ChiffresVitrine }) {
               Devis 100 % gratuits
             </li>
           </ul>
+          <LienPlansHero />
         </div>
 
         <figure className="relative m-0 hidden min-[900px]:block">

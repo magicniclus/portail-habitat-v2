@@ -1,14 +1,16 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
+import { EncartPlans } from '@/features/dessin/public/PromoPlans';
 import { JsonLd } from '@/features/vitrine/JsonLd';
-import { enTeteParticuliers, piedParticuliers } from '@/features/vitrine/navigation';
-import { PiedPublic } from '@/features/vitrine/PiedPublic';
+import { EnTeteParticuliers, PiedParticuliers } from '@/features/vitrine/CadreParticuliers';
 import { filAriane } from '@/features/vitrine/seo';
 import { routes } from '@/lib/routes';
 import { prestationsDuMetier } from '@/server/metiers';
 import { metierParId, tousLesMetiers, VILLES_LOCALES } from '@/server/seoLocal';
+
+// En-tête et pied relus toutes les heures (lien Plans selon le flag `dessinPublic`).
+export const revalidate = 3600;
 
 type Params = Promise<{ metier: string }>;
 
@@ -42,13 +44,14 @@ export default async function PageMetier({ params }: { params: Params }) {
           { nom: m.nom, chemin: routes.metier(m.id) },
         ])}
       />
-      <EnTetePublic {...enTeteParticuliers} />
+      <EnTeteParticuliers />
       <main className="mx-auto grid w-full max-w-[1100px] gap-6 px-[clamp(18px,4vw,44px)] py-[clamp(20px,3vw,36px)] pb-16">
         <h1 className="m-0 text-[clamp(28px,3.6vw,42px)] leading-[1.1]">{m.nom}</h1>
         <p className="m-0 max-w-[70ch] text-[17px] leading-[27px] text-neutre-800">
           Choisissez votre commune pour voir les artisans vérifiés qui interviennent chez vous,
           leurs réalisations et leurs avis. Les contacter est gratuit.
         </p>
+        <EncartPlans />
         <nav aria-label={`${m.nom} par commune`} className="grid gap-2">
           <h2 className="m-0 text-xl">{m.nom} par commune</h2>
           <ul className="m-0 flex list-none flex-wrap gap-2 p-0 text-sm">
@@ -78,7 +81,7 @@ export default async function PageMetier({ params }: { params: Params }) {
           </section>
         ) : null}
       </main>
-      <PiedPublic {...piedParticuliers} />
+      <PiedParticuliers />
     </>
   );
 }

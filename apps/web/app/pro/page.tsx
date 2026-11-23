@@ -19,6 +19,7 @@ import { conteneurPro, EspaceArtisan, FaqPro } from '@/features/pro/Sections';
 import { FilDemandes } from '@/features/pro/FilDemandes';
 import { CalculPro } from '@/features/pro/CalculPro';
 import { FichePro } from '@/features/pro/FichePro';
+import { PlansPro } from '@/features/pro/PlansPro';
 import { AppelFinal } from '@/features/landings/AppelFinal';
 import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { JsonLd } from '@/features/vitrine/JsonLd';
@@ -94,6 +95,9 @@ export default async function AcquisitionArtisans() {
         </Zone>
         <Zone id="espace">
           <EspaceArtisan />
+        </Zone>
+        <Zone id="plans">
+          <PlansPro />
         </Zone>
         <Zone id="fiche">
           <FichePro />

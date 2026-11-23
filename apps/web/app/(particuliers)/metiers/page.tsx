@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
+import { EncartPlans } from '@/features/dessin/public/PromoPlans';
 import { JsonLd } from '@/features/vitrine/JsonLd';
-import { enTeteParticuliers, piedParticuliers } from '@/features/vitrine/navigation';
-import { PiedPublic } from '@/features/vitrine/PiedPublic';
+import { EnTeteParticuliers, PiedParticuliers } from '@/features/vitrine/CadreParticuliers';
 import { filAriane } from '@/features/vitrine/seo';
 import { routes } from '@/lib/routes';
 import { tousLesMetiers } from '@/server/seoLocal';
+
+// En-tête et pied relus toutes les heures (lien Plans selon le flag `dessinPublic`).
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Tous les métiers du bâtiment : trouver un artisan vérifié',
@@ -26,7 +28,7 @@ export default function PageMetiers() {
           { nom: 'Métiers', chemin: routes.metiers },
         ])}
       />
-      <EnTetePublic {...enTeteParticuliers} />
+      <EnTeteParticuliers />
       <main className="mx-auto grid w-full max-w-[1100px] gap-6 px-[clamp(18px,4vw,44px)] py-[clamp(20px,3vw,36px)] pb-16">
         <h1 className="m-0 text-[clamp(28px,3.6vw,42px)] leading-[1.1]">
           Tous les métiers du bâtiment
@@ -47,8 +49,9 @@ export default function PageMetiers() {
             </li>
           ))}
         </ul>
+        <EncartPlans />
       </main>
-      <PiedPublic {...piedParticuliers} />
+      <PiedParticuliers />
     </>
   );
 }

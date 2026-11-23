@@ -9,6 +9,7 @@ import { Zone } from '@/features/comportement/Zone';
 import { FAQ_ACCUEIL } from '@/features/accueil/contenu';
 import { AppelFinal, BandeauArtisan, FaqAccueil, Villes } from '@/features/accueil/FinDePage';
 import { Hero } from '@/features/accueil/Hero';
+import { SectionPlansAccueil } from '@/features/dessin/public/PromoPlans';
 import { Inspirations } from '@/features/accueil/Inspirations';
 import { Metiers } from '@/features/accueil/Metiers';
 import {
@@ -16,10 +17,8 @@ import {
   choisirInspirations,
   choisirTemoignages,
 } from '@/features/accueil/vitrine';
-import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { JsonLd } from '@/features/vitrine/JsonLd';
-import { enTeteParticuliers, piedParticuliers } from '@/features/vitrine/navigation';
-import { PiedPublic } from '@/features/vitrine/PiedPublic';
+import { EnTeteParticuliers, PiedParticuliers } from '@/features/vitrine/CadreParticuliers';
 import { faqPage, organisation } from '@/features/vitrine/seo';
 import { lireArtisansVedette, lireAvisRecents, lireStatsPublic } from '@/server/vitrine';
 import { styleSerifTitres } from '@/features/vitrine/serifTitres';
@@ -45,10 +44,13 @@ export default async function Accueil() {
     <>
       <JsonLd donnees={organisation()} />
       <JsonLd donnees={faqPage(FAQ_ACCUEIL)} />
-      <EnTetePublic {...enTeteParticuliers} />
+      <EnTeteParticuliers />
       <main style={styleSerifTitres}>
         <Zone id="hero">
           <Hero chiffres={chiffres} />
+        </Zone>
+        <Zone id="plans">
+          <SectionPlansAccueil />
         </Zone>
         <Zone id="metiers">
           <Metiers />
@@ -85,7 +87,7 @@ export default async function Accueil() {
         </Zone>
       </main>
       <Traceur page="accueil" />
-      <PiedPublic {...piedParticuliers} />
+      <PiedParticuliers />
     </>
   );
 }

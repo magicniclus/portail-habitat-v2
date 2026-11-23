@@ -532,4 +532,5 @@ Tout le reste de Dessin vit dans de nouveaux fichiers (`packages/core/src/dessin
 | Plans d'une entreprise fermée à la corbeille | fermeture d'entreprise | 15k | fait (D92) |
 | CSP : `blob:` dans `connect-src` | en-têtes de sécurité | 15k | fait |
 | Sitemap : `/dessin` seulement si Plans et sa page publique sont ouverts | `apps/web/app/sitemap.ts` | 15j | fait |
+| Plans mis en avant sur les pages d'acquisition (22/11/2026) : section de l'accueil, lien sous le haut de page, « Plan 3D » dans l'en-tête et le pied particuliers, encart sur métiers, pages locales et simulateur ; section et 7e tuile sur /pro et les 3 landings | `server/plansAcquisition.ts`, `features/dessin/public/PromoPlans.tsx`, `features/pro/PlansPro.tsx`, `features/vitrine/CadreParticuliers.tsx`, `TuilesOutils`, `AppelFinal` | après 15k | fait : particuliers visibles seulement avec `dessin` et `dessinPublic`, artisans avec `dessin` (aucun lien vers une 404) ; `/metiers` et `/metiers/[metier]` passent en `revalidate = 3600` |
 | `/dessin` en `revalidate = 3600` | `apps/web/app/(particuliers)/dessin/page.tsx` | à l'ouverture | **pas encore fait** (page dynamique tant que le flag est éteint) |

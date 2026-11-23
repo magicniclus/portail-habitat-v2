@@ -19,10 +19,8 @@ import { DerniersAvis, Labels, Realisations } from '@/features/fiche/SectionsFic
 import { CarteFiche } from '@/features/fichePro/CarteFiche';
 import { CarteZoneFiche } from '@/features/fichePro/CarteZoneFiche';
 import { EnTeteFiche } from '@/features/fichePro/EnTeteFiche';
-import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { JsonLd } from '@/features/vitrine/JsonLd';
-import { enTeteParticuliers, piedParticuliers } from '@/features/vitrine/navigation';
-import { PiedPublic } from '@/features/vitrine/PiedPublic';
+import { EnTeteParticuliers, PiedParticuliers } from '@/features/vitrine/CadreParticuliers';
 import { URL_SITE } from '@/features/vitrine/seo';
 import { routes } from '@/lib/routes';
 import { lireFiche } from '@/server/annuaire';
@@ -91,7 +89,7 @@ export default async function PageFiche({ params }: { params: Params }) {
   return (
     <>
       <JsonLd donnees={jsonLdArtisan(f, URL_SITE)} />
-      <EnTetePublic {...enTeteParticuliers} />
+      <EnTeteParticuliers />
       <main className="mx-auto grid w-full max-w-[1240px] gap-5 px-[clamp(18px,4vw,44px)] py-[clamp(20px,3vw,36px)] pb-16">
         <Suspense>
           <BandeauApercu />
@@ -199,7 +197,7 @@ export default async function PageFiche({ params }: { params: Params }) {
         <SeoFiche seo={seo} metier={f.metierPrincipal} ville={villeZone} />
       </main>
       <MesureFiche artisanId={id} />
-      <PiedPublic {...piedParticuliers} />
+      <PiedParticuliers />
     </>
   );
 }

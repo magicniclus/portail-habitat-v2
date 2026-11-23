@@ -3,7 +3,7 @@ import type { EnTetePublicProps } from './EnTetePublic';
 import type { ColonnePied } from './PiedPublic';
 
 /** En-tête du site particuliers (maquette Accueil). */
-export const enTeteParticuliers: EnTetePublicProps = {
+const enTeteParticuliers: EnTetePublicProps = {
   bandeau: 'Devis gratuits et sans engagement · Artisans vérifiés près de chez vous',
   accueil: routes.accueil,
   liens: [
@@ -50,3 +50,31 @@ export const piedParticuliers: { accroche: string; colonnes: ColonnePied[] } = {
     },
   ],
 };
+
+/** Plans ouvert au public : lien « Plan 3D » dans l'en-tête et dans le pied de page particuliers. */
+export function enTeteParticuliersPour(plans: boolean): EnTetePublicProps {
+  if (!plans) return enTeteParticuliers;
+  return {
+    ...enTeteParticuliers,
+    liens: [{ libelle: 'Plan 3D', href: routes.dessin }, ...enTeteParticuliers.liens],
+  };
+}
+
+export function piedParticuliersPour(plans: boolean): typeof piedParticuliers {
+  if (!plans) return piedParticuliers;
+  const [premiere, ...autres] = piedParticuliers.colonnes;
+  return {
+    ...piedParticuliers,
+    colonnes: [
+      {
+        ...premiere!,
+        liens: [
+          ...premiere!.liens.slice(0, 2),
+          { libelle: 'Plan de maison 2D et 3D', href: routes.dessin },
+          ...premiere!.liens.slice(2),
+        ],
+      },
+      ...autres,
+    ],
+  };
+}

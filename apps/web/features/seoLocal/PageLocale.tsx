@@ -3,10 +3,9 @@ import { bouton } from '@ph/ui';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { CarteArtisan } from '@/features/annuaire/CarteArtisan';
-import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
+import { EncartPlans } from '@/features/dessin/public/PromoPlans';
 import { JsonLd } from '@/features/vitrine/JsonLd';
-import { enTeteParticuliers, piedParticuliers } from '@/features/vitrine/navigation';
-import { PiedPublic } from '@/features/vitrine/PiedPublic';
+import { EnTeteParticuliers, PiedParticuliers } from '@/features/vitrine/CadreParticuliers';
 import { absolue, faqPage, filAriane } from '@/features/vitrine/seo';
 import { routes } from '@/lib/routes';
 
@@ -49,7 +48,7 @@ export function PageLocale(p: {
       <JsonLd donnees={filAriane(p.fil)} />
       <JsonLd donnees={faqPage(p.faq)} />
       {p.artisans.length ? <JsonLd donnees={liste} /> : null}
-      <EnTetePublic {...enTeteParticuliers} />
+      <EnTeteParticuliers />
       <main className="mx-auto grid w-full max-w-[1100px] gap-8 px-[clamp(18px,4vw,44px)] py-[clamp(20px,3vw,36px)] pb-16">
         <nav
           aria-label="Fil d’Ariane"
@@ -93,6 +92,8 @@ export function PageLocale(p: {
             </p>
           )}
         </section>
+
+        <EncartPlans />
 
         <article className="grid max-w-[820px] gap-3 text-neutre-800">
           {p.paragraphes.map((t) => (
@@ -139,7 +140,7 @@ export function PageLocale(p: {
             </nav>
           ))}
       </main>
-      <PiedPublic {...piedParticuliers} />
+      <PiedParticuliers />
     </>
   );
 }

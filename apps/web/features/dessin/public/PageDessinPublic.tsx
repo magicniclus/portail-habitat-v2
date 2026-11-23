@@ -12,7 +12,7 @@ import {
 import Link from 'next/link';
 import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { JsonLd } from '@/features/vitrine/JsonLd';
-import { enTeteParticuliers, piedParticuliers } from '@/features/vitrine/navigation';
+import { enTeteParticuliersPour, piedParticuliersPour } from '@/features/vitrine/navigation';
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { conteneur, ListeFaq, Section } from '@/features/vitrine/Section';
 import { faqPage } from '@/features/vitrine/seo';
@@ -40,7 +40,7 @@ export function PageDessinPublic() {
   return (
     <>
       <JsonLd donnees={faqPage(FAQ_PLANS)} />
-      <EnTetePublic {...enTeteParticuliers} />
+      <EnTetePublic {...enTeteParticuliersPour(true)} />
       <main>
         <section
           className={cn(
@@ -144,7 +144,7 @@ export function PageDessinPublic() {
           </Link>
         </Section>
       </main>
-      <PiedPublic {...piedParticuliers} />
+      <PiedPublic {...piedParticuliersPour(true)} />
     </>
   );
 }

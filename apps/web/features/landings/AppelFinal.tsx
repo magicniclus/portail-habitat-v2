@@ -1,6 +1,7 @@
 import { bouton, cn } from '@ph/ui';
 import type { OutilLanding } from '@ph/core/landings';
 import { CheckIcon } from '@phosphor-icons/react/ssr';
+import { plansProOuverts } from '@/server/plansAcquisition';
 import { conteneur } from './styles';
 import { TuilesOutils } from './TuilesOutils';
 
@@ -18,7 +19,7 @@ const OUTILS_GRATUITS = [
  * Bloc final Portail Travaux (maquette : fond bleu nuit) : appel vers le formulaire et tous les
  * outils, chacun avec sa vidéo (bouton lecture en haut à droite de la carte).
  */
-export function AppelFinal({
+export async function AppelFinal({
   titre,
   texte,
   cta,
@@ -32,6 +33,8 @@ export function AppelFinal({
   /** Sous le bouton ; /pro ne parle jamais d'abonnement (PAY-01). */
   rassurance?: string;
 }) {
+  const plans = await plansProOuverts();
+  const liste = plans ? [...OUTILS_GRATUITS, 'Plans 2D et 3D'] : OUTILS_GRATUITS;
   return (
     <section
       data-formulaire-landing
@@ -60,7 +63,7 @@ export function AppelFinal({
             {texte}
           </p>
           <ul className="m-0 grid list-none gap-x-6 gap-y-2 p-0 text-[16px] leading-6 font-semibold text-blanc sm:grid-cols-2">
-            {OUTILS_GRATUITS.map((o) => (
+            {liste.map((o) => (
               <li key={o} className="flex items-start gap-2.5">
                 <CheckIcon
                   size={18}
@@ -86,7 +89,7 @@ export function AppelFinal({
             <span className="text-sm text-blanc/80">{rassurance}</span>
           </div>
         </div>
-        <TuilesOutils outil={outil} />
+        <TuilesOutils outil={outil} plans={plans} />
       </div>
     </section>
   );

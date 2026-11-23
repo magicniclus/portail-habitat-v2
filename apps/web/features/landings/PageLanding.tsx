@@ -17,6 +17,7 @@ import { lirePreuveSociale, lireStatsPublic } from '@/server/vitrine';
 import { BarreMobile } from './BarreMobile';
 import { EtapesDefilement } from './EtapesDefilement';
 import { FaqLanding } from './FaqLanding';
+import { PlansPro } from '@/features/pro/PlansPro';
 import { AppelFinal } from './AppelFinal';
 import { AvisDefilants } from './AvisDefilants';
 import { ChiffresReseau } from './ChiffresReseau';
@@ -124,6 +125,9 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
         ) : outil === 'site' ? null : (
           <CommentCaMarche etapes={c.etapes} />
         )}
+        <Zone id="plans">
+          <PlansPro />
+        </Zone>
         {/* L'app (même section que /pro) : tous les outils au même endroit, une seule fois. */}
         <div data-section-gratuit>
           <ApplicationPro />
