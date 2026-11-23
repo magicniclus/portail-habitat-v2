@@ -1,6 +1,6 @@
 'use client';
 
-import { emprise, murPlein, type Niveau } from '@ph/core/dessin';
+import { dallesDuNiveau, emprise, murPlein, type Niveau } from '@ph/core/dessin';
 import { useEffect, useMemo } from 'react';
 import { DoubleSide, Shape, ShapeGeometry } from 'three';
 import { M } from './unites';
@@ -9,20 +9,25 @@ import { COULEURS_3D } from '@ph/ui/tokens';
 import { cotes, Segment } from './FormesExterieur3D';
 
 /**
- * Habillage des trémies (DES-15) : joues verticales autour de l'ouverture, du plafond du niveau
- * jusqu'au plancher de l'étage. Par la trémie, on ne voit plus le vide du plancher.
+ * Habillage des trémies (DES-15) : joues verticales autour de l'ouverture réellement percée
+ * dans le plancher de l'étage, du plafond du niveau jusqu'à ce plancher. Rien là où le plancher
+ * n'est pas percé (sinon des « poutres » apparaissent sous le plafond).
  */
 export function HabillageTremies({ n, dessus }: { n: Niveau; dessus: Niveau }) {
   const bas = n.altitude + n.hauteurSousPlafond;
-  return n.escaliers.flatMap((e) =>
-    cotes(emprise(e)).map(([a, b], i) => (
+  const trous = useMemo(
+    () => dallesDuNiveau(dessus, n.escaliers.map(emprise)).sols.flatMap((d) => d.trous ?? []),
+    [dessus, n.escaliers],
+  );
+  return trous.flatMap((t, k) =>
+    cotes(t).map(([a, b], i) => (
       <Segment
-        key={`${e.id}-${i}`}
+        key={`${k}-${i}`}
         a={a}
         b={b}
         e={30}
-        h={dessus.altitude - bas + 6}
-        z0={bas - 3}
+        h={dessus.altitude - bas + 2}
+        z0={bas - 1}
         couleur={COULEURS_3D.mur}
       />
     )),

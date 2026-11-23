@@ -1,4 +1,5 @@
 import type { Niveau, Point, Scene } from '../schemas/dessinScene';
+import { murPlein } from './ailesToit';
 import { objetDuCatalogue } from './catalogue';
 import { contourObjet } from './emprise';
 import { aire, centroide, distance, pointDansPolygone, projeter } from './geometrie';
@@ -67,7 +68,9 @@ export function deplacerVisiteur(
   obstacles: readonly Point[][],
   rayon = RAYON_VISITEUR,
 ): Point {
-  const libre = (q: Point) => !obstacles.some((o) => touche(q, o, rayon));
+  // Déjà dans un obstacle (arrivée par un escalier, changement de niveau) : on en sort librement.
+  const coince = obstacles.some((o) => touche(p, o, rayon));
+  const libre = (q: Point) => coince || !obstacles.some((o) => touche(q, o, rayon));
   const n = Math.max(1, Math.ceil(Math.hypot(d.x, d.y) / PAS));
   const pas = { x: d.x / n, y: d.y / n };
   let q = p;
@@ -92,7 +95,10 @@ export function solSousLesPieds(scene: Scene, p: Point, zActuel: number): number
   for (const n of niveauxTries(scene)) {
     if (
       n.altitude <= zActuel + MARCHE_MAX &&
-      n.pieces.some((pc) => pointDansPolygone(p, pc.contour))
+      // Pièces, et l'épaisseur des murs (seuil d'une porte, mur traversé) : on ne tombe pas.
+      [...n.pieces.map((pc) => pc.contour), ...n.murs.map(murPlein)].some((c) =>
+        pointDansPolygone(p, c),
+      )
     )
       z = Math.max(z, n.altitude);
     for (const e of n.escaliers)

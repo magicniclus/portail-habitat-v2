@@ -188,6 +188,18 @@ describe('géométrie 3D (DES-33)', () => {
     const enL = dallesDuNiveau(quart).plafonds.flatMap((p) => p.trous ?? []);
     expect(enL).toHaveLength(1);
     expect(enL[0]!.length).toBe(emprise(quart.escaliers[0]!).length);
+    // Escalier en L contre l'angle de la maison (il déborde sur les murs) : le plafond reste
+    // percé, découpé à la pièce, au lieu de ne plus l'être du tout.
+    const angle = ok(
+      poserEscalier(
+        niveauMaquette(ctx),
+        { type: 'quart_bas', position: { x: 100, y: 100 }, hauteurAMonter: 2_700 },
+        ctx,
+      ),
+    );
+    const coupe = dallesDuNiveau(angle).plafonds.flatMap((p) => p.trous ?? []);
+    expect(coupe).toHaveLength(1);
+    expect(Math.min(...coupe[0]!.map((q) => q.x))).toBeGreaterThanOrEqual(300);
   });
 
   it('soleil : à l’est le matin, au sud et haut à midi, tourne avec le nord', () => {

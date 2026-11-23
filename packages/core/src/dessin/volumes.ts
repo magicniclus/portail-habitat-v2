@@ -95,7 +95,7 @@ const estConvexe = (p: readonly Point[]) => {
 
 /**
  * Trémies (emprises d'escalier) dans le contour : telles quelles si elles y tiennent (escalier
- * droit, en L, en U…), sinon découpées au contour (forme convexe) ; trous valides pour la 3D.
+ * droit, en L, en U…), sinon découpées au contour (l'un des deux convexe) ; trous valides pour la 3D.
  */
 const trousDans = (contour: readonly Point[], tremies: readonly Point[][]) =>
   tremies
@@ -109,9 +109,11 @@ const trousDans = (contour: readonly Point[], tremies: readonly Point[][]) =>
     .map((t) =>
       t.every((q) => pointDansPolygone(q, contour))
         ? t
-        : estConvexe(t)
-          ? decouperConvexe(contour, t)
-          : [],
+        : estConvexe(contour)
+          ? decouperConvexe(t, contour)
+          : estConvexe(t)
+            ? decouperConvexe(contour, t)
+            : [],
     )
     .filter((t) => t.length >= 3 && Math.abs(aireSignee(t)) > 10_000);
 
