@@ -82,6 +82,22 @@ test('captures Plans 2D et 3D', async ({ page }, info) => {
   await page.getByRole('radio', { name: /Maison en L meublée/ }).check();
   await page.getByRole('button', { name: 'Créer le plan' }).click();
   await expect(page.getByTestId('plan-2d').getByRole('button', { name: /^Pièce / })).toHaveCount(6);
+  // Escalier ouvert (marches seules) : un escalier plein fait un bloc massif en 3D.
+  await page
+    .getByTestId('plan-2d')
+    .getByRole('button', { name: /^Escalier de / })
+    .click();
+  await page
+    .getByRole('radiogroup', { name: 'Dessous' })
+    .getByRole('radio', { name: 'Ouvert' })
+    .click();
+  await expect(
+    page.getByRole('radiogroup', { name: 'Dessous' }).getByRole('radio', { name: 'Ouvert' }),
+  ).toHaveAttribute('aria-checked', 'true');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('status').filter({ hasText: 'Enregistré' })).toBeAttached({
+    timeout: 10_000,
+  });
   let m = await maison(page);
   await zoomer(page, m.cx, m.cy, Number(process.env.CRANS_2D ?? 3));
   await page.waitForTimeout(600);
