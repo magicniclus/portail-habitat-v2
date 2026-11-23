@@ -63,6 +63,18 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
     await page.waitForTimeout(800);
     await page.keyboard.up('z');
     await expect(repere).not.toHaveAttribute('points', avant!);
+    // Flèche droite : on tourne sur place ; Ctrl enfoncé, on presse le pas (sans rien annuler).
+    const avance = await repere.getAttribute('points');
+    await page.keyboard.down('ArrowRight');
+    await page.waitForTimeout(400);
+    await page.keyboard.up('ArrowRight');
+    await expect(repere).not.toHaveAttribute('points', avance!);
+    await page.keyboard.down('Control');
+    await page.keyboard.down('z');
+    await page.waitForTimeout(400);
+    await page.keyboard.up('z');
+    await page.keyboard.up('Control');
+    await expect(page.getByTestId('visite')).toBeVisible();
 
     // DES-37 : vue photo, ambiance soirée, photo HD téléchargée et ajoutée à la galerie.
     await menu('Rendu');
