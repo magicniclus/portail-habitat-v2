@@ -1,7 +1,5 @@
 'use client';
 
-import { cn } from '@ph/ui';
-import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react';
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
 
 /**
@@ -32,7 +30,7 @@ function Image({ base, alt }: { base: string; alt: string }) {
 
 const borne = (v: number) => Math.min(100, Math.max(0, v));
 
-export function Curseur2D3D({ className }: { className?: string }) {
+export function Curseur2D3D() {
   const [pos, setPos] = useState(50);
   const cadre = useRef<HTMLDivElement>(null);
   const touche = useRef(false);
@@ -95,10 +93,8 @@ export function Curseur2D3D({ className }: { className?: string }) {
       onPointerMove={bouger}
       onPointerUp={lacher}
       onPointerCancel={lacher}
-      className={cn(
-        'relative aspect-[4/3] cursor-ew-resize touch-pan-y overflow-hidden rounded-[18px] bg-neutre-100 shadow-lg select-none',
-        className,
-      )}
+      // Sans `cn` (tailwind-merge) : il alourdirait le script de l'accueil de 9 Ko.
+      className="relative aspect-[4/3] cursor-ew-resize touch-pan-y overflow-hidden rounded-[18px] bg-neutre-100 shadow-lg select-none"
     >
       <Image base={IMAGES['3d']} alt="La même maison en 3D, meubles et jardin compris" />
       <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
@@ -116,8 +112,18 @@ export function Curseur2D3D({ className }: { className?: string }) {
         style={{ left: `${pos}%` }}
       >
         <span className="absolute top-1/2 left-1/2 flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-blanc text-accent-700 shadow-md ring-1 ring-neutre-200">
-          <CaretLeftIcon size={16} weight="bold" />
-          <CaretRightIcon size={16} weight="bold" />
+          <svg
+            width="28"
+            height="16"
+            viewBox="0 0 28 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M9 3 4 8l5 5M19 3l5 5-5 5" />
+          </svg>
         </span>
       </div>
       <input
