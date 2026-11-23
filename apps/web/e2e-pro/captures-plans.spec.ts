@@ -98,6 +98,56 @@ test('captures Plans 2D et 3D', async ({ page }, info) => {
   await expect(page.getByRole('status').filter({ hasText: 'Enregistré' })).toBeAttached({
     timeout: 10_000,
   });
+  // Terrasse dégagée (sans barbecue) et grande baie coulissante côté terrasse, à la place de
+  // la porte-fenêtre du séjour.
+  const plan = page.getByTestId('plan-2d');
+  const choisir = async (nom: RegExp) => {
+    await plan.getByRole('button', { name: nom }).first().focus();
+    await page.keyboard.press('Enter');
+  };
+  await choisir(/^Barbecue/);
+  await page.keyboard.press('Delete');
+  await expect(plan.getByRole('button', { name: /^Barbecue/ })).toHaveCount(0);
+  await choisir(/^Porte-fenêtre/);
+  await page.keyboard.press('Delete');
+  await expect(plan.getByRole('button', { name: /^Porte-fenêtre/ })).toHaveCount(0);
+  const menuStructure = page
+    .getByRole('navigation', { name: 'Menus du plan' })
+    .getByRole('button', { name: 'Structure' });
+  if ((await menuStructure.getAttribute('aria-pressed')) !== 'true') await menuStructure.click();
+  const panneau = page.getByRole('region', { name: 'Structure' });
+  await panneau.getByRole('button', { name: /^Portes & fenêtres/ }).click();
+  await panneau.getByRole('button', { name: /^Baie coulissante/ }).click();
+  await page.waitForTimeout(400);
+  const svg = plan.locator('svg').first();
+  const ecran = async (xMm: number, yMm: number) => {
+    const boite = (await svg.boundingBox())!;
+    const [vx, vy, vl] = (await svg.getAttribute('viewBox'))!.split(' ').map(Number);
+    const k = boite.width / vl!;
+    return { x: boite.x + (xMm - vx!) * k, y: boite.y + (yMm - vy!) * k };
+  };
+  const pose = await ecran(6_500, 10_900);
+  await page.mouse.dblclick(pose.x, pose.y);
+  const baies = plan.getByRole('button', { name: /^Baie coulissante/ });
+  await expect(baies).toHaveCount(2);
+  await page.keyboard.press('Escape');
+  // La nouvelle baie est la plus proche du point de pose.
+  const boites = await baies.evaluateAll((els) =>
+    els.map((e) => e.getBoundingClientRect().toJSON() as DOMRect),
+  );
+  const proche = boites
+    .map((b, i) => ({ i, d: Math.hypot(b.x + b.width / 2 - pose.x, b.y + b.height / 2 - pose.y) }))
+    .sort((a, b) => a.d - b.d)[0]!.i;
+  await baies.nth(proche).focus();
+  await page.keyboard.press('Enter');
+  await page.getByLabel('Largeur (cm)').fill(process.env.BAIE_CM ?? '400');
+  await page.getByLabel('Largeur (cm)').press('Enter');
+  await expect(
+    plan.getByRole('button', { name: /^Baie coulissante de (400|360|380) cm/ }),
+  ).toHaveCount(1);
+  await page.getByLabel('Largeur (cm)').blur();
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('Escape');
   let m = await maison(page);
   await zoomer(page, m.cx, m.cy, Number(process.env.CRANS_2D ?? 3));
   await page.waitForTimeout(600);
@@ -117,6 +167,11 @@ test('captures Plans 2D et 3D', async ({ page }, info) => {
   await page.waitForTimeout(2500);
   const c = (await canvas.boundingBox())!;
   const [cx, cy] = [c.x + c.width / 2, c.y + c.height / 2];
+  // Murs entiers : la grande baie vitrée se voit depuis la terrasse.
+  await page
+    .getByRole('radiogroup', { name: 'Murs en 3D' })
+    .getByRole('radio', { name: 'Murs entiers' })
+    .click();
   await zoomer(page, cx, cy, Number(process.env.CRANS_3D ?? 9));
   await page.addStyleTag({ content: SANS_INTERFACE });
   await page.waitForTimeout(3000);
