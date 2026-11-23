@@ -54,6 +54,17 @@ export function murPlein(m: Niveau['murs'][number]): Point[] {
   });
 }
 
+/**
+ * Ce que couvre un étage : ses pièces et l'épaisseur de ses murs (extérieurs, porteurs, cloisons
+ * et demi-murs entre deux pièces ; sinon une bande de toit apparaît sous chaque cloison).
+ */
+export const couvertureEtage = (dessus: Pick<Niveau, 'murs' | 'pieces'>): Point[][] => [
+  ...dessus.pieces.map((p) => p.contour),
+  ...dessus.murs
+    .filter((m) => m.porteur || m.type === 'mur' || m.type === 'cloison' || m.type === 'demi_mur')
+    .map(murPlein),
+];
+
 /** Polygones de l'emprise : pièces et murs (épaisseur comprise). */
 const polygones = (n: Pick<Niveau, 'murs' | 'pieces'>) => [
   ...n.pieces.map((p) => p.contour),
@@ -70,13 +81,7 @@ export function ailesDuNiveau(
 ): Aile[] {
   const polys = polygones(n);
   if (!polys.length) return [];
-  // L'étage ne couvre que ce que portent ses murs : pièces, murs extérieurs et porteurs.
-  const haut = dessus
-    ? [
-        ...dessus.pieces.map((p) => p.contour),
-        ...dessus.murs.filter((m) => m.type === 'mur' || m.porteur).map(murPlein),
-      ]
-    : [];
+  const haut = dessus ? couvertureEtage(dessus) : [];
   // Les coordonnées de l'étage découpent aussi la grille : sa limite tombe entre deux cases.
   const pts = [...polys, ...haut].flat().map((p) => loc(r, p));
   const uniques = (v: number[]) => [...new Set(v.map((x) => Math.round(x)))].sort((x, y) => x - y);
