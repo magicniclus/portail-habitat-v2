@@ -51,3 +51,10 @@ export const entreeTexteCommuneAdmin = z.strictObject({
     .max(6),
   motif: motifAdmin,
 });
+
+/** Admin › Référentiels › Pages de secteur : bloquer, débloquer ou faire réécrire le texte IA. */
+export const entreePageSecteurAdmin = z.strictObject({
+  id: z.string().regex(/^[a-z0-9-]+__[a-z0-9-]+$/),
+  operation: z.enum(['bloquer', 'debloquer', 'regenerer']),
+  motif: z.string().trim().min(3).max(300),
+});

@@ -14,6 +14,7 @@ Hypothèse de départ : **30 000 pages vues par mois** sur les pages publiques, 
 | Assistant de rédaction (artisans) | ~3 000 utilisations Haiku (≈ 1 500 tokens chacune) | 2 à 4 € |
 | Blog des artisans (si 300 abonnés × 8 articles) | 2 400 articles Sonnet + retouches Haiku | 120 à 240 € (≈ 0,05 à 0,10 € / article) |
 | Données mots-clés et SERP (API, cache 30 j / 14 j) | ~3 000 requêtes | 30 à 60 € |
+| Pages de secteur (SEO local) : texte IA une fois par page (recherche web 5 recherches au plus + rédaction Sonnet 5.5) | selon les pages créées | ≈ 5 à 15 centimes par page, **plafond 20 € par mois** (`BUDGET_SECTEUR_CENTIMES`), ré-écrit au plus une fois par an |
 | Studio vidéo (STUDIO.md §9, si 30 vidéos par jour) | Claude Opus 5.5 + robot Cloud Run | 300 à 570 € (≈ 0,35 à 0,65 € / vidéo) |
 | Cloud Functions / Scheduler | quelques milliers d'invocations | dans le quota gratuit |
 | Plans (Dessin, lot 15) : Firestore, Storage, route `/api/dessin`, une Function de nuit | selon l'usage (pas encore en production) | **pas encore chiffré** ; aucun service payant appelé (voir § Plans) |
@@ -29,7 +30,8 @@ Hypothèse de départ : **30 000 pages vues par mois** sur les pages publiques, 
 4. **L'admin lit des agrégats pré-calculés** : un document par écran, pas de calcul à l'affichage, pas d'écoute temps réel sauf sur le journal de conversion (limité aux 50 dernières traces).
 5. **Écrire seulement ce qui change** : `cycleCalculer` compare avant d'écrire ; les triggers ignorent les modifications sans effet.
 6. **IA** : Haiku par défaut, Sonnet à la demande ; contexte compact pré-calculé la nuit ; prompt caching ; réponses mises en cache 24 h ; quota de 30 analyses par jour par membre ; budget mensuel plafonné.
-7. **Pas de minimum d'instances** sur les Functions (`minInstances: 0`), sauf le webhook Stripe si la latence l'exige.
+7. **Pages de secteur** : le déclencheur ignore les changements de fiche sans effet (note, pitch) ; le recomptage relit l'annuaire une fois par commune (cache) ; l'IA n'écrit qu'une fois par page indexable, verrou de 10 minutes, 3 essais au plus, plafond mensuel.
+8. **Pas de minimum d'instances** sur les Functions (`minInstances: 0`), sauf le webhook Stripe si la latence l'exige.
 
 ## Plans (Dessin, lot 15) : règles appliquées dans le code
 Plans est gratuit pour tous (D84). Ces règles tiennent son coût près de zéro :

@@ -153,6 +153,7 @@ Routes réelles de `apps/web/app` au 19/11/2026 (groupes de routes entre parenth
 - [ ] Secrets fournis (CLES.md) : `ANTHROPIC_API_KEY`, `IBAN_CLE_CHIFFREMENT`, `VERCEL_API_TOKEN`, Turnstile, DataForSEO (D68), clés du Studio (YouTube, Meta, TikTok, ElevenLabs, `STUDIO_RENDU_CLE`, `STUDIO_CHIFFREMENT_CLE`)
 - [ ] Studio : robot de rendu déployé sur Cloud Run par le propriétaire (`scripts/deployerStudio.sh`)
 - [ ] Plans : services IGN (adresses, cadastre, photo aérienne) vérifiés en préproduction ; `/dessin` et `/plan-maison-gratuit` (+ guides) passés en `revalidate = 3600` à l'ouverture ; flags `dessin` et `dessinPublic` ouverts seulement sur décision
+- [ ] Pages de secteur (SEO local) : `firebase deploy --only firestore:indexes,functions:suivrePagesSecteur,functions:textePageSecteur,functions:pagesSecteurNuit` ; secret `ANTHROPIC_API_KEY` lié aux Functions ; `pnpm pages-secteur:rattraper` lancé une fois ; premiers textes IA relus dans Admin › Référentiels
 - [ ] Landing SEO Plans : mots-clés des 18 pages confirmés avec un outil (volume, difficulté < 10) ; pages soumises à la Search Console ; textes réajustés selon les requêtes réelles
 - [ ] Factur-X et plateforme agréée (D62 ⏳) avant l'échéance légale de la facturation électronique
 - [ ] Tous les critères d'ACCEPTANCE.md passent en CI (identifiants encore sans test Playwright : voir ACCEPTANCE.md, « Couverture des tests »)

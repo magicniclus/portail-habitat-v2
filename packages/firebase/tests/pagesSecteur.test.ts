@@ -10,6 +10,8 @@ import { depuisFirestore, versFirestore } from '../src/conversion';
 import { publierFiche } from '../src/serveur/annuaire';
 import {
   bloquerPage,
+  listerPagesSecteurAdmin,
+  modifierPageSecteurAdmin,
   communesIndexablesDuMetier,
   rattraperPagesSecteur,
   metiersIndexablesDeCommune,
@@ -223,5 +225,33 @@ describe('pages de secteur : création et indexation', () => {
     expect(suite.creees).toBe(3);
     expect(await communesIndexablesDuMetier(db, 'plombier')).toHaveLength(3);
     expect((await communesIndexablesDuMetier(db, 'electricien'))[0]!.nom).toBe('Bordeaux');
+  });
+
+  it('admin : bloquer, débloquer, faire réécrire le texte ; chaque opération journalisée', async () => {
+    const un = await ecrireArtisan('a1');
+    await suivreArtisan(ctx(), un.avant, un.apres);
+    const s = { db, horloge: () => T };
+    const op = (operation: 'bloquer' | 'debloquer' | 'regenerer', id = 'plombier__cenon') =>
+      modifierPageSecteurAdmin(s, { acteurUid: 'adm', id, operation, motif: 'contrôle qualité' });
+    expect(await op('bloquer')).toBe(true);
+    expect(await lirePageSecteur(db, 'plombier__cenon')).toMatchObject({
+      bloquee: true,
+      indexable: false,
+    });
+    await op('debloquer');
+    expect(await lirePageSecteur(db, 'plombier__cenon')).toMatchObject({
+      bloquee: false,
+      indexable: true,
+    });
+    await db.doc('pagesSecteur/plombier__cenon').update({ texteEtat: 'echec', texteEssais: 3 });
+    await op('regenerer');
+    expect(await lirePageSecteur(db, 'plombier__cenon')).toMatchObject({
+      texteEtat: 'absent',
+      texteEssais: 0,
+    });
+    expect(await op('bloquer', 'inconnue__x')).toBe(false);
+    const audit = await db.collection('auditLog').where('action', '==', 'adminPageSecteur').get();
+    expect(audit.size).toBe(3);
+    expect((await listerPagesSecteurAdmin(db)).length).toBe(3);
   });
 });

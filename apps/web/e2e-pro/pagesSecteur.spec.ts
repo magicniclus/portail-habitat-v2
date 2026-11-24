@@ -1,6 +1,6 @@
 import { collections } from '@ph/firebase/chemins';
 import { expect, test, type Page } from '@playwright/test';
-import { admin } from './outils';
+import { admin, audits, connecter } from './outils';
 
 /**
  * Pages de secteur « métier à une commune » (SEO local, décision du 24/11/2026) : indexée
@@ -142,5 +142,34 @@ test.describe('Pages de secteur métier × commune', () => {
       expect(await robots(p)).toMatch(/follow/);
       await expect(p.locator('h1')).toBeVisible();
     }
+  });
+
+  test('admin : bloquer une page la désindexe aussitôt ; motif journalisé', async ({
+    page: p,
+    isMobile,
+  }) => {
+    test.skip(isMobile, 'Back-office : vérifié sur ordinateur');
+    await page('lormont', { indexable: true });
+    await connecter(p, 'admin@test.local', '/admin/referentiels?onglet=secteurs', 'admin');
+    const ligne = p.getByRole('listitem').filter({ hasText: 'plombier · Lormont' });
+    await expect(ligne.getByText('Indexée', { exact: true })).toBeVisible();
+    await ligne.getByRole('button', { name: 'Bloquer' }).click();
+    const feuille = p.getByRole('dialog');
+    await feuille.getByLabel('Motif (obligatoire)').fill('Contrôle qualité');
+    await feuille.getByText('Je confirme cette action').click();
+    await feuille.getByRole('button', { name: 'Confirmer' }).click();
+    await expect(ligne.getByText('Bloquée', { exact: true })).toBeVisible();
+    expect(await audits('adminPageSecteur', `${collections.pagesSecteur}/plombier__lormont`)).toBe(
+      1,
+    );
+    await expect
+      .poll(
+        async () => {
+          await p.goto('/metiers/plombier/lormont');
+          return robots(p);
+        },
+        { timeout: 20_000 },
+      )
+      .toMatch(/noindex/);
   });
 });

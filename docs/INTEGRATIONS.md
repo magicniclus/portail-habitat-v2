@@ -112,7 +112,8 @@ Voir DEPLOIEMENT.md §5 (liste complète, horaires réels). Ce qui était prévu
 
 - `generateMetadata` par page ; `title` et `description` repris des maquettes (déjà rédigés pour le diagnostic et les communes)
 - JSON-LD : `FAQPage` (accueil, diagnostic, communes), `LocalBusiness` et `AggregateRating` (fiches artisans, **uniquement avec des avis réels publiés**), `BreadcrumbList`, `Organization`
-- `sitemap.ts` dynamique (communes, fiches artisans en ligne, métiers × villes), `robots.ts` (exclure `/pro/*` connecté, `/admin`, `/mon-espace`)
+- `sitemap.ts` dynamique (communes, fiches artisans en ligne, **pages de secteur indexées du registre `pagesSecteur`**), `robots.ts` (exclure `/pro/*` connecté, `/admin`, `/mon-espace`)
+- **Pages de secteur métier × commune** (24/11/2026, DATABASE `pagesSecteur`) : créées à l'arrivée d'un artisan (sa commune + communes de 5 000 habitants et plus de sa zone) ; **indexées seulement avec au moins un artisan du métier à 20 km** (`pageIndexee`), sinon « noindex, follow », toujours consultables ; annuaire complet dans la page (filtres, tri, résultats ; un filtre ouvre `/artisans`, non indexé) ; texte local rédigé par l'IA (recherche web de faits sourcés, rédaction structurée, contrôles : aucun chiffre sans source, sources réellement trouvées, ressemblance entre pages du même métier) puis publié automatiquement ; liens seulement vers des pages indexées ; JSON-LD `BreadcrumbList`, `FAQPage`, `ItemList`. Mise en service : `pnpm pages-secteur:rattraper`
 - URLs canoniques ; pagination de l'annuaire avec `rel=next/prev` ; filtres indexables limités à métier × ville
 - Core Web Vitals : images `next/image` (AVIF), polices `next/font` (Source Sans 3, Source Serif 4 italique uniquement), pas de JS superflu sur les landings (Server Components)
 
