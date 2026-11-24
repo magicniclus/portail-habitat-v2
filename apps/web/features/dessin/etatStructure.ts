@@ -13,6 +13,7 @@ import {
   murSousLePoint,
   pieceRectangle,
   poserEscalier,
+  placerEscalierContreMur,
   poserFond,
   poserOuvertureTiree,
   pointSurMur,
@@ -77,8 +78,8 @@ function poserPoint(e: EtatEditeur, point: Point): EtatEditeur {
     // Escalier tracé : départ, virages, arrivée ; sinon posé d'un clic à sa taille.
     const trace = poserPointEscalier(e, point);
     if (trace) return trace;
-    const suite = surNiveau(e, (n) =>
-      poserEscalier(
+    const suite = surNiveau(e, (n) => {
+      const r = poserEscalier(
         n,
         {
           type: MODELES_ESCALIER[e.modeleEscalier].type ?? e.typeEscalier,
@@ -86,8 +87,13 @@ function poserPoint(e: EtatEditeur, point: Point): EtatEditeur {
           hauteurAMonter: hauteurVersLeHaut(sceneDe(e), e.niveauId),
         },
         ctx,
-      ),
-    );
+      );
+      // Posé près d'un mur : il vient s'y caler (aimant), dans le même pas d'historique.
+      const pose = r.ok ? r.data.escaliers.at(-1) : undefined;
+      return r.ok && pose && e.aimant
+        ? placerEscalierContreMur(r.data, pose.id, pose.position, toleranceEnMm(12, e.zoom))
+        : r;
+    });
     const pose = niveauCourant(suite).escaliers.at(-1);
     return suite.erreur || !pose
       ? suite

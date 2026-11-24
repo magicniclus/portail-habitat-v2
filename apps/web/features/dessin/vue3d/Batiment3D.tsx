@@ -20,6 +20,7 @@ import type { Selection3D } from './selection3d';
 import { Exterieur3D } from './Exterieur3D';
 import { Menuiseries3D } from './Menuiseries3D';
 import { MorceauMur3D } from './Mur3D';
+import { PieceEscalier3D } from './PieceEscalier3D';
 import { SurlignagePan } from './SurlignagePan';
 import { Toit3D } from './Toit3D';
 import { DalleSousLesMurs, HabillageTremies } from './Tremies3D';
@@ -169,16 +170,7 @@ export function Niveau3D({
         return (
           <group key={e.id}>
             {pieces.map((p, i) => (
-              <mesh
-                key={i}
-                position={[M(p.centre.x), M(p.centre.z), M(p.centre.y)]}
-                rotation={[0, -p.angle, p.pente, 'YZX']}
-                castShadow
-                receiveShadow
-                material={materiauUni(teinte[p.matiere])}
-              >
-                <boxGeometry args={[M(p.taille.l), M(p.taille.h), M(p.taille.p)]} />
-              </mesh>
+              <PieceEscalier3D key={i} p={p} materiau={materiauUni(teinte[p.matiere])} />
             ))}
           </group>
         );

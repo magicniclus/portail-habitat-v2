@@ -92,8 +92,17 @@ export function emprisesToit(n: Niveau, dessus: Niveau | null = null): Emprise[]
       ? { a0: w.cotes.a0, a1: w.cotes.a1, b0: w.cotes.b0, b1: w.cotes.b1 }
       : { a0: w.cotes.b0, a1: w.cotes.b1, b0: w.cotes.a1, b1: w.cotes.a0 };
     const [L0, P0] = selonA ? [w.a1 - w.a0, w.b1 - w.b0] : [w.b1 - w.b0, w.a1 - w.a0];
-    const deb = (c: Cote) => (c === 'exterieur' ? t.debord : 0);
     const appentis = t.type !== 'plate' && (cotes.b0 === 'etage' || cotes.b1 === 'etage');
+    const type = appentis ? 'monopente' : (partie?.type ?? t.type);
+    // Toit plat : la dalle s'arrête aux murs, bordée d'acrotères (jamais de débord dessous).
+    const deb = (c: Cote) => (c === 'exterieur' && type !== 'plate' ? t.debord : 0);
+    // Bouts de croupe deux fois plus pentus : débord moitié, l'égout reste à la même hauteur
+    // que celui des longs pans (pans plans, angles nets).
+    const debBout = (c: Cote) => (type === 'croupe' ? deb(c) / 2 : deb(c));
+    // Brisis de mansarde, très raide : débord réduit d'autant (sinon le toit est relevé de
+    // plus d'un mètre pour garder l'égout au-dessus des murs).
+    const debLong = (c: Cote) =>
+      type === 'mansarde' ? (deb(c) * tan(penteDe(t))) / tan(BRISIS.pente) : deb(c);
     const aile: Emprise = {
       cle,
       centre,
@@ -101,12 +110,12 @@ export function emprisesToit(n: Niveau, dessus: Niveau | null = null): Emprise[]
       v,
       L0,
       P0,
-      aMin: -L0 / 2 - deb(cotes.a0),
-      aMax: L0 / 2 + deb(cotes.a1),
-      bMin: -P0 / 2 - deb(cotes.b0),
-      bMax: P0 / 2 + deb(cotes.b1),
+      aMin: -L0 / 2 - debBout(cotes.a0),
+      aMax: L0 / 2 + debBout(cotes.a1),
+      bMin: -P0 / 2 - debLong(cotes.b0),
+      bMax: P0 / 2 + debLong(cotes.b1),
       cotes,
-      type: appentis ? 'monopente' : (partie?.type ?? t.type),
+      type,
       sens: appentis && cotes.b0 === 'etage' ? -1 : 1,
       base: n.altitude + hMurs,
       hMurs,

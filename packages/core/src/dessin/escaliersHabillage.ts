@@ -1,7 +1,8 @@
 import type { Point } from '../schemas/dessinScene';
 import { type Escalier } from './escaliers';
 import { pasDeFoulee, versPlan } from './escaliers3d';
-import { radians } from './geometrie';
+import { formesMarches } from './escaliersMarches';
+import { pointDansPolygone, radians } from './geometrie';
 import type { Pave } from './volumes';
 
 /**
@@ -15,6 +16,11 @@ export interface PieceEscalier extends Pave {
   matiere: MatiereEscalier;
   /** Inclinaison de l'axe l au-dessus de l'horizontale (radians) ; 0 : à plat. */
   pente: number;
+  /**
+   * Escalier tracé : forme exacte vue de dessus (plan, mm), extrudée sur la hauteur `taille.h`
+   * sous `centre.z + taille.h / 2` ; remplace la boîte (marches balancées, paliers).
+   */
+  empreinte?: Point[];
 }
 
 /** Épaisseur de marche (mm), nez débordant (mm). */
@@ -59,10 +65,30 @@ export function habillageEscalier(e: Escalier, altitude: number): PieceEscalier[
     y: local.y + Math.sin(sens) * long + Math.cos(sens) * travers,
   });
   const out: PieceEscalier[] = [];
+  // Escalier tracé : chaque marche a sa forme exacte (trapèze balancé, palier d'angle).
+  const formes = e.chemin ? formesMarches(e) : [];
+  const auPlan = (f: Point[]) => f.map((q) => plan(q, 0)).map(({ x, y }) => ({ x, y }));
 
   centres.forEach(({ local, sens, profondeur, palier }, i) => {
     const dessus = (i + 1) * hMarche;
     const angle = sens + rot - Math.PI / 2;
+    const forme = formes.find((f) => pointDansPolygone(local, f));
+    if (forme) {
+      const empreinte = auPlan(forme);
+      const ici = plan(local, 0);
+      const piece = (bas: number, haut: number, matiere: MatiereEscalier): PieceEscalier => ({
+        centre: { x: ici.x, y: ici.y, z: ici.z + (bas + haut) / 2 },
+        taille: { l: largeur, p: profondeur, h: haut - bas },
+        angle,
+        pente: 0,
+        matiere,
+        empreinte,
+      });
+      out.push(piece(dessus - ep, dessus, 'marche'));
+      // Dessous plein : socle enduit sous la marche, à sa forme exacte.
+      if (!ouvert && dessus - ep > 1) out.push(piece(0, dessus - ep, 'socle'));
+      return;
+    }
     // Marche : le nez déborde vers le bas de l'escalier (un palier n'a pas de nez).
     const nez = palier ? 0 : NEZ;
     out.push({

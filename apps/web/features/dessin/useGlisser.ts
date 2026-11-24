@@ -40,7 +40,7 @@ export function useGlisser(
     id: string;
     dernier: Point;
     cle: string;
-    /** Objet : écart entre son centre et le pointeur au départ, gardé pendant le geste. */
+    /** Objet, escalier : écart entre sa position et le pointeur au départ, gardé pendant le geste. */
     decalage: Point;
   } | null>(null);
 
@@ -53,7 +53,12 @@ export function useGlisser(
       if (!p || (trace && genre !== 'ouverture' && genre !== 'bordOuverture')) return;
       setActif(true);
       (ev.currentTarget as Element).setPointerCapture?.(ev.pointerId);
-      const o = genre === 'objet' ? n.objets.find((x) => x.id === id) : undefined;
+      const o =
+        genre === 'objet'
+          ? n.objets.find((x) => x.id === id)
+          : genre === 'escalier'
+            ? n.escaliers.find((x) => x.id === id)
+            : undefined;
       geste.current = {
         genre,
         id,
@@ -75,10 +80,11 @@ export function useGlisser(
         dispatch({ type: 'glisserOuverture', id, bord, vers, geste: g.cle });
       } else if (g.genre === 'escalier')
         dispatch({
-          type: 'deplacerEscalier',
+          type: 'placerEscalier',
           id: g.id,
-          delta: { x: vers.x - g.dernier.x, y: vers.y - g.dernier.y },
+          position: { x: vers.x + g.decalage.x, y: vers.y + g.decalage.y },
           geste: g.cle,
+          libre,
         });
       else if (g.genre === 'pointEscalier') {
         const [id, i] = g.id.split(':') as [string, string];
@@ -93,7 +99,15 @@ export function useGlisser(
         });
       else if (g.genre === 'poigneeExterieur') {
         const [poignee, id, i] = g.id.split(':') as [PoigneeExterieur, string, string];
-        dispatch({ type: 'poigneeExterieur', poignee, id, i: Number(i), vers, geste: g.cle });
+        dispatch({
+          type: 'poigneeExterieur',
+          poignee,
+          id,
+          i: Number(i),
+          vers,
+          geste: g.cle,
+          libre,
+        });
       } else if (g.genre === 'extremite') {
         const [murId, bout] = g.id.split(':') as [string, 'a' | 'b'];
         dispatch({

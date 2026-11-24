@@ -436,7 +436,8 @@ describe('toits en L : variantes', () => {
         for (const faitageAngle of [0, 900]) {
           const t = toit3D(avec(enL(miroir), type, { faitageAngle }))!;
           expect(t.ailes).toHaveLength(2);
-          expect(t.surface).toBeGreaterThan(80e6);
+          // Toit plat : sans débord (acrotères), un peu moins grand.
+          expect(t.surface).toBeGreaterThan(type === 'plate' ? 75e6 : 80e6);
           expect(t.faitage).toBeGreaterThanOrEqual(t.egout);
         }
   });

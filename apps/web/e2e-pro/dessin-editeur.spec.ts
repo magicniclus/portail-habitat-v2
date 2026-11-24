@@ -399,7 +399,9 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
     await page.keyboard.press('3');
     await page.getByLabel('Longueur (cm)').fill('300');
     await page.getByLabel('Longueur (cm)').press('Enter');
+    // Échap finit le tracé et revient au curseur normal : on reprend l'outil Cloison (C).
     await page.keyboard.press('Escape');
+    await page.keyboard.press('c');
     const cloison = plan.getByRole('button', { name: 'Cloison de 3,00 m' });
     await expect(cloison).toHaveCount(1);
     // Mur tiré jusqu'au bord : la vue avance pendant le tracé (plus de limite à 8 m).
@@ -415,6 +417,7 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
       p = await ecran(8000, 3000);
       await page.mouse.move(p.x, p.y, { steps: 3 });
       await page.keyboard.press('Escape');
+      await page.keyboard.press('c');
     }
     // DES-08 : à l'aplomb de l'extrémité de la cloison, le point s'aligne, guide affiché.
     p = await ecran(5020, 3500);

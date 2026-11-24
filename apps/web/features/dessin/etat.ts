@@ -67,15 +67,15 @@ function reduireBrut(e: EtatEditeur, a: Action): EtatEditeur {
       if (e.polygone.length) return fermerPolygone(e);
       if (e.cheminEscalier.length) return finirEscalier(e);
       return { ...e, trace: null, echelle: null, clotureEnCours: null };
-    case 'echap':
-      // Échap finit le tracé en cours ; s'il n'y en a pas, il désélectionne.
-      return e.polygone.length ||
-        e.cheminEscalier.length ||
-        e.trace ||
-        e.echelle ||
-        e.clotureEnCours
-        ? reduire(e, { type: 'terminerTrace' })
-        : { ...e, selection: null, multi: [] };
+    case 'echap': {
+      // Échap finit le tracé en cours (ce qui vient d'être posé reste choisi) et revient au
+      // curseur normal ; sans tracé, il quitte l'outil, puis désélectionne.
+      const enCours =
+        e.polygone.length || e.cheminEscalier.length || e.trace || e.echelle || e.clotureEnCours;
+      const fini = enCours ? reduire(e, { type: 'terminerTrace' }) : e;
+      if (fini.outil !== 'selection') return reduire(fini, { type: 'outil', outil: 'selection' });
+      return enCours ? fini : { ...fini, selection: null, multi: [] };
+    }
     case 'selectionner':
       return selectionner(e, a);
     case 'modifierLongueur':

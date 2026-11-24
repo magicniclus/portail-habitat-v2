@@ -1,6 +1,7 @@
 import {
   aimanterAngle,
   deplacerEscalier,
+  placerEscalierContreMur,
   deplacerPointEscalier,
   distance,
   hauteurVersLeHaut,
@@ -61,6 +62,17 @@ export function finirEscalier(e: EtatEditeur): EtatEditeur {
 export function reduireEscalier(e: EtatEditeur, a: Action): EtatEditeur | null {
   if (a.type === 'deplacerEscalier')
     return surNiveau(e, (n) => deplacerEscalier(n, a.id, a.delta), a.geste ?? null);
+  if (a.type === 'placerEscalier')
+    return surNiveau(
+      e,
+      (n) => {
+        const ici = n.escaliers.find((x) => x.id === a.id)?.position ?? a.position;
+        return e.aimant && !a.libre
+          ? placerEscalierContreMur(n, a.id, a.position, toleranceEnMm(12, e.zoom))
+          : deplacerEscalier(n, a.id, { x: a.position.x - ici.x, y: a.position.y - ici.y });
+      },
+      a.geste ?? null,
+    );
   if (a.type !== 'pointEscalier') return null;
   // La poignée s'aimante aux angles courants depuis le point voisin du tracé.
   const esc = niveauDe(e).escaliers.find((x) => x.id === a.id);

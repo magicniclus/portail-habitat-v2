@@ -65,3 +65,5 @@ export * from './modeles';
 export * from './piecesDessinees';
 export * from './modeles3d';
 export * from './demo';
+export * from './aimantExterieur';
+export * from './escaliersCalage';

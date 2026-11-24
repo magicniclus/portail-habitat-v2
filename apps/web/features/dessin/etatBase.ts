@@ -181,6 +181,8 @@ export type Action =
   /** Point du tracé d'un escalier déplacé (poignée). */
   | { type: 'pointEscalier'; id: string; i: number; vers: Point; geste?: string }
   | { type: 'deplacerEscalier'; id: string; delta: Point; geste?: string }
+  /** Escalier tiré à la souris : placé à `position`, calé contre les murs proches sauf Alt. */
+  | { type: 'placerEscalier'; id: string; position: Point; geste?: string; libre?: boolean }
   | { type: 'toiture'; toiture: TypeToiture | null }
   /** Toit sur toute la maison : chaque niveau, sur la partie sans étage au-dessus. */
   | { type: 'toitureAuto'; toiture: TypeToiture }
@@ -208,6 +210,8 @@ export type Action =
       i: number;
       vers: Point;
       geste?: string;
+      /** Alt enfoncé : posé librement, sans aimant. */
+      libre?: boolean;
     }
   | { type: 'deplacerParcelle'; delta: Point; geste?: string }
   | { type: 'ajouterSommetParcelle'; apres: number; point: Point }

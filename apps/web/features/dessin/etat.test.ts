@@ -34,7 +34,15 @@ describe('éditeur Dessin : désélection', () => {
       { type: 'outil', outil: 'mur' },
       { type: 'poserPoint', point: { x: 0, y: 0 } },
     ]);
-    expect(reduire(e, { type: 'echap' }).trace).toBeNull();
+    const apres = reduire(e, { type: 'echap' });
+    expect(apres.trace).toBeNull();
+    // …et revient au curseur normal.
+    expect(apres.outil).toBe('selection');
+  });
+
+  it('Échap avec un outil choisi (rien en cours) : retour au curseur normal', () => {
+    const e = jouer(vide(), [{ type: 'outil', outil: 'piece' }]);
+    expect(reduire(e, { type: 'echap' }).outil).toBe('selection');
   });
 
   it('le double-clic qui finit un tracé ne désélectionne pas', () => {

@@ -18,6 +18,8 @@ import {
   revetirTerrain,
   supprimerExterieur,
   terrasseAutourDePiscine,
+  toleranceEnMm,
+  viserExterieur,
   tracerCloture,
   type Niveau,
   type Point,
@@ -114,8 +116,14 @@ export function reduireExterieur(e: EtatEditeur, a: Action): EtatEditeur | null 
         coteTerrasse: deplacerCoteTerrasse,
         coinPiscine: redimensionnerPiscine,
       }[a.poignee];
+      // Aimant (sauf Alt) : angles de la maison, des autres terrasses et piscines, alignements.
+      const genre = a.poignee === 'coinPiscine' ? 'piscine' : 'terrasse';
+      const viser = (n: Niveau) =>
+        e.aimant && !a.libre
+          ? viserExterieur(n, { genre, id: a.id }, a.vers, toleranceEnMm(12, e.zoom))
+          : a.vers;
       // Pendant le geste, une forme impossible (trop petite, sur la maison) est ignorée.
-      const suite = surNiveau(e, (n) => r(n, a.id, a.i, a.vers), a.geste ?? null);
+      const suite = surNiveau(e, (n) => r(n, a.id, a.i, viser(n)), a.geste ?? null);
       return suite.erreur ? e : suite;
     }
     case 'deplacerParcelle':
