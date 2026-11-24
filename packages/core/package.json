@@ -27,6 +27,7 @@
     "./stats": "./src/stats/index.ts",
     "./leads": "./src/leads/index.ts",
     "./annuaire": "./src/annuaire/index.ts",
+    "./pages-secteur": "./src/pagesSecteur/index.ts",
     "./matching": "./src/matching/index.ts",
     "./facturation": "./src/facturation/index.ts",
     "./paiements": "./src/paiements/index.ts",

@@ -9,6 +9,7 @@ import * as demandes from './demandes';
 import * as devis from './devis';
 import * as facturation from './facturation';
 import * as ia from './ia';
+import * as pagesSecteur from './pagesSecteur';
 import * as parcours from './parcours';
 import * as partenaires from './partenaires';
 import * as referentiels from './referentiels';
@@ -28,6 +29,7 @@ export * from './demandes';
 export * from './devis';
 export * from './facturation';
 export * from './ia';
+export * from './pagesSecteur';
 export * from './parcours';
 export * from './partenaires';
 export * from './referentiels';
@@ -179,6 +181,8 @@ export const SCHEMAS = {
   'iaQuotas/{}': ia.quotaIa,
   'iaRedactions/{}': ia.redactionIa,
   'config/ia': ia.configIa,
+
+  'pagesSecteur/{}': pagesSecteur.pageSecteur,
 
   'brouillons/{}': parcours.brouillon,
   'brouillonsOnboarding/{}': parcours.brouillonOnboarding,

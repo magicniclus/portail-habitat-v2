@@ -111,6 +111,7 @@ describe('registre des schémas (DATABASE §16)', () => {
       'brouillons',
       'brouillonsOnboarding',
       'simulations',
+      'pagesSecteur',
     ];
     const racines = new Set(Object.keys(SCHEMAS).map((m) => m.split('/')[0]));
     for (const c of attendues) expect(racines, c).toContain(c);
