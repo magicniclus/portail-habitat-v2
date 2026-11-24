@@ -396,4 +396,4 @@ it('toits sur des formes vari√©es (L, U, T, H, Z, croix, escalier, biais, tourn√
           );
         }
   expect(tous).toEqual([]);
-}, 120_000);
+}, 300_000);

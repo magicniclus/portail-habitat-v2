@@ -74,5 +74,23 @@ describe('couverture en volume', () => {
       for (const p of [a, b])
         expect(Math.hypot(p.x - creux.x, p.y - creux.y) > 800 || p.z > egout + 200).toBe(true);
     expect(aretesHautes(t.pans).length).toBeGreaterThan(0);
+    // Deux pans : seulement des faîtages (horizontaux), jamais une faîtière en biais sur un pan.
+    for (const [a, b] of aretesHautes(t.pans)) expect(Math.abs(a.z - b.z)).toBeLessThan(2);
+    // Quatre pans sur un rectangle : un faîtage et quatre arêtiers, rien d'autre.
+    const rect = mursDepuisForme(
+      { forme: 'rectangle', largeur: 10_000, profondeur: 8_000 },
+      { epaisseur: 300, hauteur: 2_500, nouvelId: id },
+    );
+    if (!rect.ok) throw new Error(rect.message);
+    const quatre = definirToiture(
+      {
+        ...n,
+        murs: rect.data,
+        pieces: synchroniserPieces([], detecterPieces(rect.data), () => id('p')),
+      },
+      'quatre_pans',
+    );
+    if (!quatre.ok) throw new Error(quatre.message);
+    expect(aretesHautes(toit3D(quatre.data)!.pans)).toHaveLength(5);
   });
 });

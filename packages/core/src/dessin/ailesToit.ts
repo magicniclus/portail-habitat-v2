@@ -154,9 +154,37 @@ export function ailesDuNiveau(
           return true;
     return false;
   });
-  // Une partie de moins de 15 cm de large n'est pas un toit (reste d'arrondi).
+  // Deux ailes de même sens presque confondues (mur en biais) : une seule, leur rectangle
+  // commun, s'il ne dépasse leur surface réunie que de 15 % (sinon deux faîtages côte à côte).
+  for (let fusion = true; fusion;) {
+    fusion = false;
+    for (let x = 0; x < utiles.length && !fusion; x++)
+      for (let y = x + 1; y < utiles.length && !fusion; y++) {
+        const [p, q] = [utiles[x]!, utiles[y]!];
+        const boite = {
+          i0: Math.min(p.i0, q.i0),
+          i1: Math.max(p.i1, q.i1),
+          j0: Math.min(p.j0, q.j0),
+          j1: Math.max(p.j1, q.j1),
+        };
+        const commun = {
+          i0: Math.max(p.i0, q.i0),
+          i1: Math.min(p.i1, q.i1),
+          j0: Math.max(p.j0, q.j0),
+          j1: Math.min(p.j1, q.j1),
+        };
+        const recouvre = commun.i1 > commun.i0 && commun.j1 > commun.j0 ? aire(commun) : 0;
+        if (recouvre > 0 && aire(boite) <= (aire(p) + aire(q) - recouvre) * 1.15) {
+          utiles.splice(y, 1);
+          utiles[x] = boite;
+          fusion = true;
+        }
+      }
+  }
+  // Une partie de moins de 60 cm de large n'est pas une aile (lamelle le long d'un mur, reste
+  // d'arrondi) : les débords des ailes voisines la couvrent.
   const ailes: Aile[] = utiles
-    .filter((q) => Math.min(as[q.i1]! - as[q.i0]!, bs[q.j1]! - bs[q.j0]!) >= 150)
+    .filter((q) => Math.min(as[q.i1]! - as[q.i0]!, bs[q.j1]! - bs[q.j0]!) >= 600)
     .map((q) => {
       const [a0, a1, b0, b1] = [as[q.i0]!, as[q.i1]!, bs[q.j0]!, bs[q.j1]!];
       return {

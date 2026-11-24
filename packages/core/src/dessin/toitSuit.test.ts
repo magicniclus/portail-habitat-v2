@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Scene } from '../schemas/dessinScene';
 import { contexteTest, niveauMaquette, ok } from './aidesTest';
+import { avecPieces } from './commandes';
 import { definirToiture, toitureAutomatique } from './commandesToit';
 import { mursDepuisForme } from './formes';
 import { nouvelleScene } from './migrations';
@@ -27,7 +28,7 @@ describe('le toit suit les murs (DES-16)', () => {
   ];
   const base = (): Scene => ({
     ...nouvelleScene(ctx.nouvelId),
-    niveaux: [{ ...rdc, murs, id: 'n_rdc0', type: 'rdc', altitude: 0 }],
+    niveaux: [avecPieces({ ...rdc, murs, id: 'n_rdc0', type: 'rdc', altitude: 0 }, ctx)],
   });
 
   it('les murs de l’étage effacés au-dessus d’une partie : elle reçoit le toit', () => {
@@ -44,7 +45,7 @@ describe('le toit suit les murs (DES-16)', () => {
       ...s,
       niveaux: s.niveaux.map((n) =>
         n.id === etage.id
-          ? { ...n, murs: n.murs.filter((m) => Math.max(m.a.x, m.b.x) <= 10_600) }
+          ? avecPieces({ ...n, murs: n.murs.filter((m) => Math.max(m.a.x, m.b.x) <= 10_600) }, ctx)
           : n,
       ),
     };
