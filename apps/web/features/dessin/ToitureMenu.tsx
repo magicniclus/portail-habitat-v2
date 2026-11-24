@@ -15,6 +15,7 @@ import type { Dispatch } from 'react';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { HauteursToit } from './HauteursToit';
 import { PartiesToit } from './PartiesToit';
+import { SensToit } from './SensToit';
 import { Info } from './blocs';
 import { CouverturesToit, FormesToit, type Couverture } from './FormesToit';
 
@@ -74,6 +75,7 @@ export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
           dispatch={dispatch}
         />
       ) : null}
+      <SensToit toiture={t} orienter={(o) => dispatch({ type: 'orienterToit', ...o })} />
       <PartiesToit niveau={n} dessus={dessus} dispatch={dispatch} />
       <label className="grid gap-1 px-1 text-[13px] font-semibold">
         Pente · {Math.round(pente)}°
@@ -107,12 +109,6 @@ export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
               ))}
             </Select>
           </Field>
-          <Button
-            variant="secondaire"
-            onClick={() => modifier({ faitageAngle: t.faitageAngle === 0 ? 900 : 0 })}
-          >
-            Tourner les faîtages
-          </Button>
         </div>
       </details>
       <fieldset className="m-0 grid gap-2 border-0 p-0">

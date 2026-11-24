@@ -42,23 +42,67 @@ export function modifierToiture(n: Niveau, modif: ModificationToiture): Resultat
   return succes({ ...n, toiture: r.data });
 }
 
+type SensFaitage = NonNullable<Toiture['sens']>;
+type Descente = NonNullable<Toiture['descente']>;
+/** Valeur gardée, remplacée, ou retirée (`null`). */
+const choisir = <T>(nouveau: T | null | undefined, avant: T | undefined) =>
+  nouveau === undefined ? avant : (nouveau ?? undefined);
+
 /**
- * Réglage d'une partie du toit (DES-16) : forme propre (`null` = comme le reste du toit) et
- * faîtage tourné. Une partie revenue au réglage commun n'est plus enregistrée.
+ * Sens du toit entier (DES-16) : faîtages à l'horizontale ou à la verticale du plan, côté bas
+ * d'un monopente ; `null` = automatique. Les parties sans réglage propre suivent.
+ */
+export function orienterToit(
+  n: Niveau,
+  o: { sens?: SensFaitage | null; descente?: Descente | null },
+): Resultat<Niveau> {
+  if (!n.toiture) return echec('INTROUVABLE');
+  const { sens: _s, descente: _d, ...reste } = n.toiture;
+  const sens = choisir(o.sens, n.toiture.sens);
+  const descente = choisir(o.descente, n.toiture.descente);
+  // Un sens choisi remplace l'ancien « faîtages tournés » (plus d'effet caché).
+  return succes({
+    ...n,
+    toiture: {
+      ...reste,
+      ...(sens ? { sens, faitageAngle: 0 } : {}),
+      ...(descente ? { descente } : {}),
+    },
+  });
+}
+
+/**
+ * Réglage d'une partie du toit (DES-16) : forme propre, sens du faîtage, côté bas d'un
+ * monopente (`null` = comme le reste du toit). Une partie revenue au réglage commun n'est plus
+ * enregistrée.
  */
 export function reglerPartieToit(
   n: Niveau,
   cle: string,
-  reglage: { type?: TypeToiture | null; tourner?: boolean },
+  reglage: {
+    type?: TypeToiture | null;
+    tourner?: boolean;
+    sens?: SensFaitage | null;
+    descente?: Descente | null;
+  },
 ): Resultat<Niveau> {
   if (!n.toiture) return echec('INTROUVABLE');
   const avant = n.toiture.parties.find((p) => p.cle === cle) ?? { cle };
-  const type = reglage.type === undefined ? avant.type : (reglage.type ?? undefined);
-  const tourner = reglage.tourner ?? avant.tourner;
-  const partie = { cle, ...(type ? { type } : {}), ...(tourner ? { tourner } : {}) };
+  const type = choisir(reglage.type, avant.type);
+  const sens = choisir(reglage.sens, avant.sens);
+  const descente = choisir(reglage.descente, avant.descente);
+  // Un sens choisi remplace l'ancien bouton « tourner ».
+  const tourner = sens ? undefined : (reglage.tourner ?? avant.tourner);
+  const partie = {
+    cle,
+    ...(type ? { type } : {}),
+    ...(tourner ? { tourner } : {}),
+    ...(sens ? { sens } : {}),
+    ...(descente ? { descente } : {}),
+  };
   const autres = n.toiture.parties.filter((p) => p.cle !== cle);
   return modifierToiture(n, {
-    parties: partie.type || partie.tourner ? [...autres, partie] : autres,
+    parties: Object.keys(partie).length > 1 ? [...autres, partie] : autres,
   });
 }
 

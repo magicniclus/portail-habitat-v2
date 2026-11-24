@@ -71,7 +71,8 @@ describe('toiture (DES-16, DES-17)', () => {
     expect(compte('quatre_pans')).toEqual([4, 0, 4]);
     expect(compte('croupe')).toEqual([4, 0, 4]);
     expect(compte('monopente')).toEqual([1, 3, 1]);
-    expect(compte('plate')).toEqual([1, 4, 0]);
+    // Toit plat : 4 acrotères sur les murs extérieurs (4 côtés et un dessus chacun), sans gouttière.
+    expect(compte('plate')).toEqual([1, 20, 0]);
     expect(compte('mansarde')).toEqual([4, 2, 2]);
     expect(toit3D(n)).toBeNull();
     expect(toit3D({ ...toit('plate'), murs: [] })).toBeNull();

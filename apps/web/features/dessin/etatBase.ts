@@ -188,7 +188,20 @@ export type Action =
   | { type: 'toitureAuto'; toiture: TypeToiture }
   | { type: 'hauteursToit'; egout?: number; faitage?: number }
   | { type: 'modifierToiture'; modif: ModificationToiture }
-  | { type: 'partieToit'; cle: string; forme?: TypeToiture | null; tourner?: boolean }
+  | {
+      type: 'partieToit';
+      cle: string;
+      forme?: TypeToiture | null;
+      tourner?: boolean;
+      sens?: NonNullable<Niveau['toiture']>['sens'] | null;
+      descente?: NonNullable<Niveau['toiture']>['descente'] | null;
+    }
+  /** Sens du toit entier : faîtage horizontal ou vertical, côté bas du monopente (`null` : auto). */
+  | {
+      type: 'orienterToit';
+      sens?: NonNullable<Niveau['toiture']>['sens'] | null;
+      descente?: NonNullable<Niveau['toiture']>['descente'] | null;
+    }
   | { type: 'retirerElementToit'; id: string }
   | {
       type: 'modifierExterieur';

@@ -180,6 +180,8 @@ export const TYPES_PIECE = [
   'cellier',
   'garage',
   'combles',
+  /** Cour intérieure fermée par les murs mais à ciel ouvert : ni toit ni plafond. */
+  'patio',
   'autre',
 ] as const;
 
@@ -264,12 +266,21 @@ export const zoneDeco = z.object({
   revetement,
 });
 
+/** Sens d'un faîtage sur le plan (DES-16) ; sans réglage, le logiciel le choisit. */
+export const SENS_FAITAGE = ['horizontal', 'vertical'] as const;
+/** Côté vers lequel descend un monopente, sur le plan (DES-16). */
+export const DESCENTES = ['haut', 'bas', 'gauche', 'droite'] as const;
+
 export const toiture = z.object({
   type: z.enum(['deux_pans', 'quatre_pans', 'croupe', 'monopente', 'plate', 'mansarde']),
   /** Pente de chaque pan, de 0 à 90°. */
   pentes: z.array(angle.min(0).max(900)).min(1).max(8),
   debord: mmPositif.max(2_000).default(400),
   faitageAngle: angle.default(0),
+  /** Faîtages choisis : à l'horizontale ou à la verticale du plan (sinon automatique). */
+  sens: z.enum(SENS_FAITAGE).optional(),
+  /** Monopente : côté bas choisi sur le plan (sinon automatique). */
+  descente: z.enum(DESCENTES).optional(),
   /**
    * Réglages par partie du toit (aile rectangulaire de la maison, repérée par ses limites en
    * cm) : forme propre et faîtage tourné. Sans réglage, la partie suit le toit entier.
@@ -282,6 +293,8 @@ export const toiture = z.object({
           .enum(['deux_pans', 'quatre_pans', 'croupe', 'monopente', 'plate', 'mansarde'])
           .optional(),
         tourner: z.boolean().optional(),
+        sens: z.enum(SENS_FAITAGE).optional(),
+        descente: z.enum(DESCENTES).optional(),
       }),
     )
     .max(20)

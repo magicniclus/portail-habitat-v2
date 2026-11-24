@@ -7,6 +7,7 @@ import {
   pointDansPolygone,
 } from './geometrie';
 import { emprise } from './escaliers';
+import { sousToit } from './ailesToit';
 
 /**
  * Géométrie 3D tirée de la scène (DES-33), sans dépendance au moteur de rendu : pavés et
@@ -267,7 +268,8 @@ export function dallesDuNiveau(
           : [],
       ),
     ],
-    plafonds: n.pieces.map((p) => ({
+    // Patio : à ciel ouvert, pas de plafond.
+    plafonds: sousToit(n.pieces).map((p) => ({
       pieceId: p.id,
       contour: p.contour,
       z: n.altitude + n.hauteurSousPlafond,

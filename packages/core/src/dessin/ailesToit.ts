@@ -54,20 +54,23 @@ export function murPlein(m: Niveau['murs'][number]): Point[] {
   });
 }
 
+/** Pièces sous un toit : tout sauf un patio (cour à ciel ouvert, fermée par les murs). */
+export const sousToit = (pieces: Niveau['pieces']) => pieces.filter((p) => p.type !== 'patio');
+
 /**
  * Ce que couvre un étage : ses pièces et l'épaisseur de ses murs (extérieurs, porteurs, cloisons
  * et demi-murs entre deux pièces ; sinon une bande de toit apparaît sous chaque cloison).
  */
 export const couvertureEtage = (dessus: Pick<Niveau, 'murs' | 'pieces'>): Point[][] => [
-  ...dessus.pieces.map((p) => p.contour),
+  ...sousToit(dessus.pieces).map((p) => p.contour),
   ...dessus.murs
     .filter((m) => m.porteur || m.type === 'mur' || m.type === 'cloison' || m.type === 'demi_mur')
     .map(murPlein),
 ];
 
-/** Polygones de l'emprise : pièces et murs (épaisseur comprise). */
+/** Polygones de l'emprise : pièces couvertes et murs (épaisseur comprise). */
 const polygones = (n: Pick<Niveau, 'murs' | 'pieces'>) => [
-  ...n.pieces.map((p) => p.contour),
+  ...sousToit(n.pieces).map((p) => p.contour),
   ...n.murs.filter((m) => m.type === 'mur' || m.type === 'cloison').map(murPlein),
 ];
 const dedans = (polys: Point[][], p: Point) => polys.some((q) => pointDansPolygone(p, q));
@@ -90,11 +93,20 @@ export function ailesDuNiveau(
   const [nx, ny] = [as.length - 1, bs.length - 1];
   const centre = (i: number, j: number) =>
     monde(r, (as[i]! + as[i + 1]!) / 2, (bs[j]! + bs[j + 1]!) / 2);
+  // Une case est couverte dès qu'une part de la maison y tombe (mur en biais : sinon un coin
+  // reste sans toit) ; l'étage, lui, ne la retire que s'il en couvre le centre.
+  const touche = (i: number, j: number) =>
+    dedans(polys, centre(i, j)) ||
+    [0.02, 0.25, 0.5, 0.75, 0.98].some((fa) =>
+      [0.02, 0.25, 0.5, 0.75, 0.98].some((fb) =>
+        dedans(
+          polys,
+          monde(r, as[i]! + (as[i + 1]! - as[i]!) * fa, bs[j]! + (bs[j + 1]! - bs[j]!) * fb),
+        ),
+      ),
+    );
   const plein = Array.from({ length: nx }, (_, i) =>
-    Array.from(
-      { length: ny },
-      (_, j) => dedans(polys, centre(i, j)) && !dedans(haut, centre(i, j)),
-    ),
+    Array.from({ length: ny }, (_, j) => touche(i, j) && !dedans(haut, centre(i, j))),
   );
   const rempli = (q: Rect) => {
     for (let i = q.i0; i < q.i1; i++)

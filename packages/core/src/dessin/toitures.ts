@@ -63,6 +63,11 @@ export interface Emprise {
    * fenêtres, quitte à être moins pentu que le reste du toit (légère cassure de pente).
    */
   kMax?: number;
+  /**
+   * Monopente d'un seul tenant (toutes les ailes) : hauteur = pente × (p·d − o) au point p du
+   * plan, une seule surface continue au lieu d'une rampe par aile.
+   */
+  pente?: { d: Point; o: number };
 }
 
 /** Haut d'un appentis : 80 cm au-dessus du plancher de l'étage, sous ses fenêtres (mm). */
@@ -80,12 +85,18 @@ export function emprisesToit(n: Niveau, dessus: Niveau | null = null): Emprise[]
   if (!t || n.murs.length < 3) return [];
   const r = repereMaison(n);
   const hMurs = hauteurMurs(n) || Math.max(...n.murs.map((m) => m.hauteur));
-  return ailesDuNiveau(n, dessus, r).map((w) => {
+  const ailes = ailesDuNiveau(n, dessus, r).map((w) => {
     const cle = [w.a0, w.a1, w.b0, w.b1].map((x) => Math.round(x / 10)).join(':');
     const partie = t.parties.find((p) => p.cle === cle);
-    // Faîtage tourné pour tout le toit, puis éventuellement pour cette partie seule.
+    // Sens choisi (partie, sinon toit entier) : faîtage à l'horizontale ou à la verticale du
+    // plan. Sinon automatique (le long de la partie), éventuellement tourné (ancien réglage).
+    const choisi = partie?.sens ?? t.sens;
     const tourne = (t.faitageAngle === 900) !== Boolean(partie?.tourner);
-    const selonA = tourne ? !w.selonA : w.selonA;
+    const selonA = choisi
+      ? (choisi === 'horizontal') === Math.abs(r.u.x) >= Math.abs(r.u.y)
+      : tourne
+        ? !w.selonA
+        : w.selonA;
     const centre = monde(r, (w.a0 + w.a1) / 2, (w.b0 + w.b1) / 2);
     const [u, v] = selonA ? [r.u, r.v] : [r.v, { x: -r.u.x, y: -r.u.y }];
     const cotes = selonA
@@ -131,7 +142,58 @@ export function emprisesToit(n: Niveau, dessus: Niveau | null = null): Emprise[]
     };
     return { ...aile, surcroit: Math.round(surcroitDe(t, aile)) };
   });
+  return monopenteDUnSeulTenant(t, ailes, r);
 }
+
+/**
+ * Monopente sur une maison en L, U, H… (DES-16) : un seul plan incliné pour toutes les ailes
+ * (sauf les appentis contre l'étage), qui monte vers le fond de la maison (faîtage tourné :
+ * vers sa droite). Il part du haut des murs du côté bas ; les débords descendent en dessous.
+ */
+function monopenteDUnSeulTenant(t: Toiture, ailes: Emprise[], r: { u: Point; v: Point }) {
+  const libres = ailes.filter(
+    (e) => e.type === 'monopente' && e.cotes.b0 !== 'etage' && e.cotes.b1 !== 'etage',
+  );
+  if (!libres.length) return ailes;
+  // Direction de montée : à l'opposé du côté bas choisi, calée sur les murs de la maison.
+  const montee = (descente: Toiture['descente']) => {
+    if (!descente) return t.faitageAngle === 900 ? r.u : r.v;
+    const bas = DIRECTIONS[descente];
+    const axes = [r.u, r.v, { x: -r.u.x, y: -r.u.y }, { x: -r.v.x, y: -r.v.y }];
+    const vers = axes.sort((p, q) => q.x * bas.x + q.y * bas.y - (p.x * bas.x + p.y * bas.y))[0]!;
+    return { x: -vers.x, y: -vers.y };
+  };
+  const plan = (groupe: Emprise[], d: Point) => ({
+    d,
+    o: Math.min(
+      ...groupe.flatMap((e) =>
+        [-1, 1].flatMap((i) =>
+          [-1, 1].map((j) => {
+            const p = versMonde(e, (i * e.L0) / 2, (j * e.P0) / 2, 0);
+            return p.x * d.x + p.y * d.y;
+          }),
+        ),
+      ),
+    ),
+  });
+  // Une partie au côté bas choisi a sa propre pente ; les autres partagent un seul plan.
+  const propre = (e: Emprise) => t.parties.find((p) => p.cle === e.cle)?.descente;
+  const communes = libres.filter((e) => !propre(e));
+  const commun = communes.length ? plan(communes, montee(t.descente)) : null;
+  return ailes.map((e) => {
+    if (!libres.includes(e)) return e;
+    const pente = propre(e) ? plan([e], montee(propre(e))) : commun!;
+    return { ...e, pente, surcroit: 0 };
+  });
+}
+
+/** Côté bas d'un monopente, sur le plan (y vers le bas de l'écran). */
+const DIRECTIONS: Record<NonNullable<Toiture['descente']>, Point> = {
+  haut: { x: 0, y: -1 },
+  bas: { x: 0, y: 1 },
+  gauche: { x: -1, y: 0 },
+  droite: { x: 1, y: 0 },
+};
 
 /** Aile unique (ancienne API, tests) : première aile du niveau. */
 
@@ -143,7 +205,9 @@ const penteDe = (t: Toiture) => t.pentes[0]! / 10;
  * Les pans ont tous la même pente (sauf brisis de mansarde et croupe, plus raide).
  */
 type FormeAile = Pick<Emprise, 'L0' | 'P0'> &
-  Partial<Pick<Emprise, 'cotes' | 'type' | 'sens' | 'kMax' | 'surcroit'>>;
+  Partial<
+    Pick<Emprise, 'cotes' | 'type' | 'sens' | 'kMax' | 'surcroit' | 'pente' | 'centre' | 'u' | 'v'>
+  >;
 
 export function hauteurLocale(t: Toiture, e: FormeAile, a: number, b: number): number {
   return (e.surcroit ?? 0) + hauteurBrute(t, e, a, b);
@@ -177,8 +241,14 @@ function hauteurBrute(t: Toiture, e: FormeAile, a: number, b: number): number {
       return Math.min(versB, versA) * k;
     case 'croupe':
       return Math.min(versB * k, versA * k * 2);
-    case 'monopente':
+    case 'monopente': {
+      const { pente: g, centre: c, u, v } = e;
+      if (g && c && u && v) {
+        const p = { x: c.x + u.x * a + v.x * b, y: c.y + u.y * a + v.y * b };
+        return (p.x * g.d.x + p.y * g.d.y - g.o) * k;
+      }
       return ((e.sens ?? 1) * b + e.P0 / 2) * k;
+    }
     case 'plate':
       return 0;
     case 'mansarde': {

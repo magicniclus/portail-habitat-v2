@@ -1,5 +1,4 @@
 import {
-  ACROTERE,
   BRISIS,
   hauteurLocale,
   versMonde,
@@ -116,6 +115,48 @@ export function egoutsLocaux(e: Emprise): Loc[][] {
   const ext = (c: keyof Emprise['cotes']) => e.cotes[c] === 'exterieur';
   const bords: Loc[][] = [];
   if (e.type === 'plate') return bords;
+  if (e.type === 'monopente' && e.pente) {
+    // D'un seul tenant : gouttière sur le côté extérieur qui regarde vers le bas de la pente.
+    const dl = {
+      a: e.pente.d.x * e.u.x + e.pente.d.y * e.u.y,
+      b: e.pente.d.x * e.v.x + e.pente.d.y * e.v.y,
+    };
+    const cotes: [keyof Emprise['cotes'], number, Loc[]][] = [
+      [
+        'b0',
+        -dl.b,
+        [
+          [A0, B0],
+          [A1, B0],
+        ],
+      ],
+      [
+        'b1',
+        dl.b,
+        [
+          [A0, B1],
+          [A1, B1],
+        ],
+      ],
+      [
+        'a0',
+        -dl.a,
+        [
+          [A0, B1],
+          [A0, B0],
+        ],
+      ],
+      [
+        'a1',
+        dl.a,
+        [
+          [A1, B0],
+          [A1, B1],
+        ],
+      ],
+    ];
+    return cotes.filter(([c, sens]) => ext(c) && sens < -0.5).map(([, , bord]) => bord);
+  }
   if (e.type === 'monopente') {
     // Côté bas seulement : b- si le toit monte vers b+, sinon b+.
     if (e.sens === 1 ? ext('b0') : ext('b1'))
@@ -198,22 +239,8 @@ function mursDuToit(t: Toiture, e: Emprise): Point3[][] {
   const [L0, P0] = [e.L0 / 2, e.P0 / 2];
   const z = (a: number, b: number) => hauteurLocale(t, e, a, b);
   const ext = (c: keyof Emprise['cotes']) => e.cotes[c] === 'exterieur';
-  if (e.type === 'plate') {
-    const bords: [Loc, Loc, keyof Emprise['cotes']][] = [
-      [[-L0, -P0], [L0, -P0], 'b0'],
-      [[L0, -P0], [L0, P0], 'a1'],
-      [[L0, P0], [-L0, P0], 'b1'],
-      [[-L0, P0], [-L0, -P0], 'a0'],
-    ];
-    return bords
-      .filter(([, , c]) => ext(c))
-      .map(([p, q]) => [
-        versMonde(e, p[0], p[1], 0),
-        versMonde(e, q[0], q[1], 0),
-        versMonde(e, q[0], q[1], ACROTERE),
-        versMonde(e, p[0], p[1], ACROTERE),
-      ]);
-  }
+  // Toit plat : ses acrotères suivent les murs extérieurs (acroteres.ts), pas les ailes.
+  if (e.type === 'plate') return [];
   if (e.type === 'quatre_pans' || e.type === 'croupe') return [];
   const bs =
     e.type === 'mansarde'
@@ -229,9 +256,22 @@ function mursDuToit(t: Toiture, e: Emprise): Point3[][] {
   // Pignons aux deux bouts, même contre une autre partie de la maison : si celle-ci est plus
   // basse, le pignon la domine et ferme le toit (jamais de trou) ; sinon il reste caché dessous.
   const murs: Point3[][] = [coupe(-L0), coupe(L0)];
+  // Monopente d'un seul tenant : les côtés extérieurs sont fermés jusque sous le toit.
+  if (e.type === 'monopente' && e.pente)
+    for (const [b, c] of [
+      [-P0, 'b0'],
+      [P0, 'b1'],
+    ] as const)
+      if (ext(c))
+        murs.push([
+          versMonde(e, -L0, b, 0),
+          versMonde(e, L0, b, 0),
+          versMonde(e, L0, b, z(L0, b)),
+          versMonde(e, -L0, b, z(-L0, b)),
+        ]);
   // Mur haut d'une monopente, sauf contre l'étage (l'appentis s'y adosse).
   const haut = e.sens === 1 ? P0 : -P0;
-  if (e.type === 'monopente' && ext(e.sens === 1 ? 'b1' : 'b0'))
+  if (e.type === 'monopente' && !e.pente && ext(e.sens === 1 ? 'b1' : 'b0'))
     murs.push([
       versMonde(e, -L0, haut, 0),
       versMonde(e, L0, haut, 0),

@@ -138,6 +138,6 @@ describe('type de pièce (DES-11)', () => {
     const r3 = typerPiece(n, id, 'autre');
     expect(r3.ok && r3.data.pieces[0]!.nom).toBe(n.pieces[0]!.nom);
     expect(typerPiece(n, 'p_absent', 'wc')).toMatchObject({ code: 'INTROUVABLE' });
-    expect(Object.keys(LIBELLES_PIECE)).toHaveLength(15);
+    expect(Object.keys(LIBELLES_PIECE)).toHaveLength(16);
   });
 });

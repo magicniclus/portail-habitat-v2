@@ -1,4 +1,5 @@
 import type { Niveau, Point } from '../schemas/dessinScene';
+import { acroteres } from './acroteres';
 import { pansVisibles } from './decoupeToit';
 import { egoutsLocaux, mursLocaux, pansLocaux } from './pansToit';
 import {
@@ -104,6 +105,7 @@ export function toit3D(n: Niveau, dessus: Niveau | null = null): Toit3D | null {
         ]),
       );
   }
+  murs.push(...acroteres(n, dessus, ailes));
   // Toits des ailes réunis : rien ne dépasse sous le toit d'une autre aile.
   const pans = pansVisibles(parAile);
   const faitage = Math.max(...pans.flat().map((p) => p.z));

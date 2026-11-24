@@ -57,6 +57,7 @@ export const LIBELLES_PIECE: Record<Piece['type'], string> = {
   cellier: 'Cellier',
   garage: 'Garage',
   combles: 'Combles',
+  patio: 'Patio (à ciel ouvert)',
   autre: 'Autre',
 };
 
