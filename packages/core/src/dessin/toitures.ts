@@ -294,7 +294,8 @@ export function altitudeToit(
   let mieux: { z: number; aile: Emprise } | null = null;
   for (const e of ailes) {
     const { a, b } = versLocal(e, p);
-    if (a < e.aMin || a > e.aMax || b < e.bMin || b > e.bMax) continue;
+    // 1 mm de tolérance : un point pile au bord (arrondis d'une maison tournée) reste dessous.
+    if (a < e.aMin - 1 || a > e.aMax + 1 || b < e.bMin - 1 || b > e.bMax + 1) continue;
     const z = e.base + hauteurLocale(t, e, a, b);
     if (!mieux || z > mieux.z) mieux = { z, aile: e };
   }

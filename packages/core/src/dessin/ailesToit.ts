@@ -87,26 +87,31 @@ export function ailesDuNiveau(
   const haut = dessus ? couvertureEtage(dessus) : [];
   // Les coordonnées de l'étage découpent aussi la grille : sa limite tombe entre deux cases.
   const pts = [...polys, ...haut].flat().map((p) => loc(r, p));
-  const uniques = (v: number[]) => [...new Set(v.map((x) => Math.round(x)))].sort((x, y) => x - y);
+  // Lignes de la grille ; deux lignes à moins d'un centimètre n'en font qu'une (murs tournés,
+  // arrondis au millimètre : sinon des lamelles de toit d'un millimètre apparaissent).
+  const uniques = (v: number[]) =>
+    [...new Set(v.map((x) => Math.round(x)))]
+      .sort((x, y) => x - y)
+      .filter((x, i, t) => i === 0 || x - t[i - 1]! >= 10);
   const as = uniques(pts.map((p) => p.a));
   const bs = uniques(pts.map((p) => p.b));
   const [nx, ny] = [as.length - 1, bs.length - 1];
-  const centre = (i: number, j: number) =>
-    monde(r, (as[i]! + as[i + 1]!) / 2, (bs[j]! + bs[j + 1]!) / 2);
-  // Une case est couverte dès qu'une part de la maison y tombe (mur en biais : sinon un coin
-  // reste sans toit) ; l'étage, lui, ne la retire que s'il en couvre le centre.
+  // Une case est couverte dès qu'une part de la maison sans étage au-dessus y tombe (mur en
+  // biais : sinon un coin reste sans toit ; sous un étage complet : rien).
+  const echantillons = [0.02, 0.25, 0.5, 0.75, 0.98];
   const touche = (i: number, j: number) =>
-    dedans(polys, centre(i, j)) ||
-    [0.02, 0.25, 0.5, 0.75, 0.98].some((fa) =>
-      [0.02, 0.25, 0.5, 0.75, 0.98].some((fb) =>
-        dedans(
-          polys,
-          monde(r, as[i]! + (as[i + 1]! - as[i]!) * fa, bs[j]! + (bs[j + 1]! - bs[j]!) * fb),
-        ),
-      ),
+    [{ x: 0.5, y: 0.5 }, ...echantillons.flatMap((x) => echantillons.map((y) => ({ x, y })))].some(
+      (f) => {
+        const p = monde(
+          r,
+          as[i]! + (as[i + 1]! - as[i]!) * f.x,
+          bs[j]! + (bs[j + 1]! - bs[j]!) * f.y,
+        );
+        return dedans(polys, p) && !dedans(haut, p);
+      },
     );
   const plein = Array.from({ length: nx }, (_, i) =>
-    Array.from({ length: ny }, (_, j) => touche(i, j) && !dedans(haut, centre(i, j))),
+    Array.from({ length: ny }, (_, j) => touche(i, j)),
   );
   const rempli = (q: Rect) => {
     for (let i = q.i0; i < q.i1; i++)
@@ -149,17 +154,20 @@ export function ailesDuNiveau(
           return true;
     return false;
   });
-  const ailes: Aile[] = utiles.map((q) => {
-    const [a0, a1, b0, b1] = [as[q.i0]!, as[q.i1]!, bs[q.j0]!, bs[q.j1]!];
-    return {
-      a0,
-      a1,
-      b0,
-      b1,
-      selonA: a1 - a0 >= b1 - b0,
-      cotes: { a0: 'exterieur', a1: 'exterieur', b0: 'exterieur', b1: 'exterieur' },
-    };
-  });
+  // Une partie de moins de 15 cm de large n'est pas un toit (reste d'arrondi).
+  const ailes: Aile[] = utiles
+    .filter((q) => Math.min(as[q.i1]! - as[q.i0]!, bs[q.j1]! - bs[q.j0]!) >= 150)
+    .map((q) => {
+      const [a0, a1, b0, b1] = [as[q.i0]!, as[q.i1]!, bs[q.j0]!, bs[q.j1]!];
+      return {
+        a0,
+        a1,
+        b0,
+        b1,
+        selonA: a1 - a0 >= b1 - b0,
+        cotes: { a0: 'exterieur', a1: 'exterieur', b0: 'exterieur', b1: 'exterieur' },
+      };
+    });
   arreterAuxFaitages(ailes);
   // Côtés : contre l'étage (appentis) ou contre une autre partie de la maison.
   for (const w of ailes)
