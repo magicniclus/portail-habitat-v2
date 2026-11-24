@@ -156,4 +156,40 @@ describe('escalier tracé (DES-15)', () => {
     expect(r.escaliers[0]).toMatchObject({ position: { x: 1_500, y: 750 }, chemin: e.chemin });
     expect(deplacerEscalier(avec, 'esc_absent', { x: 0, y: 0 }).ok).toBe(false);
   });
+
+  it('point répété dans le tracé (double-clic, plan déjà enregistré) : emprise et marches valides', () => {
+    const tour = [
+      { x: 7600, y: 8000 },
+      { x: 7600, y: 1000 },
+      { x: 5000, y: 1000 },
+    ];
+    const net = ok(
+      poserEscalierTrace(niveauMaquette(ctx), { chemin: tour, hauteurAMonter: 2_700 }, ctx),
+    );
+    const double = [...tour, tour[2]!];
+    const pose = ok(
+      poserEscalierTrace(niveauMaquette(ctx), { chemin: double, hauteurAMonter: 2_700 }, ctx),
+    );
+    expect(pose.escaliers[0]!.chemin).toHaveLength(3);
+    // Plan enregistré avant la correction : le doublon est dans le tracé.
+    const ancien = {
+      ...net.escaliers[0]!,
+      chemin: [...net.escaliers[0]!.chemin!, { x: -2600, y: -7000 }],
+    };
+    for (const e of [
+      ancien,
+      {
+        ...ancien,
+        chemin: [ancien.chemin[0]!, ancien.chemin[1]!, ancien.chemin[1]!, ancien.chemin[2]!],
+      },
+    ]) {
+      const pts = [
+        ...emprise(e),
+        ...centresChemin(e).map((c) => c.local),
+        ...limitesMarchesChemin(e).flat(),
+      ];
+      expect(pts.every((p) => Number.isFinite(p.x) && Number.isFinite(p.y))).toBe(true);
+      expect(emprise(e)).toEqual(emprise(net.escaliers[0]!));
+    }
+  });
 });

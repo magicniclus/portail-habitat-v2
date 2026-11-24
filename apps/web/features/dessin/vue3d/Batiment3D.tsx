@@ -22,6 +22,7 @@ import { Menuiseries3D } from './Menuiseries3D';
 import { MorceauMur3D } from './Mur3D';
 import { SurlignagePan } from './SurlignagePan';
 import { Toit3D } from './Toit3D';
+import { DalleSousLesMurs, HabillageTremies } from './Tremies3D';
 import { M } from './unites';
 import { materiauRevetement, materiauUni } from './textures';
 
@@ -139,6 +140,7 @@ export function Niveau3D({
           selection={selection}
         />
       ))}
+      <DalleSousLesMurs n={n} />
       {dalles.sols.map((d) => (
         <Dalle3D key={d.zoneId ?? d.pieceId} d={d} selection={selection} />
       ))}
@@ -154,6 +156,7 @@ export function Niveau3D({
         selection={selection}
       />
       {toit ? <Toit3D n={n} dessus={dessus} /> : null}
+      {dessus ? <HabillageTremies n={n} dessus={dessus} /> : null}
       {/* La limite de parcelle est au sol : seulement au rez-de-chaussée (pas une copie par étage). */}
       <Exterieur3D n={n} parcelle={n.altitude === 0 ? parcelle : null} />
       {escaliers.map(({ e, pieces }) => {

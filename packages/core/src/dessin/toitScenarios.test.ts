@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { niveau as schemaNiveau, type Scene } from '../schemas/dessinScene';
 import { contexteTest, ok } from './aidesTest';
-import { toitureAutomatique } from './commandesToit';
+import { definirToiture, toitureAutomatique } from './commandesToit';
 import { mursDepuisForme, type Forme } from './formes';
 import { nouvelleScene } from './migrations';
 import { niveauSuperieur } from './niveaux';
 import { detecterPieces, synchroniserPieces } from './pieces';
 import { toit3D } from './toits3d';
-import type { TypeToiture } from './toitures';
+import { emprisesToit, type TypeToiture } from './toitures';
 
 const ctx = contexteTest();
 type Murs = ReturnType<typeof forme>;
@@ -91,4 +91,27 @@ describe('toit : toutes les situations de niveaux et de formes (DES-16)', () => 
         if (etage && nom !== 'étage complet') expect(rdc.toiture).not.toBeNull();
         if (nom === 'étage complet') expect(rdc.toiture).toBeNull();
       });
+});
+
+describe('étage cloisonné au-dessus d’un séjour (DES-16)', () => {
+  it('le toit du rez-de-chaussée ne couvre que la partie sans étage (pas de bandes sous les cloisons)', () => {
+    const cloisons = [
+      { a: { x: 4_025, y: 100 }, b: { x: 4_025, y: 9_300 } },
+      { a: { x: 100, y: 4_900 }, b: { x: 7_950, y: 4_900 } },
+    ].map((c, i) => ({
+      ...principal()[0]!,
+      ...c,
+      id: `m_cl${i}`,
+      type: 'cloison' as const,
+      epaisseur: 72,
+      porteur: false,
+    }));
+    const s = scene([...principal(), ...aile()], [...principal(), ...cloisons]);
+    const etage = s.niveaux[1]!;
+    const rdc = ok(definirToiture(s.niveaux[0]!, 'deux_pans'));
+    const ailes = emprisesToit(rdc, etage);
+    const aire = ailes.reduce((t, e) => t + e.L0 * e.P0, 0);
+    expect(aire).toBeLessThan(3_810 * 5_920 * 1.05);
+    expect(ailes.every((e) => Math.min(e.L0, e.P0) > 1_000)).toBe(true);
+  });
 });

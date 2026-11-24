@@ -16,6 +16,11 @@ const LONGUEUR_MIN = 1_000;
 /** Arrondi au mm, sans « -0 ». */
 const entier = (v: number) => Math.round(v) + 0;
 
+/** Tracé sans point répété (double-clic, poignée lâchée sur sa voisine) : sinon côtés nuls. */
+const propre = (c: readonly Point[]) =>
+  c.filter((p, i) => i === 0 || Math.hypot(p.x - c[i - 1]!.x, p.y - c[i - 1]!.y) >= 1);
+const cheminDe = (e: Escalier) => propre(e.chemin ?? []);
+
 type Troncon = { a: Point; b: Point; l: number; angle: number; debut: number };
 
 function troncons(chemin: readonly Point[]): Troncon[] {
@@ -73,7 +78,7 @@ export interface CentreMarche {
 
 /** Bornes des marches le long de la foulée (distances), et paliers aux angles. */
 function decoupage(e: Escalier): { bornes: [number, number][]; paliers: number[] } {
-  const ts = troncons(e.chemin ?? []);
+  const ts = troncons(cheminDe(e));
   const nb = e.nbMarches;
   if (e.virage !== 'palier' || ts.length < 2) {
     const pas = (ts.at(-1)!.debut + ts.at(-1)!.l) / nb;
@@ -104,7 +109,7 @@ function decoupage(e: Escalier): { bornes: [number, number][]; paliers: number[]
 
 /** Marches (et paliers) le long de la foulée, dans l'ordre de la montée. */
 export function centresChemin(e: Escalier): CentreMarche[] {
-  const ts = troncons(e.chemin ?? []);
+  const ts = troncons(cheminDe(e));
   if (!ts.length) return [];
   const palier = e.virage === 'palier';
   const rayon = palier ? 0 : e.largeur / 2;
@@ -128,11 +133,11 @@ export function centresChemin(e: Escalier): CentreMarche[] {
 
 /** Emprise au sol (repère de l'escalier) : la foulée élargie, angles en onglet. */
 export function empriseChemin(e: Escalier): Point[] {
-  const ts = troncons(e.chemin ?? []);
+  const ts = troncons(cheminDe(e));
   const d = e.largeur / 2;
   const normale = (a: number) => ({ x: -Math.sin(a), y: Math.cos(a) });
   const decale = (cote: 1 | -1) =>
-    (e.chemin ?? []).map((p, i) => {
+    cheminDe(e).map((p, i) => {
       const [t0, t1] = [ts[Math.max(0, i - 1)]!, ts[Math.min(ts.length - 1, i)]!];
       const [n0, n1] = [normale(t0.angle), normale(t1.angle)];
       const m = { x: n0.x + n1.x, y: n0.y + n1.y };
@@ -144,7 +149,7 @@ export function empriseChemin(e: Escalier): Point[] {
 
 /** Traits des marches vus de dessus (repère de l'escalier) : un trait entre deux marches. */
 export function limitesMarchesChemin(e: Escalier): [Point, Point][] {
-  const ts = troncons(e.chemin ?? []);
+  const ts = troncons(cheminDe(e));
   const palier = e.virage === 'palier';
   const rayon = palier ? 0 : e.largeur / 2;
   const { bornes } = decoupage(e);
@@ -169,20 +174,21 @@ export function limitesMarchesChemin(e: Escalier): [Point, Point][] {
 
 /** Giron d'un escalier tracé : longueur utile divisée par le nombre de marches. */
 function gironDe(chemin: readonly Point[], nb: number, virage: Escalier['virage'], l: number) {
-  const coudes = virage === 'palier' ? chemin.length - 2 : 0;
+  const coudes = virage === 'palier' ? propre(chemin).length - 2 : 0;
   const utile = longueurChemin(chemin) - coudes * l;
   return Math.min(400, Math.max(100, entier(utile / Math.max(1, nb - coudes))));
 }
 
 /** Escalier tracé, sans l'enregistrer (aperçu pendant le tracé) ; `null` s'il est trop court. */
 export function brouillonEscalier(
-  chemin: readonly Point[],
+  saisi: readonly Point[],
   hauteurAMonter: number,
   reglages: Partial<Pick<Escalier, 'largeur' | 'virage' | 'limon' | 'structure'>> = {},
 ): Escalier | null {
-  if (chemin.length < 2 || longueurChemin(chemin) < LONGUEUR_MIN) return null;
-  const o = chemin[0]!;
-  const local = chemin.map((p) => ({ x: entier(p.x - o.x), y: entier(p.y - o.y) }));
+  const trace = propre(saisi);
+  if (trace.length < 2 || longueurChemin(trace) < LONGUEUR_MIN) return null;
+  const o = trace[0]!;
+  const local = trace.map((p) => ({ x: entier(p.x - o.x), y: entier(p.y - o.y) }));
   const largeur = reglages.largeur ?? 900;
   const virage = reglages.virage ?? 'balance';
   const { nbMarches } = calculerMarches(hauteurAMonter, 'droit');

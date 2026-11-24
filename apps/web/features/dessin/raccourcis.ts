@@ -1,4 +1,5 @@
 import type { Action } from './etat';
+import type { Vue } from './etatBase';
 
 /** Événement qui ouvre la liste des raccourcis (bouton du rail de droite). */
 export const OUVRIR_RACCOURCIS = 'dessin:raccourcis';
@@ -32,6 +33,13 @@ export const RACCOURCIS: readonly [touches: string, action: string][] = [
   ['Flèches', 'Déplacer la sélection de 1 cm'],
   ['Maj + flèches', 'Déplacer de 10 cm'],
   ['R', 'Tourner l’objet choisi d’un quart de tour'],
+  ['3D : glisser ; Espace + glisser ou clic droit', 'Déplacer la vue ; tourner autour'],
+  ['3D : flèches ; Maj + flèches', 'Déplacer la vue ; tourner autour'],
+  ['3D : + et − ou molette', 'Zoomer, dézoomer'],
+  ['Visite : ↑ ↓ ; ← →', 'Avancer, reculer ; tourner'],
+  ['Visite : Z Q S D (ou W A S D)', 'Marcher, se décaler'],
+  ['Visite : Ctrl ou Maj enfoncé', 'Accélérer le pas'],
+  ['Visite : glisser', 'Regarder autour'],
   ['?', 'Afficher cette liste'],
 ];
 
@@ -52,12 +60,21 @@ const SIMPLES: Record<string, Action> = {
   '-': { type: 'zoomer', facteur: 0.8 },
 };
 
-/** Raccourcis (DES-47) : ignorés pendant une saisie dans un champ. */
-export function raccourci(ev: globalThis.KeyboardEvent, dispatch: (a: Action) => void) {
+/**
+ * Raccourcis (DES-47) : ignorés pendant une saisie dans un champ. Hors du plan 2D (3D, visite,
+ * photo, façades), seuls annuler, rétablir et Échap restent : les flèches et les lettres
+ * pilotent alors la caméra ou la marche, jamais le plan.
+ */
+export function raccourci(
+  ev: globalThis.KeyboardEvent,
+  dispatch: (a: Action) => void,
+  vue: Vue = 'plan',
+) {
   const cible = ev.target as HTMLElement;
   if (cible.closest('input, textarea, select, [contenteditable="true"]')) return;
   const mod = ev.metaKey || ev.ctrlKey;
   const k = ev.key.toLowerCase();
+  if (vue !== 'plan' && !(mod && (k === 'z' || k === 'y')) && k !== 'escape') return;
   const pas = ev.shiftKey ? 100 : 10;
   const fleches: Record<string, { x: number; y: number }> = {
     arrowleft: { x: -pas, y: 0 },

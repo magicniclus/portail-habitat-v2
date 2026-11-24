@@ -10,7 +10,7 @@ import {
 } from '@ph/core/dessin';
 import { COULEURS_3D } from '@ph/ui/tokens';
 import { Canvas } from '@react-three/fiber';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Vector3 } from 'three';
 import { niveauDe, sceneDe, type EtatEditeur } from '../etat';
 import { M, Niveau3D } from './Batiment3D';
@@ -27,11 +27,18 @@ import { Objets3D } from './Objets3D';
 export default function Visite({ etat }: { etat: EtatEditeur }) {
   const scene = sceneDe(etat);
   const courant = niveauDe(etat);
-  const [depart] = useState<Visiteur>(() => ({
+  const [depart, setDepart] = useState<Visiteur>(() => ({
     position: departVisite(courant),
     z: courant.altitude,
   }));
+  // Niveau changé dans la barre pendant la visite : on est transporté au départ de ce niveau.
+  const [niveauVu, setNiveauVu] = useState(courant.id);
+  if (niveauVu !== courant.id) {
+    setNiveauVu(courant.id);
+    setDepart({ position: departVisite(courant), z: courant.altitude });
+  }
   const dernier = useRef<Visiteur>(depart);
+  const signaler = useCallback((v: Visiteur) => (dernier.current = v), []);
   // Premier regard vers le plus long dégagement, jamais le nez contre un mur.
   const [premierRegard] = useState(() => regardVisite(courant, depart.position));
   const commandes = useRef<Commandes>({
@@ -39,19 +46,30 @@ export default function Visite({ etat }: { etat: EtatEditeur }) {
     joystick: { x: 0, y: 0 },
     lacet: premierRegard,
     tangage: 0,
+    course: false,
   });
   const [suivi, setSuivi] = useState({ ...depart, lacet: premierRegard });
 
   useEffect(() => {
     const touches = commandes.current.touches;
     const bas = (ev: KeyboardEvent) => {
+      commandes.current.course = ev.ctrlKey || ev.shiftKey || ev.metaKey;
       const k = ev.key.toLowerCase();
       if (!TOUCHES[k] || (ev.target as HTMLElement).closest('input, select, textarea')) return;
       ev.preventDefault();
       ev.stopPropagation();
       touches.add(k);
     };
-    const haut = (ev: KeyboardEvent) => touches.delete(ev.key.toLowerCase());
+    const haut = (ev: KeyboardEvent) => {
+      commandes.current.course = ev.ctrlKey || ev.shiftKey || ev.metaKey;
+      touches.delete(ev.key.toLowerCase());
+    };
+    // Fenêtre quittée (Alt + Tab…) : on s'arrête, aucune touche ne reste « enfoncée ».
+    const quitter = () => {
+      touches.clear();
+      commandes.current.course = false;
+    };
+    window.addEventListener('blur', quitter);
     // Capture : les flèches ne déplacent pas la sélection du plan pendant la visite.
     window.addEventListener('keydown', bas, true);
     window.addEventListener('keyup', haut);
@@ -62,6 +80,7 @@ export default function Visite({ etat }: { etat: EtatEditeur }) {
     return () => {
       window.removeEventListener('keydown', bas, true);
       window.removeEventListener('keyup', haut);
+      window.removeEventListener('blur', quitter);
       clearInterval(minuterie);
     };
   }, []);
@@ -74,7 +93,7 @@ export default function Visite({ etat }: { etat: EtatEditeur }) {
       className="relative h-full w-full touch-none select-none"
       data-testid="visite"
       tabIndex={0}
-      aria-label="Visite : ZQSD ou flèches pour marcher, glisser pour regarder"
+      aria-label="Visite : flèches pour avancer et tourner, Z Q S D pour marcher, Ctrl pour accélérer, glisser pour regarder"
       onPointerDown={(ev) => {
         ev.currentTarget.setPointerCapture(ev.pointerId);
         ev.currentTarget.focus();
@@ -122,12 +141,7 @@ export default function Visite({ etat }: { etat: EtatEditeur }) {
             </group>
           </group>
         ))}
-        <Marcheur
-          scene={scene}
-          commandes={commandes}
-          depart={depart}
-          signaler={(v) => (dernier.current = v)}
-        />
+        <Marcheur scene={scene} commandesRef={commandes} depart={depart} signaler={signaler} />
       </Canvas>
       <MiniPlan n={n} position={suivi.position} lacet={suivi.lacet} />
       <Joystick bouger={(v) => (commandes.current.joystick = v)} />

@@ -3,7 +3,7 @@
 import type { Scene } from '@ph/core/dessin';
 import type { Route } from 'next';
 import dynamic from 'next/dynamic';
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { usePresence } from './usePresence';
 import { VueDessus } from './VueDessus';
 import { useMediaQuery } from '@/lib/useMediaQuery';
@@ -66,8 +66,12 @@ export function EspaceDeTravail(p: {
   const telephone = useMediaQuery('(max-width: 899px)', false);
 
   // Raccourcis actifs tant que l'éditeur est ouvert, où que soit le focus (hors champs).
+  const vue = useRef(etat.vue);
   useEffect(() => {
-    const ecouter = (ev: globalThis.KeyboardEvent) => raccourci(ev, dispatch);
+    vue.current = etat.vue;
+  }, [etat.vue]);
+  useEffect(() => {
+    const ecouter = (ev: globalThis.KeyboardEvent) => raccourci(ev, dispatch, vue.current);
     document.addEventListener('keydown', ecouter);
     return () => document.removeEventListener('keydown', ecouter);
   }, []);

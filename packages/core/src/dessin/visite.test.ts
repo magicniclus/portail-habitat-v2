@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Niveau } from '../schemas/dessinScene';
 import { contexteTest, niveauMaquette, ok } from './aidesTest';
+import { ajouterMur } from './commandes';
 import { poserEscalier } from './escaliers';
 import { nouvelleScene } from './migrations';
 import { pointDansPolygone } from './geometrie';
@@ -76,6 +77,26 @@ describe('visite (DES-34)', () => {
     expect(niveauALaHauteur(scene, -50).altitude).toBe(0);
     // Hors de toute pièce et de toute marche : on garde son altitude.
     expect(solSousLesPieds(scene, { x: -5000, y: -5000 }, 0)).toBe(0);
+    // À l'étage, dans l'épaisseur d'un mur (seuil de porte) : on ne tombe pas au rez-de-chaussée.
+    const etage = scene.niveaux.find((x) => x.altitude === 2_700)!;
+    const cloisonne = ok(
+      ajouterMur(etage, { a: { x: 5000, y: 150 }, b: { x: 5000, y: 8450 }, type: 'cloison' }, ctx),
+    );
+    const s2 = { ...scene, niveaux: scene.niveaux.map((x) => (x.id === etage.id ? cloisonne : x)) };
+    expect(solSousLesPieds(s2, { x: 5000, y: 4000 }, 2_700)).toBe(2_700);
+  });
+
+  it('arrivé dans un meuble (changement de niveau) : on peut en sortir', () => {
+    const meuble = [
+      { x: 0, y: 0 },
+      { x: 1000, y: 0 },
+      { x: 1000, y: 1000 },
+      { x: 0, y: 1000 },
+    ];
+    expect(deplacerVisiteur({ x: 500, y: 500 }, { x: 900, y: 0 }, [meuble])).toEqual({
+      x: 1400,
+      y: 500,
+    });
   });
 
   it('départ décalé si un meuble occupe le centre de la pièce', () => {
