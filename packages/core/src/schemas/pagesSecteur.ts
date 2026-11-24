@@ -53,6 +53,8 @@ export const pageSecteur = z.object({
   texteGenereLe: horodatage.optional(),
   texteEssais: z.number().int().nonnegative(),
   texteErreur: z.string().max(300).optional(),
+  /** Rédaction en cours depuis (verrou de 10 minutes : un seul appel à l'IA à la fois). */
+  texteVerrou: horodatage.optional(),
   creeeLe: horodatage,
   majLe: horodatage,
 });

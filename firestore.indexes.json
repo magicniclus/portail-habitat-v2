@@ -1459,6 +1459,31 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "pagesSecteur",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "metier", "order": "ASCENDING" },
+        { "fieldPath": "indexable", "order": "ASCENDING" },
+        { "fieldPath": "commune.departement", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "pagesSecteur",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "metier", "order": "ASCENDING" },
+        { "fieldPath": "texteEtat", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "pagesSecteur",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "indexable", "order": "ASCENDING" },
+        { "fieldPath": "texteEtat", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": [

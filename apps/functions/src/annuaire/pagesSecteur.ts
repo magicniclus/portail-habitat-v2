@@ -1,7 +1,16 @@
 import { appAdmin } from '@ph/firebase/admin';
 import { depuisFirestore } from '@ph/firebase/conversion';
-import { communesApiGouv, recompterPages, suivreArtisan } from '@ph/firebase/pages-secteur';
-import { artisanPublic } from '@ph/core/schemas';
+import { clientAnthropic } from '@ph/firebase/ia';
+import {
+  communesApiGouv,
+  pagesSansTexte,
+  rechercheAnthropic,
+  recompterPages,
+  redigerTextePage,
+  suivreArtisan,
+} from '@ph/firebase/pages-secteur';
+import { besoinTexte } from '@ph/core/pages-secteur';
+import { artisanPublic, pageSecteur } from '@ph/core/schemas';
 import { getFirestore } from 'firebase-admin/firestore';
 import { logger } from 'firebase-functions';
 import { onDocumentWritten } from 'firebase-functions/v2/firestore';
@@ -50,5 +59,44 @@ export const pagesSecteurNuit = onSchedule(
       apres = r.dernier;
     }
     logger.info('Recomptage des pages de secteur', total);
+    const ctx = ctxTexte();
+    if (!ctx) return;
+    for (const id of await pagesSansTexte(s.db, 20)) {
+      if (Date.now() > fin) break;
+      logger.info('Texte de page de secteur (nuit)', {
+        id,
+        issue: await redigerTextePage(ctx, id),
+      });
+    }
+  },
+);
+
+/** Clé de l'API Claude (secret `ANTHROPIC_API_KEY`) : absente, aucun texte IA n'est tenté. */
+function ctxTexte() {
+  const cle = process.env.ANTHROPIC_API_KEY;
+  if (!cle) return null;
+  return {
+    db: getFirestore(appAdmin()),
+    horloge: Date.now,
+    client: clientAnthropic(cle),
+    recherche: rechercheAnthropic(cle),
+  };
+}
+
+/**
+ * Page de secteur créée ou devenue indexable : rédige son texte local (recherche web + IA,
+ * contrôles) ; la page affiche son texte construit sur nos données en attendant.
+ */
+export const textePageSecteur = onDocumentWritten(
+  { document: 'pagesSecteur/{id}', region: REGION, timeoutSeconds: 300 },
+  async (e) => {
+    const apres = e.data?.after.data();
+    if (!apres) return;
+    const p = pageSecteur.safeParse(depuisFirestore(apres));
+    if (!p.success || !besoinTexte(p.data, new Date()) || p.data.texteVerrou) return;
+    const ctx = ctxTexte();
+    if (!ctx) return;
+    const issue = await redigerTextePage(ctx, e.params.id);
+    logger.info('Texte de page de secteur', { id: e.params.id, issue });
   },
 );

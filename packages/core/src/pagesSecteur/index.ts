@@ -185,3 +185,4 @@ export function similarite(a: string, b: string): number {
 }
 /** Au-delà, deux pages se ressemblent trop (contenu dupliqué) : le texte est refusé. */
 export const SIMILARITE_MAX = 0.35;
+export * from './redaction';

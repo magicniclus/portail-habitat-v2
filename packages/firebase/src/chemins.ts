@@ -171,6 +171,7 @@ export const chemins = {
   diagnosticItem: (id: string) => `referentiel/diagnostics/items/${id}`,
   diagnosticPrix: (id: string) => `referentiel/diagnostics/prix/${id}`,
   metiers: () => 'referentiel/metiers/items',
+  prestationsItems: () => 'referentiel/prestations/items',
   labels: () => 'referentiel/labels/items',
   /** Textes des pages communes (contenu SEO public, écrit par l'admin). */
   communeTexte: (slug: string) => `referentiel/communes/items/${slug}`,
