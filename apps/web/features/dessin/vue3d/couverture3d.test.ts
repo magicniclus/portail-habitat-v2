@@ -93,4 +93,25 @@ describe('couverture en volume', () => {
     if (!quatre.ok) throw new Error(quatre.message);
     expect(aretesHautes(toit3D(quatre.data)!.pans)).toHaveLength(5);
   });
+
+  it('pan en L (après réunion des ailes) : rendu exact, aucun triangle hors du pan', () => {
+    // Pan plat en L : 4 m × 4 m moins un carré de 2 m × 2 m = 12 m².
+    // Premier sommet au bout d'une branche : un éventail depuis lui déborde sur l'encoche.
+    const L = [
+      [4_000, 2_000],
+      [2_000, 2_000],
+      [2_000, 4_000],
+      [0, 4_000],
+      [0, 0],
+      [4_000, 0],
+    ].map(([x, y]) => ({ x: x!, y: y!, z: 3_000 }));
+    const { dessus } = geometrieCouverture([L], 0, 50);
+    const p = dessus.getAttribute('position');
+    let aire = 0;
+    for (let i = 0; i < p.count; i += 3) {
+      const [a, b, c] = [i, i + 1, i + 2].map((k) => [p.getX(k), p.getZ(k)] as const);
+      aire += Math.abs((b![0] - a![0]) * (c![1] - a![1]) - (c![0] - a![0]) * (b![1] - a![1])) / 2;
+    }
+    expect(aire).toBeCloseTo(12, 3);
+  });
 });

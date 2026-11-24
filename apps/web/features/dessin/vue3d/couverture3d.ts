@@ -1,5 +1,5 @@
 import { pointDansPolygone, type Point3 } from '@ph/core/dessin';
-import { BufferGeometry, Float32BufferAttribute } from 'three';
+import { BufferGeometry, Float32BufferAttribute, ShapeUtils, Vector2 } from 'three';
 import { M } from './unites';
 
 type V = [number, number, number];
@@ -70,15 +70,22 @@ export function geometrieCouverture(
     const h = Math.hypot(n[0], n[2]) < 1e-6 ? ([1, 0, 0] as V) : unit([-n[2], 0, n[0]]);
     const s = unit(vect(n, h));
     const coord = (q: V) => [scal(q, h), scal(q, s)];
-    for (let i = 1; i < p.length - 1; i++) {
-      const [a, b, c] = [p[0]!, p[i]!, p[i + 1]!];
+    // Vraie triangulation (pan en L, en encoche après réunion des ailes) : un éventail depuis
+    // un sommet ne vaut que pour un pan convexe et poserait des triangles hors du pan.
+    const triangles = ShapeUtils.triangulateShape(
+      p.map((q) => new Vector2(...(coord(q) as [number, number]))),
+      [],
+    );
+    for (const [i, j, k] of triangles as [number, number, number][]) {
+      const [a, b, c] = [p[i]!, p[j]!, p[k]!];
       const ok = tri(pos, a, b, c, n);
       uv.push(...coord(a), ...coord(ok ? b : c), ...coord(ok ? c : b));
     }
     // Sous-face et chants, une épaisseur plus bas.
     const bas = p.map((q): V => [q[0], q[1] - e, q[2]]);
     const vers: V = [-n[0], -n[1], -n[2]];
-    for (let i = 1; i < bas.length - 1; i++) tri(posR, bas[0]!, bas[i]!, bas[i + 1]!, vers);
+    for (const [i, j, k] of triangles as [number, number, number][])
+      tri(posR, bas[i]!, bas[j]!, bas[k]!, vers);
     const centre = p.reduce((m, q) => [m[0] + q[0] / p.length, 0, m[2] + q[2] / p.length], [
       0, 0, 0,
     ] as V);

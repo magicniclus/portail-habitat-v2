@@ -87,16 +87,18 @@ function soustraire(p: Point[], c: readonly Point[]): Point[][] {
 
 /**
  * Pans visibles du toit : pour chaque aile, ses pans privés des zones où un pan d'une autre
- * aile passe au-dessus. Les pans verticaux (sans plan) sont gardés tels quels.
+ * aile passe au-dessus, avec l'aile qui les porte. Les pans verticaux sont gardés tels quels.
  */
-export function pansVisibles(parAile: readonly (readonly Point3[][])[]): Point3[][] {
+export function pansVisibles(
+  parAile: readonly (readonly Point3[][])[],
+): { pan: Point3[]; aile: number }[] {
   const plans = parAile.map((pans) => pans.map((p) => ({ p, plan: planDe(p) })));
-  const resultat: Point3[][] = [];
+  const resultat: { pan: Point3[]; aile: number }[] = [];
   plans.forEach((pans, i) => {
     const autres = plans.filter((_, j) => j !== i).flat();
     for (const { p, plan } of pans) {
       if (!plan) {
-        resultat.push(p);
+        resultat.push({ pan: p, aile: i });
         continue;
       }
       let morceaux: Point[][] = [p.map(({ x, y }) => ({ x, y }))];
@@ -112,7 +114,10 @@ export function pansVisibles(parAile: readonly (readonly Point3[][])[]): Point3[
         morceaux = morceaux.flatMap((m) => soustraire(m, dessus));
       }
       for (const m of morceaux)
-        resultat.push(m.map(({ x, y }) => ({ x, y, z: plan.a * x + plan.b * y + plan.c })));
+        resultat.push({
+          pan: m.map(({ x, y }) => ({ x, y, z: plan.a * x + plan.b * y + plan.c })),
+          aile: i,
+        });
     }
   });
   return resultat;

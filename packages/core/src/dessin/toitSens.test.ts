@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { contexteTest, niveauMaquette, ok } from './aidesTest';
-import { definirToiture, orienterToit, reglerPartieToit } from './commandesToit';
+import { definirToiture, modifierToiture, orienterToit, reglerPartieToit } from './commandesToit';
+import { defautsToit } from './aidesTestToit';
+import { nouvelleScene } from './migrations';
+import { pieceRectangle } from './piecesDessinees';
 import { toit3D } from './toits3d';
 import { emprisesToit } from './toitures';
 
@@ -52,5 +55,24 @@ describe('sens du toit choisi sur le plan (DES-16)', () => {
     const commun = ok(reglerPartieToit(r, cle, { sens: null, descente: null }));
     expect(commun.toiture!.parties).toEqual([]);
     expect(orienterToit({ ...maison, toiture: null }, { sens: 'vertical' }).ok).toBe(false);
+  });
+
+  it('versants confondus (mansarde à 70° : brisis et terrasson de même pente) : un pan chacun', () => {
+    const n = ok(modifierToiture(ok(definirToiture(maison, 'mansarde')), { pentes: [700] }));
+    expect(toit3D(n)!.pans).toHaveLength(2);
+  });
+
+  it('avancée de moins de 60 cm : englobée par l’aile qu’elle longe, toit sans trou', () => {
+    const avancee = ok(
+      pieceRectangle(maison, { x: 3_000, y: 8_450 }, { x: 7_000, y: 8_850 }, contexteTest()),
+    );
+    const t = toit3D(ok(definirToiture(avancee, 'deux_pans')))!;
+    expect(t.ailes).toHaveLength(1);
+    expect(
+      defautsToit({
+        ...nouvelleScene(contexteTest().nouvelId),
+        niveaux: [{ ...avancee, toiture: ok(definirToiture(avancee, 'deux_pans')).toiture }],
+      }),
+    ).toEqual([]);
   });
 });

@@ -146,16 +146,22 @@ export function ailesDuNiveau(
     choisis.push(q);
     for (let i = q.i0; i < q.i1; i++) for (let j = q.j0; j < q.j1; j++) couvert[i]![j] = true;
   }
-  // Une aile dont toutes les cases sont couvertes par les autres est inutile.
-  const utiles = choisis.filter((q, k) => {
+  // Une aile dont toutes les cases sont couvertes par les autres est inutile. On les retire une
+  // à une (les plus petites d'abord), en revérifiant à chaque fois : deux ailes qui se couvrent
+  // l'une l'autre ne disparaissent jamais ensemble (sinon un trou dans le toit).
+  const utiles = [...choisis];
+  const couverteParLesAutres = (q: Rect) => {
     for (let i = q.i0; i < q.i1; i++)
       for (let j = q.j0; j < q.j1; j++)
-        if (!choisis.some((o, l) => l !== k && o.i0 <= i && i < o.i1 && o.j0 <= j && j < o.j1))
-          return true;
-    return false;
-  });
-  // Deux ailes de même sens presque confondues (mur en biais) : une seule, leur rectangle
-  // commun, s'il ne dépasse leur surface réunie que de 15 % (sinon deux faîtages côte à côte).
+        if (!utiles.some((o) => o !== q && o.i0 <= i && i < o.i1 && o.j0 <= j && j < o.j1))
+          return false;
+    return true;
+  };
+  for (const q of [...choisis].sort((x, y) => aire(x) - aire(y)))
+    if (couverteParLesAutres(q)) utiles.splice(utiles.indexOf(q), 1);
+  // Deux ailes presque confondues (mur en biais) : une seule, leur rectangle commun, s'il ne
+  // dépasse leur surface réunie que de 3 % (sinon deux faîtages côte à côte). Au-delà (découpe
+  // d'un L), on garde deux ailes : jamais de toit au-dessus d'un vide.
   for (let fusion = true; fusion;) {
     fusion = false;
     for (let x = 0; x < utiles.length && !fusion; x++)
@@ -174,7 +180,7 @@ export function ailesDuNiveau(
           j1: Math.min(p.j1, q.j1),
         };
         const recouvre = commun.i1 > commun.i0 && commun.j1 > commun.j0 ? aire(commun) : 0;
-        if (recouvre > 0 && aire(boite) <= (aire(p) + aire(q) - recouvre) * 1.15) {
+        if (recouvre > 0 && aire(boite) <= (aire(p) + aire(q) - recouvre) * 1.03) {
           utiles.splice(y, 1);
           utiles[x] = boite;
           fusion = true;
@@ -182,20 +188,37 @@ export function ailesDuNiveau(
       }
   }
   // Une partie de moins de 60 cm de large n'est pas une aile (lamelle le long d'un mur, reste
-  // d'arrondi) : les débords des ailes voisines la couvrent.
-  const ailes: Aile[] = utiles
-    .filter((q) => Math.min(as[q.i1]! - as[q.i0]!, bs[q.j1]! - bs[q.j0]!) >= 600)
-    .map((q) => {
-      const [a0, a1, b0, b1] = [as[q.i0]!, as[q.i1]!, bs[q.j0]!, bs[q.j1]!];
-      return {
-        a0,
-        a1,
-        b0,
-        b1,
-        selonA: a1 - a0 >= b1 - b0,
-        cotes: { a0: 'exterieur', a1: 'exterieur', b0: 'exterieur', b1: 'exterieur' },
-      };
+  // d'arrondi) : l'aile voisine qui la longe s'agrandit pour l'englober. Faute de voisine, la
+  // lamelle reste une petite aile : jamais de trou dans le toit.
+  const fine = (q: Rect) => Math.min(as[q.i1]! - as[q.i0]!, bs[q.j1]! - bs[q.j0]!) < 600;
+  for (const q of utiles.filter(fine)) {
+    const voisine = utiles.find(
+      (o) =>
+        o !== q &&
+        !fine(o) &&
+        (((o.i1 === q.i0 || o.i0 === q.i1) && o.j0 <= q.j0 && q.j1 <= o.j1) ||
+          ((o.j1 === q.j0 || o.j0 === q.j1) && o.i0 <= q.i0 && q.i1 <= o.i1)),
+    );
+    if (!voisine) continue;
+    Object.assign(voisine, {
+      i0: Math.min(voisine.i0, q.i0),
+      i1: Math.max(voisine.i1, q.i1),
+      j0: Math.min(voisine.j0, q.j0),
+      j1: Math.max(voisine.j1, q.j1),
     });
+    utiles.splice(utiles.indexOf(q), 1);
+  }
+  const ailes: Aile[] = utiles.map((q) => {
+    const [a0, a1, b0, b1] = [as[q.i0]!, as[q.i1]!, bs[q.j0]!, bs[q.j1]!];
+    return {
+      a0,
+      a1,
+      b0,
+      b1,
+      selonA: a1 - a0 >= b1 - b0,
+      cotes: { a0: 'exterieur', a1: 'exterieur', b0: 'exterieur', b1: 'exterieur' },
+    };
+  });
   arreterAuxFaitages(ailes);
   // Côtés : contre l'étage (appentis) ou contre une autre partie de la maison.
   for (const w of ailes)

@@ -3,7 +3,7 @@
 import { toit3D, type Niveau, type Point3 } from '@ph/core/dessin';
 import { COULEURS_3D, COULEURS_COUVERTURE } from '@ph/ui/tokens';
 import { useEffect, useMemo } from 'react';
-import { BufferGeometry, DoubleSide, Float32BufferAttribute } from 'three';
+import { BufferGeometry, DoubleSide, Float32BufferAttribute, ShapeUtils, Vector2 } from 'three';
 import { aretesHautes, geometrieCouverture } from './couverture3d';
 import { materiauCouverture, materiauRevetement, materiauUni } from './textures';
 import { M } from './unites';
@@ -20,12 +20,50 @@ const RIVE = 160;
 function geometrie(polys: readonly Point3[][], dz = 0): BufferGeometry {
   const pos: number[] = [];
   for (const p of polys)
-    for (let i = 1; i < p.length - 1; i++)
-      for (const q of [p[0]!, p[i]!, p[i + 1]!]) pos.push(M(q.x), M(q.z + dz), M(q.y));
+    for (const [i, j, k] of trianguler(p))
+      for (const q of [p[i]!, p[j]!, p[k]!]) pos.push(M(q.x), M(q.z + dz), M(q.y));
   const g = new BufferGeometry();
   g.setAttribute('position', new Float32BufferAttribute(pos, 3));
   g.computeVertexNormals();
   return g;
+}
+
+/**
+ * Triangles d'un polygone plan quelconque (mur au haut en escalier, acrotère) : projeté sur son
+ * plan, puis vraie triangulation. Un éventail depuis un sommet ne vaut que pour un polygone
+ * convexe et poserait des triangles hors du mur (au-dessus du toit).
+ */
+function trianguler(p: readonly Point3[]): [number, number, number][] {
+  const n = { x: 0, y: 0, z: 0 };
+  p.forEach((a, i) => {
+    const b = p[(i + 1) % p.length]!;
+    n.x += (a.y - b.y) * (a.z + b.z);
+    n.y += (a.z - b.z) * (a.x + b.x);
+    n.z += (a.x - b.x) * (a.y + b.y);
+  });
+  // On abandonne l'axe dominant de la normale : projection sans écrasement.
+  const [ax, ay, az] = [Math.abs(n.x), Math.abs(n.y), Math.abs(n.z)];
+  const plat = (q: Point3) =>
+    az >= ax && az >= ay
+      ? new Vector2(q.x, q.y)
+      : ax >= ay
+        ? new Vector2(q.y, q.z)
+        : new Vector2(q.x, q.z);
+  // Même sens que le polygone (sa face éclairée reste celle choisie par `versLExterieur`).
+  return (ShapeUtils.triangulateShape(p.map(plat), []) as [number, number, number][]).map(
+    ([i, j, k]) => {
+      const [a, b, c] = [p[i]!, p[j]!, p[k]!];
+      const [u, v] = [
+        { x: b.x - a.x, y: b.y - a.y, z: b.z - a.z },
+        { x: c.x - a.x, y: c.y - a.y, z: c.z - a.z },
+      ];
+      const d =
+        (u.y * v.z - u.z * v.y) * n.x +
+        (u.z * v.x - u.x * v.z) * n.y +
+        (u.x * v.y - u.y * v.x) * n.z;
+      return d >= 0 ? [i, j, k] : [i, k, j];
+    },
+  );
 }
 
 /**

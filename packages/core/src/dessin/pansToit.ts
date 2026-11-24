@@ -1,112 +1,60 @@
-import {
-  BRISIS,
-  hauteurLocale,
-  versMonde,
-  type Emprise,
-  type Point3,
-  type Toiture,
-} from './toitures';
+import { plansAile, type Emprise, type PlanToit, type Toiture } from './toitures';
 
 export type Loc = [number, number];
 
+/** Partie du polygone où f(a, b) ≤ 0 (f linéaire) : découpe de Sutherland–Hodgman. */
+function garder(poly: Loc[], f: (p: Loc) => number): Loc[] {
+  const out: Loc[] = [];
+  poly.forEach((p, i) => {
+    const q = poly[(i + 1) % poly.length]!;
+    const [fp, fq] = [f(p), f(q)];
+    if (fp <= 0) out.push(p);
+    if (fp < 0 !== fq < 0 && fp !== fq) {
+      const t = fp / (fp - fq);
+      out.push([p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t]);
+    }
+  });
+  return out;
+}
+
+const aire = (poly: Loc[]) =>
+  Math.abs(
+    poly.reduce((s, p, i) => {
+      const q = poly[(i + 1) % poly.length]!;
+      return s + p[0] * q[1] - q[0] * p[1];
+    }, 0),
+  ) / 2;
+
 /**
- * Pans d'une aile en coordonnées locales (a, b), avant élévation. Une croupe ou un quatre
- * pans n'ont de pente de bout qu'aux bouts libres ; contre une autre aile, le faîtage file.
+ * Pans d'une aile en coordonnées locales (a, b), avant élévation : pour chaque versant, la zone
+ * de l'aile (débords compris) où son plan est le plus bas (`plansAile`). Arêtiers, faîtages et
+ * noues tombent d'eux-mêmes à leur place, quels que soient les débords ou les côtés contre une
+ * autre aile ; chaque pan est plan.
  */
 export function pansLocaux(t: Toiture, e: Emprise): Loc[][] {
-  const { aMin: A0, aMax: A1, bMin: B0, bMax: B1 } = e;
-  switch (e.type) {
-    case 'monopente':
-    case 'plate':
-      return [
-        [
-          [A0, B0],
-          [A1, B0],
-          [A1, B1],
-          [A0, B1],
-        ],
-      ];
-    case 'mansarde': {
-      const bb = e.P0 / 2 - e.P0 * BRISIS.part;
-      return [
-        [
-          [A0, B0],
-          [A1, B0],
-          [A1, -bb],
-          [A0, -bb],
-        ],
-        [
-          [A0, -bb],
-          [A1, -bb],
-          [A1, 0],
-          [A0, 0],
-        ],
-        [
-          [A0, B1],
-          [A1, B1],
-          [A1, bb],
-          [A0, bb],
-        ],
-        [
-          [A0, bb],
-          [A1, bb],
-          [A1, 0],
-          [A0, 0],
-        ],
-      ];
+  const plans = plansAile(t, e);
+  const rect: Loc[] = [
+    [e.aMin, e.bMin],
+    [e.aMax, e.bMin],
+    [e.aMax, e.bMax],
+    [e.aMin, e.bMax],
+  ];
+  const memes = (p: PlanToit, q: PlanToit) =>
+    Math.abs(p.ca - q.ca) < 1e-9 && Math.abs(p.cb - q.cb) < 1e-9 && Math.abs(p.c0 - q.c0) < 1e-6;
+  return plans.flatMap((p, i) => {
+    let poly = rect;
+    for (let j = 0; j < plans.length && poly.length >= 3; j++) {
+      const q = plans[j]!;
+      if (j === i) continue;
+      // Deux versants confondus : le premier seul porte le pan.
+      if (memes(p, q)) {
+        if (j < i) poly = [];
+        continue;
+      }
+      poly = garder(poly, ([a, b]) => (p.ca - q.ca) * a + (p.cb - q.cb) * b + (p.c0 - q.c0));
     }
-    case 'deux_pans':
-      return [
-        [
-          [A0, B0],
-          [A1, B0],
-          [A1, 0],
-          [A0, 0],
-        ],
-        [
-          [A0, B1],
-          [A1, B1],
-          [A1, 0],
-          [A0, 0],
-        ],
-      ];
-    case 'quatre_pans':
-    case 'croupe': {
-      // Bout du faîtage : en retrait aux bouts libres (croupe), au bord contre une autre aile.
-      const recul = t.type === 'croupe' ? e.P0 / 4 : e.P0 / 2;
-      const libre0 = e.cotes.a0 === 'exterieur';
-      const libre1 = e.cotes.a1 === 'exterieur';
-      const r0 = libre0 ? Math.min(0, -e.L0 / 2 + recul) : A0;
-      const r1 = libre1 ? Math.max(0, e.L0 / 2 - recul) : A1;
-      const pans: Loc[][] = [
-        [
-          [A0, B0],
-          [A1, B0],
-          [r1, 0],
-          [r0, 0],
-        ],
-        [
-          [A1, B1],
-          [A0, B1],
-          [r0, 0],
-          [r1, 0],
-        ],
-      ];
-      if (libre1)
-        pans.push([
-          [A1, B0],
-          [A1, B1],
-          [r1, 0],
-        ]);
-      if (libre0)
-        pans.push([
-          [A0, B1],
-          [A0, B0],
-          [r0, 0],
-        ]);
-      return pans;
-    }
-  }
+    return poly.length >= 3 && aire(poly) > 100 ? [poly] : [];
+  });
 }
 
 /** Bords d'égout (gouttières) d'une aile, côtés extérieurs seulement. */
@@ -196,87 +144,4 @@ export function egoutsLocaux(e: Emprise): Loc[][] {
       ]);
   }
   return bords;
-}
-
-/** Murs sous le toit : pignons aux bouts libres, mur haut d'un appentis, acrotères. */
-/**
- * Bandes de surcroît : mur entre le haut des murs et le toit relevé, le long des égouts
- * (les pignons, eux, descendent déjà jusqu'au haut des murs).
- */
-function bandesSurcroit(e: Emprise): Point3[][] {
-  const s = e.surcroit ?? 0;
-  if (s < 1 || e.type === 'plate') return [];
-  const [L0, P0] = [e.L0 / 2, e.P0 / 2];
-  const ext = (c: keyof Emprise['cotes']) => e.cotes[c] === 'exterieur';
-  const cotes: [Loc, Loc, keyof Emprise['cotes']][] =
-    e.type === 'monopente'
-      ? [e.sens === 1 ? [[-L0, -P0], [L0, -P0], 'b0'] : [[-L0, P0], [L0, P0], 'b1']]
-      : [
-          [[-L0, -P0], [L0, -P0], 'b0'],
-          [[-L0, P0], [L0, P0], 'b1'],
-          ...(e.type === 'quatre_pans' || e.type === 'croupe'
-            ? ([
-                [[-L0, -P0], [-L0, P0], 'a0'],
-                [[L0, -P0], [L0, P0], 'a1'],
-              ] as [Loc, Loc, keyof Emprise['cotes']][])
-            : []),
-        ];
-  return cotes
-    .filter(([, , c]) => ext(c))
-    .map(([p, q]) => [
-      versMonde(e, p[0], p[1], 0),
-      versMonde(e, q[0], q[1], 0),
-      versMonde(e, q[0], q[1], s),
-      versMonde(e, p[0], p[1], s),
-    ]);
-}
-
-export function mursLocaux(t: Toiture, e: Emprise): Point3[][] {
-  return [...mursDuToit(t, e), ...bandesSurcroit(e)];
-}
-
-function mursDuToit(t: Toiture, e: Emprise): Point3[][] {
-  const [L0, P0] = [e.L0 / 2, e.P0 / 2];
-  const z = (a: number, b: number) => hauteurLocale(t, e, a, b);
-  const ext = (c: keyof Emprise['cotes']) => e.cotes[c] === 'exterieur';
-  // Toit plat : ses acrotères suivent les murs extérieurs (acroteres.ts), pas les ailes.
-  if (e.type === 'plate') return [];
-  if (e.type === 'quatre_pans' || e.type === 'croupe') return [];
-  const bs =
-    e.type === 'mansarde'
-      ? [-P0, -P0 + e.P0 * BRISIS.part, 0, P0 - e.P0 * BRISIS.part, P0]
-      : e.type === 'monopente'
-        ? [-P0, P0]
-        : [-P0, 0, P0];
-  const coupe = (a: number) => [
-    versMonde(e, a, P0, 0),
-    versMonde(e, a, -P0, 0),
-    ...bs.map((b) => versMonde(e, a, b, z(a, b))),
-  ];
-  // Pignons aux deux bouts, même contre une autre partie de la maison : si celle-ci est plus
-  // basse, le pignon la domine et ferme le toit (jamais de trou) ; sinon il reste caché dessous.
-  const murs: Point3[][] = [coupe(-L0), coupe(L0)];
-  // Monopente d'un seul tenant : les côtés extérieurs sont fermés jusque sous le toit.
-  if (e.type === 'monopente' && e.pente)
-    for (const [b, c] of [
-      [-P0, 'b0'],
-      [P0, 'b1'],
-    ] as const)
-      if (ext(c))
-        murs.push([
-          versMonde(e, -L0, b, 0),
-          versMonde(e, L0, b, 0),
-          versMonde(e, L0, b, z(L0, b)),
-          versMonde(e, -L0, b, z(-L0, b)),
-        ]);
-  // Mur haut d'une monopente, sauf contre l'étage (l'appentis s'y adosse).
-  const haut = e.sens === 1 ? P0 : -P0;
-  if (e.type === 'monopente' && !e.pente && ext(e.sens === 1 ? 'b1' : 'b0'))
-    murs.push([
-      versMonde(e, -L0, haut, 0),
-      versMonde(e, L0, haut, 0),
-      versMonde(e, L0, haut, z(L0, haut)),
-      versMonde(e, -L0, haut, z(-L0, haut)),
-    ]);
-  return murs;
 }

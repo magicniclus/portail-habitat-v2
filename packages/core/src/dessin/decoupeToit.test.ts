@@ -14,8 +14,10 @@ describe('réunion des toits des ailes (DES-16)', () => {
   it('un pan plus bas perd la partie couverte par un pan plus haut', () => {
     const bas = carre(0, 0, 1000, () => 0);
     const haut = carre(500, 0, 1000, () => 100);
-    const [a, b] = [pansVisibles([[bas], [haut]]), pansVisibles([[haut], [bas]])];
-    const surface = (l: typeof a) => l.reduce((s, p) => s + aire3D(p), 0);
+    const [a, b] = [pansVisibles([[bas], [haut]]), pansVisibles([[haut], [bas]])].map((r) =>
+      r.map((v) => v.pan),
+    );
+    const surface = (l: typeof a) => l!.reduce((s, p) => s + aire3D(p), 0);
     // 1 m² (haut) + 0,5 m² visibles du pan bas, dans les deux ordres.
     expect(surface(a)).toBeCloseTo(1_500_000, -2);
     expect(surface(b)).toBeCloseTo(1_500_000, -2);
@@ -24,7 +26,7 @@ describe('réunion des toits des ailes (DES-16)', () => {
   it('pans qui se croisent : chacun garde sa partie au-dessus ; pan vertical gardé ; caché en entier', () => {
     const monte = carre(0, 0, 1000, (x) => x);
     const descend = carre(0, 0, 1000, (x) => 1000 - x);
-    const v = pansVisibles([[monte], [descend]]);
+    const v = pansVisibles([[monte], [descend]]).map((v) => v.pan);
     // Chacun garde la moitié où il est le plus haut.
     expect(v.reduce((s, p) => s + aire3D(p), 0) / 1e6).toBeCloseTo(2 * 0.5 * Math.SQRT2, 2);
     const mur = [
@@ -32,9 +34,11 @@ describe('réunion des toits des ailes (DES-16)', () => {
       { x: 1000, y: 0, z: 0 },
       { x: 1000, y: 0, z: 500 },
     ];
-    expect(pansVisibles([[mur], [monte]])).toContainEqual(mur);
+    expect(pansVisibles([[mur], [monte]]).map((v) => v.pan)).toContainEqual(mur);
     expect(
-      pansVisibles([[carre(100, 100, 200, () => 0)], [carre(0, 0, 1000, () => 50)]]),
+      pansVisibles([[carre(100, 100, 200, () => 0)], [carre(0, 0, 1000, () => 50)]]).map(
+        (v) => v.pan,
+      ),
     ).toHaveLength(1);
     // Un pan dégénéré (points alignés) est gardé tel quel.
     const ligne = [
@@ -42,6 +46,6 @@ describe('réunion des toits des ailes (DES-16)', () => {
       { x: 1, y: 0, z: 0 },
       { x: 2, y: 0, z: 0 },
     ];
-    expect(pansVisibles([[ligne], []])).toEqual([ligne]);
+    expect(pansVisibles([[ligne], []]).map((v) => v.pan)).toEqual([ligne]);
   });
 });

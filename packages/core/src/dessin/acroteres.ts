@@ -1,7 +1,6 @@
 import type { Niveau, Point } from '../schemas/dessinScene';
 import { couvertureEtage, sousToit } from './ailesToit';
 import { pointDansPolygone } from './geometrie';
-import { contourMur } from './murs';
 import { contoursRaccordes } from './raccords';
 import { devant } from './revetements';
 import { ACROTERE, versLocal, type Emprise, type Point3 } from './toitures';
@@ -29,11 +28,9 @@ export function acroteres(n: Niveau, dessus: Niveau | null, ailes: readonly Empr
         return Math.abs(l.a) <= e.L0 / 2 + m.epaisseur && Math.abs(l.b) <= e.P0 / 2 + m.epaisseur;
       });
       if (!aile) return [];
-      const c = contours.get(m.id) ?? contourMur(m);
-      const [bas, dessusMur] = [
-        aile.base + (aile.surcroit ?? 0),
-        aile.base + (aile.surcroit ?? 0) + ACROTERE,
-      ];
+      const c = contours.get(m.id)!;
+      const bas = aile.base + (aile.surcroit ?? 0);
+      const dessusMur = bas + ACROTERE;
       const faces: Point3[][] = c.map((p, i) => {
         const q = c[(i + 1) % c.length]!;
         return [

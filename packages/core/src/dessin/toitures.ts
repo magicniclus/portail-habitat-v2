@@ -204,7 +204,7 @@ const penteDe = (t: Toiture) => t.pentes[0]! / 10;
  * Hauteur du toit au-dessus du haut des murs au point local (a, b) ; négative dans les débords.
  * Les pans ont tous la même pente (sauf brisis de mansarde et croupe, plus raide).
  */
-type FormeAile = Pick<Emprise, 'L0' | 'P0'> &
+export type FormeAile = Pick<Emprise, 'L0' | 'P0'> &
   Partial<
     Pick<Emprise, 'cotes' | 'type' | 'sens' | 'kMax' | 'surcroit' | 'pente' | 'centre' | 'u' | 'v'>
   >;
@@ -221,44 +221,60 @@ export function surcroitDe(t: Toiture, e: FormeAile & Pick<Emprise, 'bMin' | 'bM
   return Math.max(0, -hauteurBrute(t, e, 0, e.bMin), -hauteurBrute(t, e, 0, e.bMax));
 }
 
-function hauteurBrute(t: Toiture, e: FormeAile, a: number, b: number): number {
+/** Plan d'un versant, en coordonnées locales : hauteur = ca·a + cb·b + c0 (mm). */
+export type PlanToit = { ca: number; cb: number; c0: number };
+
+/**
+ * Versants d'une aile (DES-16) : un plan par versant. Le toit est partout le plus bas de ces
+ * plans (toit convexe : deux pans, croupes, mansarde, monopente, plat) et chaque pan est la
+ * zone où son plan est le plus bas (`pansLocaux`) : hauteur et forme des pans viennent de la
+ * même définition, un pan est plan par construction, quels que soient les débords.
+ */
+export function plansAile(t: Toiture, e: FormeAile): PlanToit[] {
   const k = Math.min(tan(penteDe(t)), e.kMax ?? Infinity);
-  const versB = e.P0 / 2 - Math.abs(b);
-  // Croupe ou quatre pans : la pente de bout n'existe qu'aux bouts libres (pas contre une aile).
+  const [L, P] = [e.L0 / 2, e.P0 / 2];
+  // Pente de bout (croupe, quatre pans) seulement aux bouts libres, pas contre une autre aile.
   const libre = (c: Cote | undefined) => c === undefined || c === 'exterieur';
-  const versA =
-    a < 0
-      ? libre(e.cotes?.a0)
-        ? e.L0 / 2 + a
-        : Infinity
-      : libre(e.cotes?.a1)
-        ? e.L0 / 2 - a
-        : Infinity;
+  const bouts = (kb: number) => [
+    ...(libre(e.cotes?.a0) ? [{ ca: kb, cb: 0, c0: L * kb }] : []),
+    ...(libre(e.cotes?.a1) ? [{ ca: -kb, cb: 0, c0: L * kb }] : []),
+  ];
+  const longs = (kl: number, decalage = 0) => [
+    { ca: 0, cb: kl, c0: P * kl + decalage },
+    { ca: 0, cb: -kl, c0: P * kl + decalage },
+  ];
   switch (e.type ?? t.type) {
     case 'deux_pans':
-      return versB * k;
+      return longs(k);
     case 'quatre_pans':
-      return Math.min(versB, versA) * k;
+      return [...longs(k), ...bouts(k)];
     case 'croupe':
-      return Math.min(versB * k, versA * k * 2);
+      return [...longs(k), ...bouts(2 * k)];
     case 'monopente': {
       const { pente: g, centre: c, u, v } = e;
-      if (g && c && u && v) {
-        const p = { x: c.x + u.x * a + v.x * b, y: c.y + u.y * a + v.y * b };
-        return (p.x * g.d.x + p.y * g.d.y - g.o) * k;
-      }
-      return ((e.sens ?? 1) * b + e.P0 / 2) * k;
+      if (g && c && u && v)
+        return [
+          {
+            ca: k * (u.x * g.d.x + u.y * g.d.y),
+            cb: k * (v.x * g.d.x + v.y * g.d.y),
+            c0: k * (c.x * g.d.x + c.y * g.d.y - g.o),
+          },
+        ];
+      return [{ ca: 0, cb: (e.sens ?? 1) * k, c0: P * k }];
     }
     case 'plate':
-      return 0;
+      return [{ ca: 0, cb: 0, c0: 0 }];
     case 'mansarde': {
+      // Brisis raide en bas, terrasson moins pentu au-dessus : deux plans par côté.
       const largeurBrisis = e.P0 * BRISIS.part;
-      const hBrisis = largeurBrisis * tan(BRISIS.pente);
-      return versB <= largeurBrisis
-        ? versB * tan(BRISIS.pente)
-        : hBrisis + (versB - largeurBrisis) * k;
+      const tb = tan(BRISIS.pente);
+      return [...longs(tb), ...longs(k, largeurBrisis * tb - largeurBrisis * k)];
     }
   }
+}
+
+function hauteurBrute(t: Toiture, e: FormeAile, a: number, b: number): number {
+  return Math.min(...plansAile(t, e).map((p) => p.ca * a + p.cb * b + p.c0));
 }
 
 /** Repère local → plan + altitude. */

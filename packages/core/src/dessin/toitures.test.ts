@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { pointDansPolygone } from './geometrie';
 import {
   niveau as schemaNiveau,
   toiture as schemaToiture,
@@ -55,7 +56,8 @@ describe('toiture (DES-16, DES-17)', () => {
   it('deux pans à 45° : faîtage à 4,30 m au-dessus des murs, 2 pans, 2 pignons, 2 gouttières', () => {
     const t = toit3D(toit('deux_pans'))!;
     expect(t.pans).toHaveLength(2);
-    expect(t.murs).toHaveLength(2);
+    // Murs sous le toit (pignons, bandes) : vérifiés par toitFormes.test.ts (rien de vide).
+    expect(t.murs.length).toBeGreaterThan(0);
     expect(t.gouttieres).toHaveLength(2);
     expect(t).toMatchObject({ egout: 2_500, faitage: 2_500 + 4_300 });
     // 2 × 10,60 m × (4,30 / cos 45°) = 128,9 m².
@@ -66,14 +68,16 @@ describe('toiture (DES-16, DES-17)', () => {
   it('chaque type a ses pans, ses murs, ses gouttières', () => {
     const compte = (type: TypeToiture) => {
       const t = toit3D(toit(type, 30))!;
-      return [t.pans.length, t.murs.length, t.gouttieres.length];
+      return [t.pans.length, t.gouttieres.length];
     };
-    expect(compte('quatre_pans')).toEqual([4, 0, 4]);
-    expect(compte('croupe')).toEqual([4, 0, 4]);
-    expect(compte('monopente')).toEqual([1, 3, 1]);
+    // Pans et gouttières ; les murs sous le toit sont vérifiés par toitFormes.test.ts.
+    expect(compte('quatre_pans')).toEqual([4, 4]);
+    expect(compte('croupe')).toEqual([4, 4]);
+    expect(compte('monopente')).toEqual([1, 1]);
     // Toit plat : 4 acrotères sur les murs extérieurs (4 côtés et un dessus chacun), sans gouttière.
-    expect(compte('plate')).toEqual([1, 20, 0]);
-    expect(compte('mansarde')).toEqual([4, 2, 2]);
+    expect(compte('plate')).toEqual([1, 0]);
+    expect(toit3D(toit('plate', 30))!.murs).toHaveLength(20);
+    expect(compte('mansarde')).toEqual([4, 2]);
     expect(toit3D(n)).toBeNull();
     expect(toit3D({ ...toit('plate'), murs: [] })).toBeNull();
   });
@@ -158,8 +162,6 @@ describe('toits en L, T, U et sur une partie sans étage', () => {
     const t = toit3D(toitL)!;
     expect(t.ailes).toHaveLength(2);
     expect(t.ailes.filter((e) => Object.values(e.cotes).includes('interieur'))).toHaveLength(1);
-    // Pignons : 2 sur l'aile principale, 1 au bout libre de l'aile secondaire.
-    expect(t.murs).toHaveLength(3);
     // Faîtage le plus haut : aile de 6,60 m de large à 45° → 3,30 m au-dessus des murs.
     expect(t.faitage).toBe(2_500 + 3_300);
     // Toits réunis : la surface des pans visibles égale la couverture mesurée, et aucun
@@ -198,9 +200,20 @@ describe('toits en L, T, U et sur une partie sans étage', () => {
               const p = versMonde(e, a, 0, hauteurLocale(niv.toiture!, e, a, 0));
               const autres = t.ailes.filter((o) => o !== e);
               const couvert = (altitudeToit(niv.toiture!, autres, p)?.z ?? -Infinity) >= p.z - 5;
-              const pignon = t.murs.some((m) =>
-                m.some((q) => Math.hypot(q.x - p.x, q.y - p.y, q.z - p.z) < 5),
-              );
+              // Juste sous le bout du faîtage (10 cm) : un mur vertical ferme le toit.
+              const pignon = t.murs.some((m) => {
+                const o = m[0]!;
+                const b = m.find((q) => Math.hypot(q.x - o.x, q.y - o.y) > 1);
+                if (!b) return false;
+                const l = Math.hypot(b.x - o.x, b.y - o.y);
+                const u = { x: (b.x - o.x) / l, y: (b.y - o.y) / l };
+                if (Math.abs((p.x - o.x) * u.y - (p.y - o.y) * u.x) > 150) return false;
+                const s2 = (q: { x: number; y: number }) => (q.x - o.x) * u.x + (q.y - o.y) * u.y;
+                return pointDansPolygone(
+                  { x: s2(p), y: p.z - 100 },
+                  m.map((q) => ({ x: s2(q), y: q.z })),
+                );
+              });
               expect(couvert || pignon, `${f} ${faitageAngle} ${d.largeur}`).toBe(true);
             }
           }
@@ -392,8 +405,8 @@ describe('surcroît : les débords ne descendent pas devant les fenêtres', () =
     const egout = Math.min(...t.pans.flat().map((p) => p.z));
     expect(Math.abs(egout - t.egout)).toBeLessThan(2);
     expect(t.ailes[0]!.surcroit).toBeGreaterThan(200);
-    // Deux pignons et deux bandes de surcroît le long des égouts.
-    expect(t.murs).toHaveLength(4);
+    // Pignons et bandes de surcroît le long des égouts : des murs ferment le dessous.
+    expect(t.murs.length).toBeGreaterThan(0);
   });
 });
 

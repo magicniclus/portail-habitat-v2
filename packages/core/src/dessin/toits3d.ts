@@ -1,8 +1,8 @@
 import type { Niveau, Point } from '../schemas/dessinScene';
 import { acroteres } from './acroteres';
-import { fermeturesSousLeToit } from './fermeturesToit';
+import { mursSousLeToit } from './fermeturesToit';
 import { pansVisibles } from './decoupeToit';
-import { egoutsLocaux, mursLocaux, pansLocaux } from './pansToit';
+import { egoutsLocaux, pansLocaux } from './pansToit';
 import {
   altitudeToit,
   emprisesToit,
@@ -24,7 +24,9 @@ export interface PaveIncline extends Pave {
 export interface Toit3D {
   ailes: Emprise[];
   pans: Point3[][];
-  /** Pignons, mur haut d'une monopente, acrotères d'un toit plat. */
+  /** Aile qui porte chaque pan (index dans `ailes`). */
+  aileDesPans: number[];
+  /** Murs sous le toit (pignons, bandes, joues), acrotères d'un toit plat. */
   murs: Point3[][];
   gouttieres: [Point3, Point3][];
   fenetres: PaveIncline[];
@@ -93,24 +95,6 @@ export function toit3D(n: Niveau, dessus: Niveau | null = null): Toit3D | null {
   for (const e of ailes) {
     const z = (a: number, b: number) => hauteurLocale(t, e, a, b);
     parAile.push(pansLocaux(t, e).map((poly) => poly.map(([a, b]) => versMonde(e, a, b, z(a, b)))));
-    // Pignon caché sous le toit d'une autre partie : inutile ; sinon il ferme le toit.
-    const autres = ailes.filter((o) => o !== e);
-    // Points le long des bords (pas seulement les coins : une bande dont les deux bouts sont
-    // sous une autre aile peut être à découvert en son milieu).
-    const lePourtour = (poly: Point3[]) =>
-      poly.flatMap((p, i) => {
-        const q = poly[(i + 1) % poly.length]!;
-        return [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875].map((k) => ({
-          x: p.x + (q.x - p.x) * k,
-          y: p.y + (q.y - p.y) * k,
-          z: p.z + (q.z - p.z) * k,
-        }));
-      });
-    const visible = (poly: Point3[]) =>
-      lePourtour(poly).some(
-        (p) => p.z > e.base + 10 && (altitudeToit(t, autres, p)?.z ?? -Infinity) < p.z - 5,
-      );
-    murs.push(...mursLocaux(t, e).filter(visible));
     for (const [p, q] of egoutsLocaux(e))
       gouttieres.push(
         ...aLAirLibre(t, ailes, e, [
@@ -119,17 +103,18 @@ export function toit3D(n: Niveau, dessus: Niveau | null = null): Toit3D | null {
         ]),
       );
   }
-  murs.push(...acroteres(n, dessus, ailes));
-  // Aucun vide entre le haut des murs et le toit (mur en biais, angle rentrant…).
-  murs.push(...fermeturesSousLeToit(n, dessus, t, ailes, murs));
   // Toits des ailes réunis : rien ne dépasse sous le toit d'une autre aile.
-  const pans = pansVisibles(parAile);
+  const visibles = pansVisibles(parAile);
+  const pans = visibles.map((v) => v.pan);
+  // Murs sous le toit déduits de sa surface (pignons, bandes, joues), acrotères du toit plat.
+  murs.push(...acroteres(n, dessus, ailes), ...mursSousLeToit(n, dessus, t, ailes, visibles));
   const faitage = Math.max(...pans.flat().map((p) => p.z));
   const surLeToit = (p: Point) => altitudeToit(t, ailes, p);
   const mesures = mesurerToit(t, ailes, n.altitude);
   return {
     ailes,
     pans,
+    aileDesPans: visibles.map((v) => v.aile),
     murs,
     gouttieres,
     fenetres: t.fenetresToit.flatMap((f) => {
