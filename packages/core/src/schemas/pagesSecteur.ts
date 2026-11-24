@@ -1,5 +1,5 @@
 import { z } from '../zod';
-import { codePostal, geo, horodatage, id, schemaVersion } from './commun';
+import { codePostal, geo, geohash, horodatage, id, schemaVersion } from './commun';
 
 /**
  * Pages de secteur « métier à une commune » (registre, SEO local) : créées quand un artisan en
@@ -40,6 +40,8 @@ export const pageSecteur = z.object({
   schemaVersion,
   metier: id,
   commune: communeSecteur,
+  /** Geohash du centre de la commune : pages proches d'un artisan qui change. */
+  geohash,
   /** Artisans en ligne qui exercent ce métier dans un rayon de 20 km. */
   nbArtisans: z.number().int().nonnegative(),
   /** Au moins un artisan et page non bloquée par l'admin. */

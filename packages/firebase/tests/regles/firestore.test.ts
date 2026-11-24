@@ -148,6 +148,14 @@ const CAS: Cas[] = [
     autorises: [],
   },
 
+  // ----- pages de secteur (SEO local) -----
+  { nom: 'lire une page de secteur', op: { get: 'pagesSecteur/plombier__cenon' }, autorises: TOUS },
+  {
+    nom: 'écrire une page de secteur',
+    op: { maj: 'pagesSecteur/plombier__cenon', donnees: { indexable: true } },
+    autorises: [],
+  },
+
   // ----- artisans -----
   { nom: 'lire la fiche publique', op: { get: 'artisansPublic/a1' }, autorises: TOUS },
   {

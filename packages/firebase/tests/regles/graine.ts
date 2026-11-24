@@ -31,6 +31,7 @@ const DOCUMENTS: Record<string, Record<string, unknown>> = {
   },
   'users/part1/notifications/n1': { ...v, type: 'info', titre: 'Bienvenue', corps: '…', lu: false },
   'artisansPublic/a1': { ...v, slug: 'dupont', nomCommercial: 'Dupont', enLigne: true },
+  'pagesSecteur/plombier__cenon': { ...v, metier: 'plombier', nbArtisans: 1, indexable: true },
   'artisans/a1': {
     ...v,
     nomCommercial: 'Dupont Rénovation',

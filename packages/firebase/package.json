@@ -31,7 +31,8 @@
     "./ia": "./src/serveur/ia/index.ts",
     "./migrations": "./src/serveur/migrations/index.ts",
     "./studio": "./src/serveur/studio/index.ts",
-    "./dessin": "./src/serveur/dessin/index.ts"
+    "./dessin": "./src/serveur/dessin/index.ts",
+    "./pages-secteur": "./src/serveur/pagesSecteur/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

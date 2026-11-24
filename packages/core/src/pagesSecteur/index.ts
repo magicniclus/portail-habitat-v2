@@ -1,3 +1,4 @@
+import { encoderGeohash } from '../geo';
 import type { CommuneSecteur, PageSecteur, TexteSecteur } from '../schemas/pagesSecteur';
 
 /**
@@ -62,6 +63,7 @@ export function nouvellePage(
     schemaVersion: 1,
     metier,
     commune,
+    geohash: encoderGeohash(commune.centre.latitude, commune.centre.longitude),
     nbArtisans,
     indexable: estIndexable(nbArtisans, false),
     bloquee: false,

@@ -73,6 +73,8 @@ service cloud.firestore {
 
     // ---------- artisans ----------
     match /artisansPublic/{id} { allow read: if true; allow write: if false; }
+    // Pages de secteur (SEO local) : registre public, écrit seulement par le serveur.
+    match /pagesSecteur/{id} { allow read: if true; allow write: if false; }
 
     match /artisans/{aid} {
       allow read: if isMembre(aid) || lit('art');

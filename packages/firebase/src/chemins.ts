@@ -65,6 +65,7 @@ export const collections = {
   iaRecommandations: 'iaRecommandations',
   iaQuotas: 'iaQuotas',
   iaRedactions: 'iaRedactions',
+  pagesSecteur: 'pagesSecteur',
   studioProjets: 'studioProjets',
   studioTendances: 'studioTendances',
   studioIdees: 'studioIdees',
