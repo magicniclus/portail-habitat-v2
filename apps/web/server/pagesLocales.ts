@@ -18,16 +18,22 @@ export async function donneesLocales(commune: CommuneLocale, metiers: string[]) 
     artisansAutour(lieu, RAYON_LOCAL),
     communesProches(commune.centre, 25, 13),
   ]);
-  const r = trierResultats(
-    fiches,
-    lireFiltresAnnuaire({ metier: metiers.join(','), rayon: String(RAYON_LOCAL) }),
-    null,
-  );
+  // Mêmes réglages que l'annuaire filtré sur ce métier autour de cette commune (lien des filtres).
+  const f = lireFiltresAnnuaire({
+    metier: metiers.join(','),
+    rayon: String(RAYON_LOCAL),
+    ville: commune.nom,
+    lat: String(commune.centre.latitude),
+    lon: String(commune.centre.longitude),
+  });
+  const r = trierResultats(fiches, f, null);
   const trouves = [...r.premium, ...r.standards];
   const artisans = trouves.length
     ? trouves
     : plusProches(await artisansAlentour(lieu), { metiers });
   return {
+    f,
+    r,
     artisans,
     repli: !trouves.length && artisans.length > 0,
     nbSecteur: trouves.length,

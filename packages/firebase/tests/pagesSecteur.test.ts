@@ -10,6 +10,10 @@ import { depuisFirestore, versFirestore } from '../src/conversion';
 import { publierFiche } from '../src/serveur/annuaire';
 import {
   bloquerPage,
+  communesIndexablesDuMetier,
+  rattraperPagesSecteur,
+  metiersIndexablesDeCommune,
+  voisinesIndexables,
   lirePageSecteur,
   pagesIndexables,
   recompterPages,
@@ -195,5 +199,29 @@ describe('pages de secteur : création et indexation', () => {
     await bloquerPage({ db, horloge: () => T }, 'plombier__cenon', false);
     expect((await lirePageSecteur(db, 'plombier__cenon'))?.indexable).toBe(true);
     expect(await bloquerPage({ db, horloge: () => T }, 'inconnue__x', true)).toBe(false);
+  });
+
+  it('liens : voisines indexées du même métier, métiers indexés de la commune', async () => {
+    const un = await ecrireArtisan('a1');
+    await suivreArtisan(ctx(), un.avant, un.apres);
+    const deux = await ecrireArtisan('a2', { metiers: ['electricien'] });
+    await suivreArtisan(ctx(), deux.avant, deux.apres);
+    const v = await voisinesIndexables(db, 'plombier', '33');
+    expect(v.map((x) => x.commune.slug).sort()).toEqual(['bordeaux', 'cenon', 'lormont']);
+    expect((await metiersIndexablesDeCommune(db, 'cenon')).sort()).toEqual([
+      'electricien',
+      'plombier',
+    ]);
+  });
+
+  it('rattrapage : les fiches déjà en ligne créent leurs pages, par lots', async () => {
+    await ecrireArtisan('a1');
+    await ecrireArtisan('a2', { metiers: ['electricien'] });
+    const lot = await rattraperPagesSecteur(ctx(), { limite: 1 });
+    expect(lot).toMatchObject({ lues: 1, creees: 3 });
+    const suite = await rattraperPagesSecteur(ctx(), { apres: lot.dernier! });
+    expect(suite.creees).toBe(3);
+    expect(await communesIndexablesDuMetier(db, 'plombier')).toHaveLength(3);
+    expect((await communesIndexablesDuMetier(db, 'electricien'))[0]!.nom).toBe('Bordeaux');
   });
 });

@@ -186,3 +186,17 @@ export function similarite(a: string, b: string): number {
 /** Au-delà, deux pages se ressemblent trop (contenu dupliqué) : le texte est refusé. */
 export const SIMILARITE_MAX = 0.35;
 export * from './redaction';
+
+/**
+ * Indexation d'une page métier × commune à l'affichage : seulement si elle est au registre,
+ * indexable, et qu'au moins un artisan du secteur est réellement affiché. Registre illisible
+ * (`null`, panne passagère) : on s'en tient au compte affiché, pour ne pas désindexer une page
+ * pendant une heure de cache à cause d'une lecture manquée. Absente du registre : jamais.
+ */
+export function pageIndexee(
+  registre: Pick<PageSecteur, 'indexable'> | 'absente' | null,
+  nbAffiches: number,
+): boolean {
+  if (nbAffiches < 1 || registre === 'absente') return false;
+  return registre === null || registre.indexable;
+}

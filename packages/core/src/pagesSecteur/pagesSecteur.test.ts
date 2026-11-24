@@ -8,6 +8,7 @@ import {
   lirePageSecteurId,
   majCompte,
   nouvellePage,
+  pageIndexee,
   pagesAAssurer,
   similarite,
   MAX_COMMUNES_PAR_ARTISAN,
@@ -230,5 +231,18 @@ describe('similarité entre deux textes', () => {
     expect(
       similarite(a, 'la toiture en ardoise demande un entretien régulier chaque automne'),
     ).toBeLessThan(0.1);
+  });
+});
+
+describe('indexation à l’affichage', () => {
+  it('registre indexable et au moins un artisan affiché : indexée ; sinon non', () => {
+    expect(pageIndexee({ indexable: true }, 2)).toBe(true);
+    expect(pageIndexee({ indexable: true }, 0)).toBe(false);
+    expect(pageIndexee({ indexable: false }, 3)).toBe(false);
+    expect(pageIndexee('absente', 3)).toBe(false);
+  });
+  it('registre illisible : le compte affiché décide (pas de désindexation par erreur)', () => {
+    expect(pageIndexee(null, 1)).toBe(true);
+    expect(pageIndexee(null, 0)).toBe(false);
   });
 });

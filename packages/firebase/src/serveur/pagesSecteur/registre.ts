@@ -8,8 +8,8 @@ import {
   RAYON_SECTEUR_KM,
 } from '@ph/core/pages-secteur';
 import {
+  artisanPublic,
   pageSecteur,
-  type artisanPublic,
   type CommuneSecteur,
   type PageSecteur,
 } from '@ph/core/schemas';
@@ -17,7 +17,7 @@ import type { z } from '@ph/core/zod';
 import type { Firestore } from 'firebase-admin/firestore';
 import { collections } from '../../chemins';
 import { fichesAutour, trierResultats } from '../annuaire';
-import { depot } from '../depot';
+import { convertisseur, depot } from '../depot';
 import type { SourceCommunes } from './communes';
 
 type FichePublique = z.output<typeof artisanPublic>;
@@ -188,4 +188,67 @@ export const lirePageSecteur = (db: Firestore, id: string) => pages(db).lire(id)
 export async function pagesIndexables(db: Firestore, limite = 5_000) {
   const snap = await pages(db).reference.where('indexable', '==', true).limit(limite).get();
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/** Pages indexées du même métier dans le département (liens « près de ») ; jamais de lien vers une page non indexée. */
+export async function voisinesIndexables(
+  db: Firestore,
+  metier: string,
+  departement: string,
+  limite = 24,
+) {
+  const s = await pages(db)
+    .reference.where('metier', '==', metier)
+    .where('indexable', '==', true)
+    .where('commune.departement', '==', departement)
+    .limit(limite)
+    .get();
+  return s.docs.map((d) => ({
+    id: d.id,
+    commune: d.data().commune,
+    nbArtisans: d.data().nbArtisans,
+  }));
+}
+
+/** Métiers qui ont une page indexée dans une commune (liens « autres artisans à … »). */
+export async function metiersIndexablesDeCommune(db: Firestore, slug: string, limite = 30) {
+  const s = await pages(db)
+    .reference.where('commune.slug', '==', slug)
+    .where('indexable', '==', true)
+    .limit(limite)
+    .get();
+  return s.docs.map((d) => d.data().metier);
+}
+
+/** Communes où un métier a une page indexée (page du métier), les plus peuplées d'abord. */
+export async function communesIndexablesDuMetier(db: Firestore, metier: string, limite = 200) {
+  const s = await pages(db)
+    .reference.where('metier', '==', metier)
+    .where('indexable', '==', true)
+    .limit(limite)
+    .get();
+  return s.docs
+    .map((d) => d.data().commune)
+    .sort((a, b) => b.population - a.population || a.nom.localeCompare(b.nom, 'fr'));
+}
+
+/**
+ * Rattrapage (mise en service, puis au besoin) : passe chaque fiche publique en ligne comme si
+ * elle venait d'être publiée. Par lots dans l'ordre des identifiants, reprise après `apres`.
+ */
+export async function rattraperPagesSecteur(
+  ctx: CtxSecteur,
+  o: { apres?: string; limite?: number } = {},
+): Promise<{ lues: number; creees: number; dernier: string | null }> {
+  let q = ctx.db
+    .collection(collections.artisansPublic)
+    .withConverter(convertisseur(artisanPublic))
+    .orderBy('__name__')
+    .limit(o.limite ?? 100);
+  if (o.apres) q = q.startAfter(o.apres);
+  const snap = await q.get();
+  let creees = 0;
+  for (const d of snap.docs)
+    creees += (await suivreArtisan(ctx, undefined, d.data())).creees.length;
+  return { lues: snap.size, creees, dernier: snap.docs.at(-1)?.id ?? null };
 }

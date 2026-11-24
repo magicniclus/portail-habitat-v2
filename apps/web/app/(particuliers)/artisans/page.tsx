@@ -1,13 +1,9 @@
 import {
   articleAnnuaire,
   plusProches,
-  BUDGETS_ANNUAIRE,
   chipsFiltres,
-  DISPOS_ANNUAIRE,
   ecrireFiltresAnnuaire,
-  LIBELLES_LABELS,
   lireFiltresAnnuaire,
-  NOTES_ANNUAIRE,
 } from '@ph/core/annuaire';
 import { trierResultats } from '@ph/firebase/annuaire';
 import { bouton } from '@ph/ui';
@@ -16,7 +12,7 @@ import { headers } from 'next/headers';
 import Link from 'next/link';
 import { BarreRecherche } from '@/features/annuaire/BarreRecherche';
 import { Traceur } from '@/features/comportement/Traceur';
-import { Filtres, type OptionsFiltres } from '@/features/annuaire/Filtres';
+import { Filtres } from '@/features/annuaire/Filtres';
 import { PanneauFiltres } from '@/features/annuaire/PanneauFiltres';
 import { Resultats } from '@/features/annuaire/Resultats';
 import { EnTeteParticuliers, PiedParticuliers } from '@/features/vitrine/CadreParticuliers';
@@ -28,7 +24,8 @@ import {
   idsTexte,
   resoudreLieu,
 } from '@/server/annuaire';
-import { metiersFiltre, nomMetier, prestationParNom, prestationsDuMetier } from '@/server/metiers';
+import { nomMetier, prestationParNom, prestationsDuMetier } from '@/server/metiers';
+import { optionsAnnuaire } from '@/server/optionsAnnuaire';
 import { ArticleAnnuaire } from '@/features/annuaire/ArticleAnnuaire';
 
 type Params = Promise<Record<string, string | string[] | undefined>>;
@@ -106,13 +103,7 @@ export default async function PageAnnuaire({ searchParams }: { searchParams: Par
       { metier: f.metier[0]!, lieu, userAgent: (await headers()).get('user-agent') ?? '' },
       r,
     );
-  const options: OptionsFiltres = {
-    metiers: metiersFiltre(f.metier),
-    notes: NOTES_ANNUAIRE,
-    labels: Object.entries(LIBELLES_LABELS).map(([id, libelle]) => ({ id, libelle })),
-    dispos: DISPOS_ANNUAIRE,
-    budgets: BUDGETS_ANNUAIRE,
-  };
+  const options = optionsAnnuaire(f.metier);
   const cle = ecrireFiltresAnnuaire(f);
   const nbActifs = chipsFiltres(f, nomMetier).length;
 

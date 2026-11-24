@@ -1484,6 +1484,22 @@
         { "fieldPath": "indexable", "order": "ASCENDING" },
         { "fieldPath": "texteEtat", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "pagesSecteur",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "commune.slug", "order": "ASCENDING" },
+        { "fieldPath": "indexable", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "pagesSecteur",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "metier", "order": "ASCENDING" },
+        { "fieldPath": "indexable", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": [

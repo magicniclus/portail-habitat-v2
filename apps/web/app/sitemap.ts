@@ -5,19 +5,20 @@ import { LANDINGS } from '@ph/core/landings';
 import { lireSlugs } from '@/server/annuaire';
 import { routes } from '@/lib/routes';
 import { flagActif } from '@/server/flags';
-import { metiersPopulaires } from '@/server/metiers';
-import { tousLesMetiers, toutesLesPrestations, VILLES_LOCALES } from '@/server/seoLocal';
+import { pagesSecteurSitemap } from '@/server/pagesSecteur';
+import { tousLesMetiers, toutesLesPrestations } from '@/server/seoLocal';
 
 // Régénéré toutes les heures : les nouvelles fiches en ligne y apparaissent sans redéploiement.
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [slugs, site, devis, dessin, dessinPublic] = await Promise.all([
+  const [slugs, site, devis, dessin, dessinPublic, secteurs] = await Promise.all([
     lireSlugs(),
     flagActif('landingSite'),
     flagActif('landingDevis'),
     flagActif('dessin'),
     flagActif('dessinPublic'),
+    pagesSecteurSitemap(),
   ]);
   const landings = [
     LANDINGS.chantiers.route,
@@ -29,12 +30,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ? [routes.planMaison as string, ...GUIDES_PLAN.map((g) => routes.planMaisonGuide(g.slug))]
       : []),
   ];
-  // Pages permanentes de référencement local : index, métiers, métiers courants × communes mises
-  // en avant, travaux × Bordeaux. Les autres combinaisons sont atteintes par les liens internes.
+  // Référencement local : index, métiers, pages de secteur indexées du registre (métier × commune
+  // avec au moins un artisan, créées à l'arrivée des artisans), travaux × Bordeaux.
   const locales = [
     routes.metiers,
     ...tousLesMetiers().map((m) => routes.metier(m.id)),
-    ...metiersPopulaires().flatMap((m) => VILLES_LOCALES.map((v) => routes.metierVille(m.id, v))),
+    ...secteurs.map((p) => routes.metierVille(p.metier, p.commune.slug)),
     ...toutesLesPrestations().map((p) => routes.travauxVille(p.id, 'Bordeaux')),
   ];
   return pagesDuSitemap(new Date(), slugs, landings, locales);

@@ -7,6 +7,7 @@ import { EnTeteParticuliers, PiedParticuliers } from '@/features/vitrine/CadrePa
 import { filAriane } from '@/features/vitrine/seo';
 import { routes } from '@/lib/routes';
 import { prestationsDuMetier } from '@/server/metiers';
+import { communesDuMetier } from '@/server/pagesSecteur';
 import { metierParId, tousLesMetiers, VILLES_LOCALES } from '@/server/seoLocal';
 
 // En-tête et pied relus toutes les heures (lien Plans selon le flag `dessinPublic`).
@@ -32,7 +33,14 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 export default async function PageMetier({ params }: { params: Params }) {
   const m = metierParId((await params).metier);
   if (!m) notFound();
-  const prestations = await prestationsDuMetier(m.id);
+  const [prestations, registre] = await Promise.all([
+    prestationsDuMetier(m.id),
+    communesDuMetier(m.id),
+  ]);
+  // Communes où le métier a des artisans (registre) ; registre vide ou illisible : communes de lancement.
+  const communes = registre?.length
+    ? registre.map((c) => ({ nom: c.nom, slug: c.slug }))
+    : VILLES_LOCALES.map((v) => ({ nom: v, slug: v }));
   const pastille =
     'inline-flex min-h-11 items-center rounded-pill border border-trait bg-blanc px-3.5 text-neutre-800 no-underline hover:border-neutre-500 hover:text-texte';
   return (
@@ -55,10 +63,10 @@ export default async function PageMetier({ params }: { params: Params }) {
         <nav aria-label={`${m.nom} par commune`} className="grid gap-2">
           <h2 className="m-0 text-xl">{m.nom} par commune</h2>
           <ul className="m-0 flex list-none flex-wrap gap-2 p-0 text-sm">
-            {VILLES_LOCALES.map((v) => (
-              <li key={v}>
-                <Link href={routes.metierVille(m.id, v)} className={pastille}>
-                  {m.nom} à {v}
+            {communes.map((c) => (
+              <li key={c.slug}>
+                <Link href={routes.metierVille(m.id, c.slug)} className={pastille}>
+                  {m.nom} à {c.nom}
                 </Link>
               </li>
             ))}
