@@ -25,8 +25,8 @@ type Genre =
   | 'poigneeExterieur';
 
 /**
- * Glisser un mur (parallèlement, par pas), une porte ou fenêtre (le long de son mur) ou un objet (vers la position du pointeur, placé
- * automatiquement ; Alt pour poser librement). Un seul pas d'historique par geste.
+ * Glisser un mur (d'équerre, aimanté aux alignements), une porte ou fenêtre (le long de son mur)
+ * ou un objet (placé automatiquement). Alt : sans aimant. Un seul pas d'historique par geste.
  */
 export function useGlisser(
   n: Niveau,
@@ -42,6 +42,8 @@ export function useGlisser(
     cle: string;
     /** Objet, escalier : écart entre sa position et le pointeur au départ, gardé pendant le geste. */
     decalage: Point;
+    /** Mur : pointeur et mur au départ (le décalage se mesure depuis là). */
+    depart?: { p: Point; a: Point; b: Point };
   } | null>(null);
 
   /** Un geste est en cours : le plan montre la main fermée jusqu'au relâcher. */
@@ -59,7 +61,9 @@ export function useGlisser(
           : genre === 'escalier'
             ? n.escaliers.find((x) => x.id === id)
             : undefined;
+      const mur = genre === 'mur' ? n.murs.find((x) => x.id === id) : undefined;
       geste.current = {
+        ...(mur ? { depart: { p: arrondir(p), a: mur.a, b: mur.b } } : {}),
         genre,
         id,
         dernier: arrondir(p),
@@ -118,12 +122,14 @@ export function useGlisser(
           geste: g.cle,
           libre,
         });
-      } else if (g.genre === 'mur')
+      } else if (g.genre === 'mur' && g.depart)
         dispatch({
-          type: 'deplacerMur',
+          type: 'glisserMur',
           murId: g.id,
-          delta: { x: vers.x - g.dernier.x, y: vers.y - g.dernier.y },
+          depart: g.depart,
+          delta: { x: vers.x - g.depart.p.x, y: vers.y - g.depart.p.y },
           geste: g.cle,
+          libre,
         });
       else
         dispatch({

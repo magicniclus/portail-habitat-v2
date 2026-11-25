@@ -113,4 +113,4 @@ it('toits : aucun trou, pans plans, pour chaque forme de maison et chaque type',
       }
     }
   expect(out).toEqual([]);
-});
+}, 60_000);

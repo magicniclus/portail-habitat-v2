@@ -58,6 +58,53 @@ describe('éditeur Dessin : désélection', () => {
   });
 });
 
+describe('éditeur Dessin : mur glissé à la souris', () => {
+  const piece = (x0: number, x1: number) =>
+    jouer(vide(), [
+      { type: 'outil', outil: 'piece' },
+      { type: 'poserPoint', point: { x: x0, y: 0 } },
+      { type: 'poserPoint', point: { x: x1, y: 4000 } },
+      { type: 'outil', outil: 'selection' },
+    ]);
+  const droite = (e: ReturnType<typeof piece>, x: number) =>
+    niveauDe(e).murs.find((m) => m.a.x === x && m.b.x === x)!;
+  const glisser = (e: ReturnType<typeof piece>, x: number, delta: { x: number; y: number }) => {
+    const m = droite(e, x);
+    const fin = reduire(e, {
+      type: 'glisserMur',
+      murId: m.id,
+      depart: { a: m.a, b: m.b },
+      delta,
+      geste: 'g',
+    });
+    return { fin, m: niveauDe(fin).murs.find((x2) => x2.id === m.id)! };
+  };
+
+  it('reste d’équerre : la pièce ne se tord pas même si la souris part en biais', () => {
+    const { m, fin } = glisser(piece(0, 5000), 5000, { x: 730, y: 410 });
+    expect(m.a.x).toBe(m.b.x);
+    expect(m.a.x).toBe(5730);
+    expect(fin.guides).toEqual([]);
+  });
+
+  it('à l’étage, il se cale sur le mur du rez-de-chaussée (guide affiché)', () => {
+    let e = piece(0, 5000);
+    e = reduire(e, { type: 'ajouterNiveau', niveau: 'etage', copierMurs: false });
+    const etage = sceneDe(e).niveaux.find((n) => !n.murs.length)!;
+    const actions: Action[] = [
+      { type: 'changerNiveau', niveauId: etage.id },
+      { type: 'outil', outil: 'piece' },
+      { type: 'poserPoint', point: { x: 0, y: 0 } },
+      { type: 'poserPoint', point: { x: 3000, y: 4000 } },
+      { type: 'outil', outil: 'selection' },
+    ];
+    e = actions.reduce(reduire, e);
+    const { m, fin } = glisser(e, 3000, { x: 1960, y: 0 });
+    expect(m.a.x).toBe(5000);
+    expect(fin.guides.length).toBeGreaterThan(0);
+  });
+});
+
 describe('éditeur Dessin : extrémité de mur aimantée', () => {
   const piece = () =>
     jouer(vide(), [

@@ -262,6 +262,15 @@ export type Action =
     }
   | { type: 'fusionnerMur'; murId: string; avec: string }
   | { type: 'deplacerMur'; murId: string; delta: Point; geste?: string }
+  /** Mur glissé à la souris : décalage total depuis sa position de départ (Alt : sans aimant). */
+  | {
+      type: 'glisserMur';
+      murId: string;
+      depart: { a: Point; b: Point };
+      delta: Point;
+      geste: string;
+      libre?: boolean;
+    }
   | { type: 'finGeste' }
   /** Flèches du clavier : déplace le mur sélectionné (DES-47). */
   | { type: 'deplacerClavier'; delta: Point }

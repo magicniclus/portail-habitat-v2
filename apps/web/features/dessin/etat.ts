@@ -22,7 +22,7 @@ import {
   type Action,
   type EtatEditeur,
 } from './etatBase';
-import { viserExtremite } from './etatAimant';
+import { glisserMur, niveauxVoisins, viserExtremite } from './etatAimant';
 import { reduireAmenagement } from './etatAmenagement';
 import { reduireNiveaux } from './etatNiveaux';
 import { finirEscalier, reduireEscalier } from './etatEscalier';
@@ -85,7 +85,14 @@ function reduireBrut(e: EtatEditeur, a: Action): EtatEditeur {
     case 'deplacerExtremite': {
       const vers =
         e.aimant && !a.libre
-          ? viserExtremite(niveauDe(e), a.murId, a.extremite, a.vers, e.zoom)
+          ? viserExtremite(
+              niveauDe(e),
+              a.murId,
+              a.extremite,
+              a.vers,
+              e.zoom,
+              niveauxVoisins(e.historique.present, e.niveauId),
+            )
           : a.vers;
       return surNiveau(
         e,
@@ -99,6 +106,8 @@ function reduireBrut(e: EtatEditeur, a: Action): EtatEditeur {
       return { ...surNiveau(e, (n) => fusionnerMurs(n, a.murId, a.avec, ctx)), selection: null };
     case 'deplacerMur':
       return surNiveau(e, (n) => deplacerMur(n, a.murId, a.delta, ctx), a.geste ?? null);
+    case 'glisserMur':
+      return glisserMur(e, a.murId, a.depart, a.delta, a.geste, a.libre);
     case 'deplacerClavier':
       if (e.multi.length) return deplacerMulti(e, a.delta) ?? e;
       if (e.selection?.genre === 'objet')

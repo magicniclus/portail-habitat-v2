@@ -2,6 +2,7 @@
 export * from '../schemas/dessinScene';
 export * from '../schemas/dessinPlan';
 export * from './aimantation';
+export * from './glisserMur';
 export * from './catalogue';
 export * from './commandes';
 export * from './cuisine';
