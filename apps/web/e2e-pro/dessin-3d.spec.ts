@@ -238,7 +238,7 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
     await expect(page.getByRole('region', { name: 'Finitions' })).toHaveCount(0);
   });
 
-  test('DES-16, DES-17 : toiture deux pans : pente, fenêtre de toit, couverture au métré, toit en 3D', async ({
+  test('DES-16, DES-17 : toiture deux pans : formes conseillées, pente, couverture au métré, toit en 3D', async ({
     page,
   }) => {
     await connecter(page, COMPTES.proprio, '/pro/plans');
@@ -261,7 +261,13 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
     // DES-16 : toit deux pans généré sur les murs, pente à 45°.
     await menu('Structure');
     await page.getByRole('button', { name: /^Toiture & combles/ }).click();
-    await page.getByRole('button', { name: 'Deux pans' }).click();
+    // Formes conseillées pour cette maison (8,6 m de profondeur : monopente trop haut).
+    await expect(page.getByRole('button', { name: /^Deux pans Conseillé/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Monopente Pas optimal/ })).toBeVisible();
+    await page.getByRole('button', { name: /^Monopente/ }).click();
+    await expect(page.getByText(/Pas optimal pour cette maison/)).toBeVisible();
+    await page.getByRole('button', { name: /^Deux pans/ }).click();
+    await expect(page.getByText(/Pas optimal pour cette maison/)).toHaveCount(0);
     await expect(page.getByRole('term').filter({ hasText: 'Couverture' })).toBeVisible();
     await page.getByLabel(/^Pente/).fill('45');
     await expect(page.getByText('Pente · 45°')).toBeVisible();
@@ -274,23 +280,8 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
       await expect(plan).toBeVisible();
     }
 
-    // DES-17 : fenêtre de toit posée d'un clic sur le plan.
-    await page.getByRole('button', { name: 'Fenêtre de toit' }).click();
-    await page.waitForTimeout(400);
-    const svg = plan.locator('svg');
-    const boite = (await svg.boundingBox())!;
-    const [vx, vy, vl] = (await svg.getAttribute('viewBox'))!.split(' ').map(Number);
-    const k = boite.width / vl!;
-    await page.mouse.click(boite.x + (3000 - vx!) * k, boite.y + (3000 - vy!) * k);
-    await menu('Structure');
-    // Sur téléphone, le menu s'est replié pour la pose : on revient au sous-menu.
-    const sousMenu = page.getByRole('button', { name: /^Toiture & combles/ });
-    if (await sousMenu.isVisible()) await sousMenu.click();
-    await expect(page.getByRole('button', { name: 'Retirer : Fenêtre de toit' })).toBeVisible();
-
     await menu('Chiffrer');
     await expect(page.getByText('Couverture de toiture')).toBeVisible();
-    await expect(page.getByText('Fenêtres de toit')).toBeVisible();
 
     await menu('Rendu');
     await page.getByLabel('Maison de poupée (murs avant abaissés)').uncheck();

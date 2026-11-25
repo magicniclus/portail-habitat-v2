@@ -50,6 +50,7 @@ export * from './toitures';
 export * from './toits3d';
 export * from './commandesToit';
 export * from './ailesToit';
+export * from './conseilsToit';
 export * from './exterieur';
 export * from './placementExterieur';
 export * from './implantation';
