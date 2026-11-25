@@ -4,10 +4,31 @@ import {
   detecterPieces,
   mursDepuisForme,
   niveau as schemaNiveau,
+  pointDansPolygone,
   synchroniserPieces,
   toit3D,
 } from '@ph/core/dessin';
 import { aretesHautes, geometrieCouverture } from './couverture3d';
+
+type P3 = { x: number; y: number; z: number };
+/** Haut du toit au point (x, y) : le plus haut des pans qui le couvrent (null : hors du toit). */
+function hautDuToit(pans: readonly P3[][], x: number, y: number): number | null {
+  let haut: number | null = null;
+  for (const pan of pans) {
+    if (!pointDansPolygone({ x, y }, pan)) continue;
+    const n = { x: 0, y: 0, z: 0 };
+    pan.forEach((p, i) => {
+      const q = pan[(i + 1) % pan.length]!;
+      n.x += (p.y - q.y) * (p.z + q.z);
+      n.y += (p.z - q.z) * (p.x + q.x);
+      n.z += (p.x - q.x) * (p.y + q.y);
+    });
+    const o = pan[0]!;
+    const z = o.z - (n.x * (x - o.x) + n.y * (y - o.y)) / n.z;
+    haut = Math.max(haut ?? -Infinity, z);
+  }
+  return haut;
+}
 
 describe('couverture en volume', () => {
   it('pas de chant sur une arête partagée par deux pans (faîtage) : pas de pointillé', () => {
@@ -113,5 +134,72 @@ describe('couverture en volume', () => {
       aire += Math.abs((b![0] - a![0]) * (c![1] - a![1]) - (c![0] - a![0]) * (b![1] - a![1])) / 2;
     }
     expect(aire).toBeCloseTo(12, 3);
+  });
+
+  it('chaque faîtière est un vrai sommet du toit : plus bas des deux côtés, rien au-dessus', () => {
+    // Ailes alignées sur un côté de la maison (côtés dans le même plan) : ni arêtier fantôme
+    // vers le coin extérieur, ni faîtage prolongé sous le toit voisin.
+    const id = (p: string) => `${p}_t${Math.random().toString(36).slice(2, 10)}`;
+    const formes = [
+      {
+        forme: 'L',
+        largeur: 10_730,
+        profondeur: 12_450,
+        decoupe: { largeur: 7_230, profondeur: 6_200 },
+      },
+      {
+        forme: 'L',
+        largeur: 12_000,
+        profondeur: 10_000,
+        decoupe: { largeur: 5_000, profondeur: 4_000 },
+      },
+      {
+        forme: 'U',
+        largeur: 14_000,
+        profondeur: 10_000,
+        decoupe: { largeur: 6_000, profondeur: 5_000 },
+      },
+      {
+        forme: 'T',
+        largeur: 12_000,
+        profondeur: 10_000,
+        decoupe: { largeur: 4_000, profondeur: 5_000 },
+      },
+    ] as const;
+    const defauts: string[] = [];
+    for (const f of formes)
+      for (const type of ['quatre_pans', 'croupe', 'deux_pans', 'mansarde'] as const) {
+        const murs = mursDepuisForme(f, { epaisseur: 200, hauteur: 2_500, nouvelId: id });
+        if (!murs.ok) throw new Error(murs.message);
+        const base = schemaNiveau.parse({ id: id('n'), nom: 'RDC', type: 'rdc', altitude: 0 });
+        const n = {
+          ...base,
+          murs: murs.data,
+          pieces: synchroniserPieces([], detecterPieces(murs.data), () => id('p')),
+        };
+        const r = definirToiture(n, type);
+        if (!r.ok) throw new Error(r.message);
+        const pans = toit3D(r.data)!.pans;
+        for (const [a, b] of aretesHautes(pans)) {
+          const l = Math.hypot(b.x - a.x, b.y - a.y);
+          const nrm = { x: -(b.y - a.y) / l, y: (b.x - a.x) / l };
+          for (const k of [0.25, 0.5, 0.75]) {
+            const m = {
+              x: a.x + (b.x - a.x) * k,
+              y: a.y + (b.y - a.y) * k,
+              z: a.z + (b.z - a.z) * k,
+            };
+            const ici = hautDuToit(pans, m.x, m.y) ?? -Infinity;
+            const cotes = [1, -1].map((s) =>
+              hautDuToit(pans, m.x + nrm.x * 150 * s, m.y + nrm.y * 150 * s),
+            );
+            if (ici > m.z + 5 || cotes.some((z) => z !== null && z > m.z - 5))
+              defauts.push(
+                `${f.forme} ${type} : faîtière (${Math.round(m.x)}, ${Math.round(m.y)})`,
+              );
+          }
+        }
+      }
+    expect(defauts).toEqual([]);
   });
 });

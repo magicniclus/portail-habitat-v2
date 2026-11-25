@@ -129,12 +129,21 @@ export function aretesHautes(pans: readonly Point3[][]): [Point3, Point3][] {
   // Le pan descend-il en s'éloignant de l'arête ? On marche perpendiculairement au bord, du
   // côté où se trouve le pan (le point juste à côté est dans le pan) : une jointure entre deux morceaux
   // d'un même pan, ou une noue, ne descend pas des deux côtés.
-  /** Côté du bord (a → b) où se trouve le pan : +1 à gauche, -1 à droite (vu de dessus). */
+  /**
+   * Côté du bord (a → b) où se trouve le pan : +1 à gauche, -1 à droite (vu de dessus), 0 si
+   * le pan n'a pas 2 cm de large le long du bord (lamelle laissée entre deux parties du toit
+   * dans le même plan : pas un versant, aucune faîtière).
+   */
   const cote = (pan: readonly Point3[], a: Point3, b: Point3) => {
     const l = Math.hypot(b.x - a.x, b.y - a.y);
-    const m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
     const n = { x: -(b.y - a.y) / l, y: (b.x - a.x) / l };
-    return pointDansPolygone({ x: m.x + n.x * 50, y: m.y + n.y * 50 }, pan) ? 1 : -1;
+    const cotes = [0.3, 0.5, 0.7].map((k) => {
+      const m = { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k };
+      const dans = (s: number) =>
+        pointDansPolygone({ x: m.x + n.x * 20 * s, y: m.y + n.y * 20 * s }, pan);
+      return dans(1) ? 1 : dans(-1) ? -1 : 0;
+    });
+    return cotes.every((c) => c === cotes[0]) ? cotes[0]! : 0;
   };
   const descend = (pan: readonly Point3[], a: Point3, b: Point3) => {
     const l = Math.hypot(b.x - a.x, b.y - a.y);
@@ -165,7 +174,8 @@ export function aretesHautes(pans: readonly Point3[][]): [Point3, Point3][] {
       const [p, q] = [sur(d), sur(g)];
       // Une arête sépare deux pans de part et d'autre, qui descendent tous les deux.
       const [pe, pf] = [pans[e.i]!, pans[f.i]!];
-      if (cote(pe, p, q) === cote(pf, p, q)) continue;
+      const [ce, cf] = [cote(pe, p, q), cote(pf, p, q)];
+      if (!ce || !cf || ce === cf) continue;
       if (descend(pe, p, q) && descend(pf, p, q)) aretes.push([p, q]);
     }
   }
