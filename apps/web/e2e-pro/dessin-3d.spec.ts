@@ -326,6 +326,24 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
     await expect(page.getByLabel('Au plus haut (m)')).toHaveValue(/^(6,99|7,00|7,01)$/);
     await expect(page.getByText(/^Pente · (4[0-9]|5[0-9])°$/)).toBeVisible();
 
+    // Un étage sur toute la maison, puis une forme choisie à l'étage : toutes les toitures se
+    // recalculent, le rez-de-chaussée (entièrement couvert) n'a plus de toit à lui.
+    const sousMenu = async (nom: RegExp) => {
+      await menu('Structure');
+      const retour = page
+        .getByRole('region', { name: 'Structure' })
+        .getByRole('button', { name: 'Structure', exact: true });
+      if (await retour.isVisible()) await retour.click();
+      await page.getByRole('button', { name: nom }).first().click();
+    };
+    await sousMenu(/^Niveaux/);
+    await page.getByRole('button', { name: 'Ajouter un étage' }).click();
+    await sousMenu(/^Toiture & combles/);
+    await page.getByRole('button', { name: /^Quatre pans/ }).click();
+    await expect(page.getByRole('button', { name: /^Quatre pans/, pressed: true })).toBeVisible();
+    await page.getByRole('combobox', { name: 'Niveau' }).selectOption('Rez-de-chaussée');
+    await expect(page.getByText(/les toits de toute la maison/)).toBeVisible();
+
     await menu('Rendu');
     await page.getByLabel('Maison de poupée (murs avant abaissés)').uncheck();
     await page.getByRole('button', { name: 'Vue 3D' }).click();

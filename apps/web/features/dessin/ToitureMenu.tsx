@@ -24,16 +24,15 @@ export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
   const t = n.toiture;
   const dessus = niveauSuperieur(sceneDe(etat), n.id);
   const conseils = conseilsToit(n, dessus);
-  const poser = (type: TypeToiture) =>
-    t
-      ? dispatch({ type: 'modifierToiture', modif: { type } })
-      : dispatch({ type: 'toitureAuto', toiture: type });
+  // Choisir une forme recalcule toutes les toitures de la maison (chaque niveau, ce qui dépasse
+  // de l'étage, les appentis) : jamais un toit ancien qui ne raccorde plus après un changement.
+  const poser = (type: TypeToiture) => dispatch({ type: 'toitureAuto', toiture: type });
   if (!t)
     return (
       <div className="grid gap-3">
         <p className="m-0 px-1 text-sm leading-5 text-neutre-800">
-          Choisissez une forme : le toit se pose seul sur toute la maison. Les formes conseillées
-          pour votre maison sont en tête.
+          Choisissez une forme : les toits de toute la maison, à chaque niveau, se recalculent
+          ensemble. Les formes conseillées pour votre maison sont en tête.
         </p>
         <FormesToit actif={null} choisir={poser} conseils={conseils} />
       </div>
