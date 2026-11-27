@@ -137,7 +137,9 @@ test.describe('Plans — exports, partage, essai (DES-03, DES-41 à DES-43)', ()
     await page.getByRole('button', { name: 'Continuer l’essai' }).click();
     await expect(page.getByRole('dialog')).toHaveCount(0);
     // Rechargé : l'essai est toujours là ; les fonctions serveur invitent au compte.
-    await page.reload();
+    // Rouvert à la même adresse (et non `reload()` : dans le WebKit de Playwright, recharger cet
+    // écran puis changer de page fait planter l'onglet sur une assertion interne du moteur).
+    await page.goto(page.url());
     await expect(page.getByTestId('plan-2d').getByText(/m²$/).first()).toBeVisible();
     await page
       .getByRole('navigation', { name: 'Menus du plan' })

@@ -1,12 +1,15 @@
 /**
  * Première page d'un PDF rendue en image JPEG (D91), dans le navigateur. `pdfjs-dist` n'est
  * chargé qu'à ce moment-là ; son « worker » tourne dans la page (aucun fichier à servir à part).
+ * Version « legacy » : la version standard appelle des fonctions toutes récentes du navigateur
+ * (`Map.getOrInsertComputed`, `Math.sumPrecise`…) et échoue sur un Safari ou un Chrome de
+ * quelques mois ; la version legacy les complète.
  */
 export async function pdfEnImage(fichier: File): Promise<string> {
   const [pdfjs, worker] = await Promise.all([
-    import('pdfjs-dist'),
+    import('pdfjs-dist/legacy/build/pdf.mjs'),
     // @ts-expect-error -- module du worker sans déclaration de types
-    import('pdfjs-dist/build/pdf.worker.min.mjs'),
+    import('pdfjs-dist/legacy/build/pdf.worker.min.mjs'),
   ]);
   (globalThis as { pdfjsWorker?: unknown }).pdfjsWorker = worker;
   const chargement = pdfjs.getDocument({ data: new Uint8Array(await fichier.arrayBuffer()) });

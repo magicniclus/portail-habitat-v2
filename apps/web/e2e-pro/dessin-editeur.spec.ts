@@ -83,6 +83,19 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
   test('DES-04, DES-05, DES-12, DES-13, DES-14, DES-15, D91 : poser une porte et un escalier, ajouter un étage avec ses murs, retrouver le tout', async ({
     page,
   }) => {
+    // Navigateur de quelques mois : sans les fonctions JavaScript toutes récentes, l'import d'un
+    // PDF doit marcher quand même (régression du 18/11 : il échouait sans message).
+    await page.addInitScript(() => {
+      const supprimer = (o: object, noms: string[]) => {
+        for (const n of noms) Reflect.deleteProperty(o, n);
+      };
+      supprimer(Map.prototype, ['getOrInsert', 'getOrInsertComputed']);
+      supprimer(WeakMap.prototype, ['getOrInsert', 'getOrInsertComputed']);
+      supprimer(Math, ['sumPrecise']);
+      supprimer(Promise, ['try']);
+      supprimer(Uint8Array, ['fromBase64', 'fromHex']);
+      supprimer(Uint8Array.prototype, ['toBase64', 'toHex']);
+    });
     await connecter(page, COMPTES.proprio, '/pro/plans');
     await page
       .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
@@ -130,7 +143,10 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
     await page.mouse.move(p.x, p.y);
     await expect(plan.getByTestId('pose-ouverture')).toBeAttached();
     await page.mouse.click(p.x, p.y);
-    await expect(plan.getByRole('button', { name: 'Porte de 80 cm' })).toBeVisible();
+    // Sur téléphone, un pixel vaut près de 3 cm du plan et Safari arrondit le pointeur au pixel.
+    const largeurPorte =
+      page.viewportSize()!.width >= 900 ? 'Porte de 80 cm' : /^Porte de (7[6-9]|8[0-4]) cm$/;
+    await expect(plan.getByRole('button', { name: largeurPorte })).toBeVisible();
 
     // Escalier tracé dans la pièce (DES-15) : départ, virage, arrivée ; 15 marches pour 2,70 m.
     await structure('Escaliers', 'À palier');

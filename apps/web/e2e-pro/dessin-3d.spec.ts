@@ -164,7 +164,10 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
     await page.mouse.dblclick(p.x, p.y);
     await proprietes();
     await page.getByLabel('Volets').selectOption('battant');
-    await expect(page.getByLabel('Depuis le coin (cm)')).toHaveValue('390');
+    // Sur téléphone, un pixel vaut près de 3 cm du plan et Safari arrondit le pointeur au pixel.
+    await expect(page.getByLabel('Depuis le coin (cm)')).toHaveValue(
+      page.viewportSize()!.width >= 900 ? '390' : /^(385|390|395)$/,
+    );
     await replier();
     // Une menuiserie posée glisse le long de son mur (DES-14), sans changer d'outil (souris).
     if (page.viewportSize()!.width >= 900) {
