@@ -1,0 +1,76 @@
+@import '@ph/ui/styles.css';
+
+/* Classes utilisées dans les pages et features du site. */
+@source '../';
+/* Déclaré explicitement : un chemin listé ici est lu même si un .gitignore (global, parent…) l'exclut
+   de la détection automatique (classes de Ma fiche absentes sur un poste Windows). */
+@source '../features';
+
+/* Bandeau d'avis des landings (LANDINGS §3.10) : deux lignes en sens opposés, arrêt si mouvement réduit. */
+@keyframes defiler-gauche {
+  to {
+    transform: translateX(calc(-50% - 8px));
+  }
+}
+/* Texte de l'étape active des landings (maquette : entrée de 14 px en fondu). */
+@keyframes apparaitre {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+/* Demande qui arrive sur le téléphone de /pro : glisse depuis le haut en fondu. */
+@keyframes arrivee {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+}
+/* Notification du téléphone de /pro : descend, reste, remonte. */
+@keyframes notif {
+  0% {
+    opacity: 0;
+    transform: translateY(-130%);
+  }
+  12%,
+  78% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-130%);
+  }
+}
+/* Barre « en cours » du Studio (durée inconnue) : un segment qui va et vient. */
+@keyframes va-et-vient {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+@keyframes defiler-droite {
+  from {
+    transform: translateX(calc(-50% - 8px));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Curseurs du plan 2D (Plans) — spécificité nulle (:where) : les classes d'un élément gagnent.
+   Sélection : la main sur tout ce qu'on peut choisir. Outil de tracé : la croix partout, même
+   au-dessus d'un élément. Geste en cours (glisser, tirer une poignée) : la main fermée. */
+:where(.plan-selection) :where([role='button']) {
+  cursor: pointer;
+}
+:where(.plan-trace),
+:where(.plan-trace) :where(*) {
+  cursor: crosshair;
+}
+.plan-geste,
+.plan-geste * {
+  cursor: grabbing !important;
+}

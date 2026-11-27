@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Couverture de la VSL</title>
+    <link rel="stylesheet" href="film.css" />
+    <style>
+      #scene {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 64px;
+        text-align: center;
+      }
+      #scene > * {
+        position: static;
+      }
+      .logo {
+        font-size: 38px;
+        color: #fff;
+      }
+      h1 {
+        font-weight: 800;
+        font-size: 168px;
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+        color: #fff;
+      }
+      h1 .ital {
+        color: var(--clair);
+        font-size: 1.14em;
+        line-height: 1;
+      }
+      h1 .ital i.trait {
+        background: var(--clair);
+      }
+      .lecture {
+        width: 230px;
+        height: 230px;
+        border-radius: 50%;
+        background: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+          0 0 0 22px rgba(224, 90, 16, 0.28),
+          0 0 0 52px rgba(224, 90, 16, 0.12),
+          0 24px 60px rgba(0, 0, 0, 0.4);
+      }
+      .lecture svg {
+        margin-left: 16px;
+      }
+      .duree {
+        font-weight: 700;
+        font-size: 40px;
+        color: rgba(255, 255, 255, 0.82);
+        margin-top: -8px;
+      }
+      body.vertical h1 {
+        font-size: 132px;
+      }
+      body.vertical #scene {
+        gap: 90px;
+      }
+      /* Affiche du lecteur de la landing : le lecteur pose son propre bouton. */
+      body.affiche .lecture {
+        display: none;
+      }
+      /* Titre selon le film (`?site` : film « site internet »). */
+      .t-site,
+      body.site .t-chantiers {
+        display: none;
+      }
+      body.site .t-site {
+        display: block;
+      }
+      body.site.vertical h1 {
+        font-size: 112px;
+      }
+      .t-devis,
+      body.devis .t-chantiers {
+        display: none;
+      }
+      body.devis .t-devis {
+        display: block;
+      }
+      body.devis.vertical h1 {
+        font-size: 104px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="scene" class="nuit">
+      <span class="logo"
+        ><svg
+          width="72"
+          height="72"
+          viewBox="0 0 40 40"
+          fill="none"
+          stroke-width="3.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M5 19.5 20 7l15 12.5" stroke="#ff9857" />
+          <path d="M9 21.5V33h22V21.5" stroke="#fff" />
+          <rect x="17" y="25" width="6" height="8" rx="1" fill="#ff9857" /></svg
+        >PORTAIL TRAVAUX<b>PRO</b></span
+      >
+      <h1 class="t-chantiers">
+        C'est gratuit…<br />où est le <span class="ital">piège<i class="trait"></i></span>&nbsp;?
+      </h1>
+      <h1 class="t-site">
+        Votre site d'artisan,<br /><span class="ital">gratuitement<i class="trait"></i></span>
+      </h1>
+      <h1 class="t-devis">
+        Vos devis et factures,<br /><span class="ital">gratuitement<i class="trait"></i></span>
+      </h1>
+      <div class="lecture">
+        <svg width="96" height="110" viewBox="0 0 96 110">
+          <path d="M10 8v94a6 6 0 0 0 9 5l72-47a6 6 0 0 0 0-10L19 3a6 6 0 0 0-9 5z" fill="#fff" />
+        </svg>
+      </div>
+    </div>
+    <script>
+      for (const cle of new URLSearchParams(location.search).keys())
+        document.body.classList.add(cle);
+    </script>
+  </body>
+</html>

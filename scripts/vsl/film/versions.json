@@ -1,0 +1,50 @@
+{
+  "note": "Versions courtes de la VSL. Chaque segment reprend la voix du film ; `mots` [premier, dernier] garde une partie de la phrase (indices dans mots.json), `texte` est alors le texte dit. `avant` / `apres` : silences en secondes ; `pas` : grille des durées.",
+  "60s": {
+    "pas": 0.5,
+    "avant": { "p01": 0.3 },
+    "apres": { "p04": 0.3, "p22a": 0.35, "p28": 2.6 },
+    "segments": [
+      { "id": "p01" },
+      { "id": "p04" },
+      {
+        "id": "p13",
+        "mots": [10, 36],
+        "texte": "Vous créez votre fiche gratuitement. Les particuliers de votre secteur vous trouvent, et les demandes qui arrivent par votre fiche sont gratuites : en moyenne, dix par mois."
+      },
+      { "id": "p14" },
+      {
+        "id": "p22a",
+        "mots": [0, 9],
+        "texte": "Les demandes de chantier dans votre secteur géographique et technique."
+      },
+      { "id": "p22b", "mots": [0, 4], "texte": "Votre fiche sur le portail." },
+      { "id": "p22c" },
+      { "id": "p22d", "mots": [0, 2], "texte": "Vos avis clients." },
+      { "id": "p22e" },
+      { "id": "p22f", "mots": [0, 5], "texte": "Et le suivi de vos clients." },
+      { "id": "p22g", "mots": [0, 2], "texte": "Tout ça, gratuitement." },
+      { "id": "p28" }
+    ]
+  },
+  "30s": {
+    "pas": 0.25,
+    "avant": { "p01": 0.3 },
+    "apres": { "p01": 0.3, "p04": 0.3, "p13": 0.45, "p14": 0.45, "p28": 2.6 },
+    "segments": [
+      { "id": "p01" },
+      { "id": "p04" },
+      {
+        "id": "p13",
+        "mots": [10, 36],
+        "texte": "Vous créez votre fiche gratuitement. Les particuliers de votre secteur vous trouvent, et les demandes qui arrivent par votre fiche sont gratuites : en moyenne, dix par mois."
+      },
+      { "id": "p14" },
+      {
+        "id": "p28",
+        "mots": [0, 11],
+        "texte": "Créez votre espace gratuit, et regardez les demandes près de chez vous."
+      }
+    ]
+  }
+}

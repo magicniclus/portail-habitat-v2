@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<figure style="margin:0;min-width:0;width:100%">
+  <sc-if value="{{ estNavigateur }}" hint-placeholder-val="{{ true }}">
+    <div style="background:#fff;border:1px solid var(--color-divider);border-radius:14px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--color-divider);background:var(--color-neutral-100)">
+        <span style="width:10px;height:10px;border-radius:50%;background:var(--color-neutral-400);flex:none"></span><span style="width:10px;height:10px;border-radius:50%;background:var(--color-neutral-400);flex:none"></span><span style="width:10px;height:10px;border-radius:50%;background:var(--color-neutral-400);flex:none"></span>
+        <span style="margin-left:8px;flex:1;min-width:0;font-size:12px;color:var(--color-neutral-700);background:#fff;border-radius:6px;padding:3px 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ url }}</span>
+      </div>
+      <div style="{{ styleBoite }}"><iframe src="{{ src }}" title="{{ legende }}" tabindex="-1" aria-hidden="true" scrolling="no" onLoad="{{ charge }}" style="{{ styleFrame }}"></iframe></div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ estTelephone }}" hint-placeholder-val="{{ false }}">
+    <div style="position:relative;width:100%;max-width:300px;margin:0 auto;aspect-ratio:9 / 19.2;box-sizing:border-box;padding:3.2%;border-radius:15% / 7%;background:linear-gradient(145deg,#3a3836 0%,#141312 45%,#2b2927 100%);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14),inset 0 0 0 4px #0c0b0b">
+      <span aria-hidden="true" style="position:absolute;left:-1.6%;top:18%;width:1.6%;height:6%;border-radius:2px 0 0 2px;background:#2b2927"></span>
+      <span aria-hidden="true" style="position:absolute;left:-1.6%;top:28%;width:1.6%;height:11%;border-radius:2px 0 0 2px;background:#2b2927"></span>
+      <span aria-hidden="true" style="position:absolute;right:-1.6%;top:24%;width:1.6%;height:14%;border-radius:0 2px 2px 0;background:#2b2927"></span>
+      <div style="position:relative;width:100%;height:100%;border-radius:12% / 5.6%;overflow:hidden;background:#fff;display:flex;flex-direction:column">
+        <div style="flex:none;height:7.5%;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 9%;font-size:clamp(7px,3.6cqw,13px);font-weight:700;color:#141312;container-type:inline-size;background:#fff">
+          <span style="font-size:clamp(7px,3.4vw,12px)">9:41</span>
+          <span aria-hidden="true" style="position:absolute;left:50%;top:22%;transform:translateX(-50%);width:32%;height:52%;border-radius:999px;background:#0c0b0b"></span>
+          <span aria-hidden="true" style="display:flex;gap:3px;align-items:center"><span style="width:14px;height:8px;border:1.5px solid #141312;border-radius:3px;box-sizing:border-box;position:relative"><span style="position:absolute;inset:1px 3px 1px 1px;background:#141312;border-radius:1px"></span></span></span>
+        </div>
+        <div style="flex:1;min-height:0;position:relative;overflow:hidden">
+          <div style="{{ styleBoite }}"><iframe src="{{ src }}" title="{{ legende }}" tabindex="-1" aria-hidden="true" scrolling="no" onLoad="{{ charge }}" style="{{ styleFrame }}"></iframe></div>
+        </div>
+        <span aria-hidden="true" style="position:absolute;left:50%;bottom:1.6%;transform:translateX(-50%);width:34%;height:4px;border-radius:999px;background:rgba(20,19,18,.75)"></span>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ aLegende }}" hint-placeholder-val="{{ true }}"><figcaption style="{{ styleLegende }}">{{ legende }}</figcaption></sc-if>
+</figure>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;src&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;url&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;legende&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;cadre&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;navigateur&quot;,&quot;telephone&quot;],&quot;default&quot;:&quot;navigateur&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;vw&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1280,&quot;tsType&quot;:&quot;number&quot;},&quot;vh&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:800,&quot;tsType&quot;:&quot;number&quot;},&quot;x&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:0,&quot;tsType&quot;:&quot;number&quot;},&quot;y&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:0,&quot;tsType&quot;:&quot;number&quot;},&quot;w&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:0,&quot;tsType&quot;:&quot;number&quot;},&quot;h&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:0,&quot;tsType&quot;:&quot;number&quot;},&quot;clics&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  componentDidUpdate() { this.defiler(); }
+  defiler() { const fr = this._fr, p = this.props.defil; if (!fr || p === undefined || p === null || p === "") return;
+    try { const d = fr.contentDocument; const el = (this.props.defilSel && d.querySelector(this.props.defilSel)) || d.scrollingElement || d.documentElement; const max = el.scrollHeight - el.clientHeight; if (max > 0) el.scrollTop = Math.round(max * Math.min(1, Math.max(0, +p))); } catch (e) {} }
+  renderVals() {
+    const p = this.props, tel = p.cadre === "telephone";
+    const vw = +p.vw || (tel ? 390 : 1280), vh = +p.vh || (tel ? 780 : 800);
+    const x = +p.x || 0, y = +p.y || 0, cw = +p.w || vw - x, ch = +p.h || vh - y;
+    const k = "calc(tan(atan2(100cqw, 1px)) / " + cw + ")";
+    const clics = (p.clics || "").split("|").map((c) => c.trim()).filter(Boolean);
+    return {
+      src: p.src || "", url: p.url || "", legende: p.legende || "", aLegende: !!p.legende,
+      estNavigateur: !tel, estTelephone: tel,
+      styleBoite: { position: "relative", width: "100%", aspectRatio: cw + " / " + ch, overflow: "hidden", background: "#fff", containerType: "inline-size" },
+      styleFrame: { position: "absolute", top: 0, left: 0, width: vw + "px", height: vh + "px", border: 0, transformOrigin: "0 0", transform: "scale(" + k + ") translate(" + (-x) + "px," + (-y) + "px)", pointerEvents: "none" },
+      styleLegende: { marginTop: "12px", fontSize: "13px", lineHeight: "19px", color: "var(--color-neutral-800)", textAlign: tel ? "center" : "left" },
+      charge: (e) => {
+        const fr = e.target; this._fr = fr; setTimeout(() => this.defiler(), 1500); if (!clics.length) return;
+        let i = 0;
+        const suivant = () => { if (i >= clics.length) { setTimeout(() => { try { const d = fr.contentDocument; d.querySelectorAll('[style*="position:fixed"],[style*="position: fixed"]').forEach((el) => { if (/bottom/.test(el.getAttribute("style") || "")) el.style.display = "none"; }); } catch (er) {} }, 900); return; }
+          try { const d = fr.contentDocument; const t = clics[i]; const els = Array.from(d.querySelectorAll("button, a, [title]")); const el = els.find((b) => (b.getAttribute("title") || "") === t) || els.find((b) => (b.textContent || "").trim() === t) || els.find((b) => (b.textContent || "").trim().indexOf(t) === 0); if (el) el.click(); } catch (er) {}
+          i++; setTimeout(suivant, 450); };
+        setTimeout(suivant, 900);
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+docs/
+.claude/
+CLAUDE.md
+pnpm-lock.yaml
+.next/
+apps/functions/lib/
+coverage/
+packages/ui/src/styles/theme.css
+packages/ui/src/styles/themes.css
+packages/ui/src/styles/ambiance.css
+storybook-static/
+.lighthouseci/
+scripts/vsl/film/film.html
+scripts/vsl/film/film-site.html
+scripts/vsl/film/film-devis.html

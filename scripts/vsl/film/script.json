@@ -1,0 +1,185 @@
+{
+  "note": "Voix off de la VSL longue, découpage validé le 15/11/2026. Un segment = un fichier de voix. Plan 16 : variante « cinq champs » (pas de remplissage automatique par SIRET dans le parcours). Plan 18 non tourné (les 3 artisans maximum ne valent que pour les appels d'offres). Plan 9 : coût moyen estimé (≈ 480 € par mois) à partir de tarifs publics relevés en novembre 2026 : visibilité 110 à 249 € HT par mois, contact partagé 15 à 50 €, logiciel de devis 15 à 37 € HT par mois ; hypothèse de 10 contacts par mois.",
+  "segments": [
+    {
+      "id": "p01",
+      "acte": 1,
+      "texte": "En ce moment, près de chez vous, un particulier cherche un artisan."
+    },
+    {
+      "id": "p02",
+      "acte": 1,
+      "texte": "Il a décrit son chantier, sa ville, son budget."
+    },
+    {
+      "id": "p03",
+      "acte": 1,
+      "texte": "La question, c'est : est-ce que sa demande arrive chez vous ?"
+    },
+    {
+      "id": "p04",
+      "acte": 1,
+      "texte": "Avec Portail Travaux, trouver des clients n'a jamais été aussi simple. Et c'est gratuit."
+    },
+    {
+      "id": "p05a",
+      "acte": 2,
+      "texte": "Vous avez déjà payé pour un contact qui n'a jamais décroché ?"
+    },
+    {
+      "id": "p05b",
+      "acte": 2,
+      "texte": "Pris un abonnement qui n'a rien rapporté ?"
+    },
+    {
+      "id": "p05c",
+      "acte": 2,
+      "texte": "Reçu une demande à deux cents kilomètres de chez vous ?"
+    },
+    {
+      "id": "p06",
+      "acte": 2,
+      "texte": "Alors la suite va vous intéresser."
+    },
+    {
+      "id": "p07",
+      "acte": 3,
+      "texte": "Portail Travaux est parti d'un constat simple."
+    },
+    {
+      "id": "p08",
+      "acte": 3,
+      "texte": "Un bon artisan passe ses journées sur le chantier. Le soir, il fait ses devis."
+    },
+    {
+      "id": "p09",
+      "acte": 3,
+      "texte": "On lui vend la visibilité. On lui vend chaque contact. Et en plus de tout ça, il doit payer chaque outil. En moyenne, près de cinq cents euros par mois. Sur Portail Travaux : zéro euro pour tout ça. Et plus de performance."
+    },
+    {
+      "id": "p10",
+      "acte": 3,
+      "texte": "Résultat : ceux qu'on trouve en premier sont ceux qui paient le plus. Pas toujours ceux qui travaillent le mieux."
+    },
+    {
+      "id": "p10b",
+      "acte": 3,
+      "texte": "Et si tout ça était gratuit, et réuni dans une seule plateforme ?"
+    },
+    {
+      "id": "p11",
+      "acte": 3,
+      "texte": "C'est ce qu'on a construit : un portail où l'artisan est visible, reçoit des demandes, et dispose des meilleurs outils de gestion et de marketing. Le tout, gratuitement."
+    },
+    {
+      "id": "p12",
+      "acte": 4,
+      "texte": "Première idée reçue : « Les plateformes, on paie pour rien. »"
+    },
+    {
+      "id": "p13",
+      "acte": 4,
+      "texte": "C'est peut-être vrai pour les autres. Mais chez Portail Travaux, vous créez votre fiche gratuitement. Les particuliers de votre secteur vous trouvent, et les demandes qui arrivent par votre fiche sont gratuites : en moyenne, dix par mois."
+    },
+    {
+      "id": "p14",
+      "acte": 4,
+      "texte": "Zéro euro. Zéro pour cent de commission sur vos chantiers."
+    },
+    {
+      "id": "p15",
+      "acte": 5,
+      "texte": "Deuxième idée reçue : « Je n'ai pas le temps, et l'informatique, ce n'est pas mon truc. »"
+    },
+    {
+      "id": "p16",
+      "acte": 5,
+      "texte": "Vous remplissez cinq champs. En deux minutes, vous êtes en ligne. Rien à installer."
+    },
+    {
+      "id": "p17",
+      "acte": 6,
+      "texte": "Troisième idée reçue : « Les demandes sont revendues à tout le monde, et jamais dans mon coin. »"
+    },
+    {
+      "id": "p19",
+      "acte": 6,
+      "texte": "Vous réglez votre rayon, de dix à cent kilomètres, et vous choisissez vos métiers. Le reste ne vous arrive pas."
+    },
+    {
+      "id": "p20",
+      "acte": 6,
+      "texte": "Et le réseau est réservé aux entreprises immatriculées et assurées."
+    },
+    {
+      "id": "p21",
+      "acte": 7,
+      "texte": "Regardez exactement ce que vous obtenez en créant votre espace."
+    },
+    {
+      "id": "p22a",
+      "acte": 8,
+      "texte": "Les demandes de chantier dans votre secteur géographique et technique : la ville et le type de chantier vous sont détaillés avant d'appeler."
+    },
+    {
+      "id": "p22b",
+      "acte": 8,
+      "texte": "Votre fiche sur le portail : on vous trouve quand on cherche votre métier près de chez soi."
+    },
+    {
+      "id": "p22c",
+      "acte": 8,
+      "texte": "Votre site internet, à votre nom."
+    },
+    {
+      "id": "p22d",
+      "acte": 8,
+      "texte": "Vos avis clients : vous en demandez un après chaque chantier."
+    },
+    {
+      "id": "p22e",
+      "acte": 8,
+      "texte": "Vos devis et factures, entièrement conformes."
+    },
+    {
+      "id": "p22f",
+      "acte": 8,
+      "texte": "Et le suivi de vos clients, du premier appel à la facture."
+    },
+    {
+      "id": "p22g",
+      "acte": 8,
+      "texte": "Tout ça, gratuitement. Pensez à ce que vous payez aujourd'hui pour la moitié de ces outils."
+    },
+    {
+      "id": "p23",
+      "acte": 9,
+      "texte": "Et là, vous vous dites : « C'est gratuit… où est le piège ? »"
+    },
+    {
+      "id": "p24",
+      "acte": 9,
+      "texte": "Il n'y en a pas, et on vous dit comment on gagne notre vie. Certains artisans veulent aller plus loin : un nom de domaine à leur nom, une mise en avant dans leur secteur, des demandes en plus. Ces options sont payantes. Personne n'est obligé de les prendre."
+    },
+    {
+      "id": "p25",
+      "acte": 10,
+      "texte": "Vous ne risquez rien : pas de carte bancaire, pas d'engagement."
+    },
+    {
+      "id": "p26",
+      "acte": 10,
+      "texte": "La seule chose qui coûte, c'est le temps qui passe sans être inscrit. Sur Portail Travaux, il arrive en moyenne dix demandes par heure. Dans votre secteur, jusqu'à une demande toutes les trois heures."
+    },
+    {
+      "id": "p27",
+      "acte": 10,
+      "texte": "Imaginez plutôt votre téléphone qui sonne, pour un chantier à dix kilomètres de chez vous."
+    },
+    {
+      "id": "p28",
+      "acte": 11,
+      "texte": "Créez votre espace gratuit, et regardez les demandes près de chez vous. Inscrivez-vous via le formulaire, et recevez vos premières demandes gratuites. Deux minutes, et vous êtes en ligne."
+    }
+  ]
+}

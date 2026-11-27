@@ -1,0 +1,91 @@
+import type { Ligne } from './catalogue';
+import { MUR } from './catalogueOptions';
+
+const canape = (style: string | undefined, l: [number, number], p?: [number, number]) => ({
+  ...MUR,
+  ...(style ? { style } : {}),
+  plages: { l, ...(p ? { p } : {}) },
+});
+
+/** Canapés du séjour (DES-21) : le tissu prend la couleur choisie dans l'inspecteur. */
+export const LIGNES_CANAPES: Ligne[] = [
+  ['canape-3', 'Canapé 3 places', 'canape', 2200, 950, 850, canape(undefined, [1600, 2800])],
+  [
+    'canape-droit',
+    'Canapé droit à coussins',
+    'canape',
+    2200,
+    950,
+    820,
+    canape('droit', [1600, 3000]),
+  ],
+  [
+    'canape-2',
+    'Canapé 2 places sur pieds',
+    'canape',
+    1700,
+    880,
+    820,
+    canape('pieds', [1300, 2200]),
+  ],
+  ['canape-4', 'Grand canapé 4 places', 'canape', 2800, 1000, 850, canape('droit', [2400, 3600])],
+  [
+    'canape-angle',
+    'Canapé d’angle, retour à droite',
+    'canape',
+    2600,
+    2000,
+    850,
+    canape('angle', [2000, 3600], [1600, 3000]),
+  ],
+  [
+    'canape-angle-gauche',
+    'Canapé d’angle, retour à gauche',
+    'canape',
+    2600,
+    2000,
+    850,
+    canape('angle-gauche', [2000, 3600], [1600, 3000]),
+  ],
+  ['canape-u', 'Canapé en U', 'canape', 3200, 2200, 850, canape('u', [2600, 4200], [1800, 3200])],
+  [
+    'canape-modulable',
+    'Canapé modulable',
+    'canape',
+    2700,
+    1050,
+    780,
+    canape('modulable', [1500, 4000]),
+  ],
+  [
+    'canape-arrondi',
+    'Canapé arrondi bouclette',
+    'canape',
+    2300,
+    1000,
+    760,
+    canape('arrondi', [1600, 3000]),
+  ],
+  [
+    'canape-capitonne',
+    'Canapé capitonné',
+    'canape',
+    2100,
+    900,
+    820,
+    canape('capitonne', [1500, 2600]),
+  ],
+  ['canape-banquette', 'Banquette', 'canape', 1900, 800, 800, canape('banquette', [1200, 2400])],
+  [
+    'canape-convertible',
+    'Canapé convertible',
+    'canape',
+    2000,
+    950,
+    850,
+    canape('convertible', [1400, 2400]),
+  ],
+  ['canape-meridienne', 'Méridienne', 'canape', 1900, 800, 800, { style: 'meridienne' }],
+  ['canape-chesterfield', 'Canapé Chesterfield', 'canape', 2300, 780, 940, MUR],
+  ['canape-classique', 'Canapé classique', 'canape', 1600, 670, 810, MUR],
+];

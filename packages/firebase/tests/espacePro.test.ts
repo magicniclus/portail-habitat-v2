@@ -1,0 +1,149 @@
+import { droitsInitiaux } from '@ph/core/paiements';
+import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
+import { chemins } from '../src/chemins';
+import { choisirEntrepriseActive, lireEspacePro, tableauDeBordPro } from '../src/serveur/comptes';
+
+let db: Firestore;
+const T = Timestamp.fromMillis(Date.UTC(2026, 8, 29, 8));
+
+beforeAll(() => {
+  db = getFirestore(appAdmin());
+});
+
+const membre = (role: string, statut = 'actif') => ({
+  schemaVersion: 1,
+  role,
+  statut,
+  notifs: { demandes: true, avis: true, factures: true },
+  ajouteLe: T,
+  ajoutePar: 'u1',
+});
+const artisan = (nom: string, extra: Record<string, unknown> = {}) => ({
+  nomCommercial: nom,
+  enLigne: false,
+  droits: droitsInitiaux('gratuit', new Date(0)),
+  metiers: ['couvreur'],
+  metierPrincipal: 'couvreur',
+  zoneIntervention: { rayonKm: 30, centre: { latitude: 44.8, longitude: -0.6 } },
+  adresseSiege: { ville: 'Mérignac', codePostal: '33700', ligne1: '1 rue A' },
+  description: '',
+  labels: [],
+  noteMoyenne: 0,
+  nbAvis: 0,
+  demandesRecuesMois: 0,
+  ...extra,
+});
+
+beforeEach(async () => {
+  await fetch(
+    `http://${process.env.FIRESTORE_EMULATOR_HOST}/emulator/v1/projects/${PROJET_EMULATEUR}/databases/(default)/documents`,
+    { method: 'DELETE' },
+  );
+  await Promise.all([
+    db.doc(chemins.user('u1')).set({
+      nomAffiche: 'Julien Bertrand',
+      entreprises: ['a1', 'a2', 'a3'],
+      entrepriseActive: 'a1',
+      telephoneVerifie: false,
+    }),
+    db.doc(chemins.artisan('a1')).set(artisan('Bertrand Toiture')),
+    db.doc(chemins.artisan('a2')).set(
+      artisan('Bertrand Zinc', {
+        enLigne: true,
+        droits: droitsInitiaux('tout_inclus', new Date(0)),
+      }),
+    ),
+    db.doc(chemins.artisan('a3')).set(artisan('Ancienne SARL')),
+    db.doc(chemins.membre('a1', 'u1')).set(membre('proprietaire')),
+    db.doc(chemins.membre('a2', 'u1')).set(membre('collaborateur')),
+    db.doc(chemins.membre('a3', 'u1')).set(membre('gerant', 'suspendu')),
+  ]);
+});
+
+describe('lireEspacePro', () => {
+  it('entreprise active, rôle et liste pour le sélecteur', async () => {
+    const e = await lireEspacePro(db, 'u1');
+    expect(e.active).toMatchObject({
+      artisanId: 'a1',
+      membre: { role: 'proprietaire', statut: 'actif' },
+      artisan: { nomCommercial: 'Bertrand Toiture', ville: 'Mérignac', rayonKm: 30 },
+    });
+    // SIREN pas encore reconnu : l'interrupteur ne peut pas rallumer la fiche.
+    expect(e.active?.artisan.peutEtreEnLigne).toBe(false);
+    await db.doc(chemins.artisan('a1')).update({
+      statut: 'actif',
+      sirenReconnu: { par: 'repertoire', le: T },
+    });
+    expect((await lireEspacePro(db, 'u1')).active?.artisan.peutEtreEnLigne).toBe(true);
+    expect(e.entreprises.map((x) => x.nomCommercial)).toEqual([
+      'Bertrand Toiture',
+      'Bertrand Zinc',
+      'Ancienne SARL',
+    ]);
+  });
+
+  it('entreprise active dont la personne n’est plus membre actif : aucune', async () => {
+    await db.doc(chemins.user('u1')).update({ entrepriseActive: 'a3' });
+    expect((await lireEspacePro(db, 'u1')).active).toBeNull();
+  });
+});
+
+describe('choisirEntrepriseActive (COMPTES §4.5)', () => {
+  it('bascule vers une entreprise dont on est membre actif', async () => {
+    await choisirEntrepriseActive(db, 'u1', 'a2');
+    expect((await db.doc(chemins.user('u1')).get()).get('entrepriseActive')).toBe('a2');
+  });
+
+  it('refuse une entreprise étrangère ou un membre suspendu', async () => {
+    await expect(choisirEntrepriseActive(db, 'u1', 'autre')).rejects.toMatchObject({
+      code: 'PERMISSION_REFUSEE',
+    });
+    await expect(choisirEntrepriseActive(db, 'u1', 'a3')).rejects.toMatchObject({
+      code: 'PERMISSION_REFUSEE',
+    });
+    expect((await db.doc(chemins.user('u1')).get()).get('entrepriseActive')).toBe('a1');
+  });
+});
+
+describe('tableauDeBordPro', () => {
+  it('espace tout neuf : accueil de bienvenue, assurance à envoyer', async () => {
+    const t = await tableauDeBordPro(db, 'a1');
+    expect(t.completude.pourcent).toBe(0);
+    expect(t.neuf).toBe(true);
+    expect(t.assurance).toBe('a_envoyer');
+  });
+
+  it('présentation enregistrée, premier avis ou première demande : tableau de bord habituel', async () => {
+    await db
+      .doc(chemins.artisan('a1'))
+      .update({ description: 'Couvreur zingueur à Bordeaux depuis 2010.' });
+    expect((await tableauDeBordPro(db, 'a1')).neuf).toBe(false);
+    await db.doc(chemins.artisan('a1')).update({ description: '', nbAvis: 1 });
+    expect((await tableauDeBordPro(db, 'a1')).neuf).toBe(false);
+    await db.doc(chemins.artisan('a1')).update({ nbAvis: 0 });
+    await db
+      .collection('demandes')
+      .doc('d1')
+      .collection('attributions')
+      .doc('a1')
+      .set({ artisanId: 'a1', proposeeLe: T });
+    expect((await tableauDeBordPro(db, 'a1')).neuf).toBe(false);
+  });
+
+  it('la décennale la plus récente fait foi (refusée puis renvoyée)', async () => {
+    await db.collection(chemins.documents('a1')).add({
+      type: 'decennale',
+      statut: 'refuse',
+      createdAt: T,
+    });
+    expect((await tableauDeBordPro(db, 'a1')).assurance).toBe('a_renvoyer');
+    await db.collection(chemins.documents('a1')).add({
+      type: 'decennale',
+      statut: 'en_attente',
+      createdAt: Timestamp.fromMillis(T.toMillis() + 1000),
+    });
+    expect((await tableauDeBordPro(db, 'a1')).assurance).toBe('en_verification');
+  });
+});

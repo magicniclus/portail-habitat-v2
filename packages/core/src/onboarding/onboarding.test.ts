@@ -1,0 +1,180 @@
+import { describe, expect, it } from 'vitest';
+import { entreeInscriptionEtape1, entreeInscriptionEtape2 } from '../schemas';
+import {
+  chantiersDesMetiers,
+  decouperNom,
+  DEMANDES_RECENTES_MIN,
+  demandesRecentes,
+  forceMotDePasse,
+  intentionsApresChangement,
+  phraseDemandesRecentes,
+  RAYON_ZONE,
+  statutCompte,
+  statutZone,
+} from './index';
+
+const I = [
+  { id: 'toit-refection', libelle: 'Réfection de toiture', metier: 'couvreur' },
+  { id: 'velux', libelle: 'Pose de Velux', metier: 'couvreur' },
+  { id: 'gouttieres', libelle: 'Gouttières', metier: 'zingueur' },
+  { id: 'sdb', libelle: 'Salle de bain', metier: 'plombier' },
+];
+
+describe('chantiers (ONB-01c)', () => {
+  it('chantiers de chaque métier choisi', () => {
+    expect(chantiersDesMetiers(['couvreur'], I)[0]!.chantiers.map((c) => c.id)).toEqual([
+      'toit-refection',
+      'velux',
+    ]);
+  });
+  it('ajouter « zingueur » coche ses chantiers ; un chantier décoché le reste', () => {
+    const r = intentionsApresChangement(
+      { metiers: ['couvreur'], intentions: ['toit-refection'] },
+      ['couvreur', 'zingueur'],
+      I,
+    );
+    expect(r).toEqual(['toit-refection', 'gouttieres']);
+  });
+  it('retirer un métier retire ses chantiers', () => {
+    expect(
+      intentionsApresChangement(
+        { metiers: ['couvreur', 'zingueur'], intentions: ['velux', 'gouttieres'] },
+        ['couvreur'],
+        I,
+      ),
+    ).toEqual(['velux']);
+  });
+});
+
+describe('barre fixe (ONB-07)', () => {
+  it('zone : complète seulement avec une ville', () => {
+    expect(statutZone({ rayonKm: 30 })).toEqual({
+      complete: false,
+      statut: 'Choisissez votre ville',
+    });
+    expect(statutZone({ ville: 'Mérignac', rayonKm: 30 })).toEqual({
+      complete: true,
+      statut: 'Mérignac · 30 km',
+    });
+  });
+  it('compte par mot de passe : entreprise, mot de passe solide et confirmé (conditions acceptées à l’étape 1)', () => {
+    const base = {
+      methode: 'motDePasse',
+      entrepriseChoisie: true,
+      motDePasse: 'Chantier-2026!',
+      confirmation: 'Chantier-2026!',
+    } as const;
+    expect(statutCompte(base).complete).toBe(true);
+    expect(statutCompte({ ...base, entrepriseChoisie: false }).complete).toBe(false);
+    expect(statutCompte({ ...base, motDePasse: 'court' }).complete).toBe(false);
+    expect(statutCompte({ ...base, confirmation: 'autre' }).statut).toMatch(/différents/);
+  });
+  it('compte Google : l’entreprise suffit, aucun mot de passe', () => {
+    const g = {
+      methode: 'google',
+      entrepriseChoisie: true,
+      motDePasse: '',
+      confirmation: '',
+    } as const;
+    expect(statutCompte(g)).toEqual({ complete: true, statut: 'Tout est prêt' });
+    expect(statutCompte({ ...g, entrepriseChoisie: false }).complete).toBe(false);
+  });
+  it('force du mot de passe', () => {
+    expect(forceMotDePasse('abc')).toBe(0);
+    expect(forceMotDePasse('abcdefgh')).toBe(1);
+    expect(forceMotDePasse('abcdefghij')).toBe(2);
+    expect(forceMotDePasse('Chantier-2026!')).toBe(4);
+  });
+});
+
+describe('entrées de l’inscription', () => {
+  // Formulaire court (décision du 17/11/2026) : métier, code postal, email ; ni nom, ni téléphone,
+  // ni case à cocher (les conditions sont acceptées par l'envoi, version enregistrée côté serveur).
+  const etape1 = {
+    email: 'j@b.fr',
+    codePostal: '33000',
+    metierPrincipal: 'couvreur',
+    metiers: ['couvreur'],
+    intentions: ['velux'],
+  };
+  it('formulaire court : métier, code postal et email suffisent', () => {
+    expect(entreeInscriptionEtape1.safeParse(etape1).success).toBe(true);
+    for (const champ of ['email', 'codePostal', 'metierPrincipal'] as const) {
+      const sans: Record<string, unknown> = { ...etape1 };
+      delete sans[champ];
+      expect(entreeInscriptionEtape1.safeParse(sans).success).toBe(false);
+    }
+    // Anciens champs refusés : plus de nom, de téléphone ni de case dans le premier formulaire.
+    expect(entreeInscriptionEtape1.safeParse({ ...etape1, nom: 'Julien' }).success).toBe(false);
+    expect(entreeInscriptionEtape1.safeParse({ ...etape1, telephone: '0612345678' }).success).toBe(
+      false,
+    );
+    expect(entreeInscriptionEtape1.safeParse({ ...etape1, cgv: true }).success).toBe(false);
+    expect(entreeInscriptionEtape1.safeParse({ ...etape1, codePostal: '330' }).success).toBe(false);
+  });
+  it('ONB-01b : sans métier principal parmi les métiers, refus', () => {
+    expect(entreeInscriptionEtape1.safeParse(etape1).success).toBe(true);
+    expect(entreeInscriptionEtape1.safeParse({ ...etape1, metiers: ['plombier'] }).success).toBe(
+      false,
+    );
+    expect(entreeInscriptionEtape1.safeParse({ ...etape1, metierPrincipal: '' }).success).toBe(
+      false,
+    );
+  });
+  it('rayon 10 à 100 km (D31c)', () => {
+    const z = { ville: 'Mérignac', centre: { latitude: 44.8, longitude: -0.6 } };
+    expect(entreeInscriptionEtape2.safeParse({ ...z, rayonKm: 5 }).success).toBe(false);
+    expect(entreeInscriptionEtape2.safeParse({ ...z, rayonKm: 30 }).success).toBe(true);
+  });
+});
+
+describe('demandes récentes (étapes 2 et 3, décision du 15/11/2026)', () => {
+  it('engagement fixe du propriétaire : au moins 3 demandes en 48 h, sans calcul', () => {
+    expect(DEMANDES_RECENTES_MIN).toBe(3);
+    // Sans base connue (département inconnu) : le plancher de 3.
+    expect(phraseDemandesRecentes({ ville: 'Mérignac', rayonKm: 40 })).toEqual({
+      phrase:
+        'Au moins 3 demandes de travaux déposées ces dernières 48 h autour de Mérignac, dans un rayon de 40 km.',
+      precision:
+        'Certaines ont peut-être déjà été confiées à un artisan : vous verrez dans votre espace celles qui sont encore ouvertes.',
+    });
+  });
+});
+
+describe('demandesRecentes (17/11/2026 : le nombre suit le rayon)', () => {
+  // Base : demandes du mois, tous métiers, à 30 km (modèle de STATS_DEMANDES ou réel).
+  const COUV = { '30': 0.45, '50': 0.8, '100': 1.6 };
+  it('48 h = 2/30 du mois, 10 % de marge en dessous (« au moins »), à 30 km', () => {
+    expect(demandesRecentes({ mensuel30: 900, rayonKm: 30, couverture: COUV })).toBe(54);
+  });
+  it('augmente avec le rayon, interpolé entre les points du modèle, jamais sous 3', () => {
+    const n = [10, 20, 30, 40, 50, 70, 100].map((r) =>
+      demandesRecentes({ mensuel30: 900, rayonKm: r, couverture: COUV }),
+    );
+    for (let i = 1; i < n.length; i++) expect(n[i]!).toBeGreaterThan(n[i - 1]!);
+    expect(demandesRecentes({ mensuel30: 900, rayonKm: 50, couverture: COUV })).toBe(96);
+    expect(demandesRecentes({ mensuel30: 900, rayonKm: 100, couverture: COUV })).toBe(192);
+    expect(demandesRecentes({ mensuel30: 20, rayonKm: 10, couverture: COUV })).toBe(3);
+    expect(demandesRecentes({ mensuel30: null, rayonKm: 70, couverture: COUV })).toBe(3);
+  });
+  it('la phrase reprend le nombre', () => {
+    expect(phraseDemandesRecentes({ ville: 'Bordeaux', rayonKm: 70 }, 120).phrase).toBe(
+      'Au moins 120 demandes de travaux déposées ces dernières 48 h autour de Bordeaux, dans un rayon de 70 km.',
+    );
+  });
+});
+
+describe('decouperNom (profil créé à l’inscription)', () => {
+  it('premier mot = prénom, le reste = nom ; espaces ignorés', () => {
+    expect(decouperNom('Julien Bertrand')).toEqual({ prenom: 'Julien', nom: 'Bertrand' });
+    expect(decouperNom('  Marie  de la Tour ')).toEqual({ prenom: 'Marie', nom: 'de la Tour' });
+    expect(decouperNom('Julien')).toEqual({ prenom: 'Julien' });
+    expect(decouperNom('   ')).toEqual({});
+  });
+});
+
+describe('rayon de la zone (curseur 10 à 100 km)', () => {
+  it('bornes et pas de 5 km', () => {
+    expect(RAYON_ZONE).toEqual({ min: 10, max: 100, pas: 5, defaut: 30 });
+  });
+});

@@ -1,0 +1,92 @@
+import type { CategorieObjet, Ligne } from './catalogue';
+import { MUR } from './catalogueOptions';
+
+/** Catalogue d'objets (DES-21) : déco, électricité, chauffage. */
+export const LIGNES_TECHNIQUE: Partial<Record<CategorieObjet, Ligne[]>> = {
+  deco: [
+    ['suspension', 'Suspension', 'point_lumineux', 500, 500, 300, { altitude: 2000 }],
+    ['lampadaire', 'Lampadaire', 'rond', 400, 400, 1700],
+    ['tapis', 'Tapis', 'tapis', 2000, 1400, 10, { plages: { l: [600, 4000], p: [600, 4000] } }],
+    ['plante', 'Plante', 'plante', 500, 500, 1200],
+    ['plante-pot', 'Plante en pot', 'plante', 600, 600, 1300],
+    ['succulente', 'Plante grasse', 'plante', 220, 220, 350],
+    [
+      'ventilateur',
+      'Ventilateur de plafond',
+      'point_lumineux',
+      1300,
+      1300,
+      450,
+      { altitude: 2050 },
+    ],
+    ['miroir', 'Miroir', 'rectangle', 800, 30, 1200, { ...MUR, altitude: 900 }],
+  ],
+  electricite: [
+    [
+      'prise',
+      'Prise',
+      'prise',
+      80,
+      40,
+      80,
+      { ...MUR, altitude: 300, prestationId: 'prises-eclairage' },
+    ],
+    [
+      'interrupteur',
+      'Interrupteur',
+      'interrupteur',
+      80,
+      40,
+      80,
+      { ...MUR, altitude: 1100, prestationId: 'prises-eclairage' },
+    ],
+    [
+      'point-lumineux',
+      'Point lumineux',
+      'point_lumineux',
+      150,
+      150,
+      100,
+      { altitude: 2400, prestationId: 'prises-eclairage' },
+    ],
+    [
+      'tableau-electrique',
+      'Tableau électrique',
+      'rectangle',
+      500,
+      150,
+      900,
+      { ...MUR, altitude: 1000, prestationId: 'tableau-electrique' },
+    ],
+  ],
+  chauffage: [
+    [
+      'radiateur',
+      'Radiateur',
+      'radiateur',
+      1000,
+      100,
+      600,
+      { ...MUR, altitude: 150, plages: { l: [400, 2000] }, prestationId: 'chauffage-electrique' },
+    ],
+    [
+      'chaudiere',
+      'Chaudière murale',
+      'rectangle',
+      450,
+      350,
+      700,
+      { ...MUR, altitude: 1100, prestationId: 'chaudiere' },
+    ],
+    [
+      'ballon',
+      'Ballon d’eau chaude',
+      'rond',
+      550,
+      550,
+      1500,
+      { ...MUR, prestationId: 'chauffe-eau' },
+    ],
+    ['poele', 'Poêle', 'rond', 600, 600, 1000, { prestationId: 'poele' }],
+  ],
+};
